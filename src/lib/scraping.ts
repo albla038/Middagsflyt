@@ -1,5 +1,7 @@
 import robotsParser from "robots-parser";
 import * as cheerio from "cheerio";
+import { JsonLdRecipe, jsonLdRecipeSchema } from "@/lib/schemas/json-ld-recipe";
+import { jsonrepair } from "jsonrepair";
 
 // TODO Change userAgent in production
 async function checkUrlPermission(
@@ -49,4 +51,66 @@ async function checkUrlPermission(
     console.error("Unknown error while fetching robots.txt:", error);
     return null;
   }
+}
+
+// TODO Consider returning [] instead of null
+function extractAndValidateJsonLdRecipes(
+  $: cheerio.CheerioAPI,
+): JsonLdRecipe[] | null {
+  const jsonLdScripts = $("script[type='application/ld+json']");
+  const recipes: JsonLdRecipe[] = [];
+
+  // Early return if no scripts are found
+  if (jsonLdScripts.length === 0) return null;
+
+  for (const script of jsonLdScripts) {
+    const jsonLdContent = $(script).html();
+    if (!jsonLdContent) continue;
+
+    // Parse to JSON
+    let parsedData: unknown;
+    try {
+      // Repair JSON before parsing
+      parsedData = JSON.parse(jsonrepair(jsonLdContent));
+    } catch (error) {
+      console.warn(
+        "Failed to parse JSON-LD content:",
+        error,
+        "\nContent:",
+        jsonLdContent,
+      );
+      continue;
+    }
+
+    // Normalize to array
+    const parsedDataArray = Array.isArray(parsedData)
+      ? parsedData
+      : [parsedData];
+
+    // Pre-filter for objects that claim to be a Recipe
+    const potentialRecipeDataArray = parsedDataArray.filter(
+      (item) =>
+        typeof item === "object" &&
+        item !== null &&
+        "@type" in item &&
+        item["@type"] === "Recipe",
+    );
+
+    // Validate each JSON-LD object against schema.
+    // Add only successfull validations (i.e. Recipe objects)
+    for (const potentialRecipeData of potentialRecipeDataArray) {
+      const validatedData = jsonLdRecipeSchema.safeParse(potentialRecipeData);
+      if (validatedData.success) {
+        recipes.push(validatedData.data);
+      } else {
+        console.warn(
+          "JSON-LD data failed schema validation:",
+          validatedData.error.issues,
+        );
+      }
+    }
+  }
+
+  if (recipes.length === 0) return null;
+  return recipes;
 }
