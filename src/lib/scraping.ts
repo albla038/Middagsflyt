@@ -114,3 +114,42 @@ function extractAndValidateJsonLdRecipes(
   if (recipes.length === 0) return null;
   return recipes;
 }
+
+function sanitizeRecipeHtml($: cheerio.CheerioAPI): string {
+  // Remove unnecessary tags
+  $("script, noscript, style, img, picture, svg, nav, header, footer").remove();
+  $('link:not([rel="canonical"])').remove();
+
+  // Filter for comments and remove
+  $("*")
+    .contents()
+    .filter(function () {
+      return this.type === "comment";
+    })
+    .remove();
+
+  console.log("Removed comments:", $.html().length);
+
+  // Remove presentational attributes
+  $("*").removeAttr("style, onclick, onmouseover");
+
+  const sanitizedHtmlString = $.html();
+
+  // Remove whitespace
+  let normalizedHtmlString = sanitizedHtmlString.replace(/[ \t]{2,}/g, " ");
+  normalizedHtmlString = normalizedHtmlString.replace(/\n{3,}/g, "\n\n");
+  return normalizedHtmlString.trim();
+}
+
+// TODO remove export
+export function processRecipeHtml(htmlString: string): JsonLdRecipe[] | string {
+  // Load the HTML string into Cheerio
+  const $ = cheerio.load(htmlString);
+
+  // PLAN A: Search for structured JSON-LD data in script tags
+  const jsonLdRecipes = extractAndValidateJsonLdRecipes($);
+  if (jsonLdRecipes) return jsonLdRecipes;
+
+  // PLAN B: Generic HTML sanitization
+  return sanitizeRecipeHtml($);
+}
