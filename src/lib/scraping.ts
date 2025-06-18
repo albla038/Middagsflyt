@@ -153,3 +153,57 @@ export function processRecipeHtml(htmlString: string): JsonLdRecipe[] | string {
   // PLAN B: Generic HTML sanitization
   return sanitizeRecipeHtml($);
 }
+
+async function getAndValidateRecipeFromLlm(
+  data: JsonLdRecipe | string,
+): Promise<Result<Recipe, Error>> {
+  let response: Result<string, Error>;
+
+  if (typeof data !== "string") {
+    // PLAN A: Augment/enrich JSON-LD data with LLM
+    response = await parseJsonLdRecipeWithLlm(
+      data,
+      recipeLlmResponseJsonSchema,
+    );
+  } else {
+    // PLAN B: Generic HTML parsing with LLM
+    response = await parseHtmlRecipeWithLlm(data, recipeLlmResponseJsonSchema);
+  }
+
+  if (!response.ok) return response;
+
+  let parsedResponse: unknown;
+
+  // Parse the response text
+  try {
+    parsedResponse = JSON.parse(response.data);
+  } catch (error) {
+    return {
+      ok: false,
+      error: new Error("Failed to parse LLM response text into JSON", {
+        cause: error,
+      }),
+    };
+  }
+
+  const validatedResponse = recipeLlmResponseSchema.safeParse(parsedResponse);
+
+  if (validatedResponse.success) {
+    const validatedData = validatedResponse.data;
+
+    if (validatedData.status === "success") {
+      // Return the recipe data if the status is success
+      return { ok: true, data: validatedData.data };
+    }
+
+    return {ok: false, error: new Error(validatedData.error)};
+
+  } else {
+    return {
+      ok: false,
+      error: new Error("Parsed data failed schema validation", {
+        cause: z.prettifyError(validatedResponse.error),
+      }),
+    };
+  }
+}
