@@ -2,69 +2,77 @@ import robotsParser from "robots-parser";
 import * as cheerio from "cheerio";
 import { JsonLdRecipe, jsonLdRecipeSchema } from "@/lib/schemas/json-ld-recipe";
 import { jsonrepair } from "jsonrepair";
+import { parseHtmlRecipeWithLlm, parseJsonLdRecipeWithLlm } from "@/llm";
+import {
+  Recipe,
+  recipeLlmResponseJsonSchema,
+  recipeLlmResponseSchema,
+} from "@/lib/schemas/recipe";
+import { PermissionResult, Result } from "@/lib/types";
+import { z } from "zod/v4";
 
 // TODO Change userAgent in production
 async function checkUrlPermission(
-  targetUrlStr: string,
+  targetUrlString: string,
   userAgent: string = "Middagsflyt/1.0 (+http://localhost:3000)",
-) {
-  const url = new URL(targetUrlStr);
-  const robotsUrlStr = `${url.origin}/robots.txt`;
+): Promise<PermissionResult> {
+  const url = new URL(targetUrlString);
+  const robotsUrlString = `${url.origin}/robots.txt`;
 
   try {
-    const response = await fetch(robotsUrlStr);
+    const response = await fetch(robotsUrlString);
 
     // If robots.txt is not found, assume permission is granted
     if (response.status === 404) {
-      console.log(`robots.txt not found at ${robotsUrlStr}`);
-      return true;
+      console.log(`robots.txt not found at ${robotsUrlString}`);
+      return { allowed: true };
     }
 
     if (!response.ok) {
-      console.error(`Failed to fetch robots.txt from ${robotsUrlStr}`);
-      return null;
+      return {
+        allowed: false,
+        reason: `Failed to fetch robots.txt from ${robotsUrlString}`,
+      };
     }
 
     const robotsTxt = await response.text();
 
     // Parse the robots.txt content
-    const robots = robotsParser(robotsUrlStr, robotsTxt);
+    const robots = robotsParser(robotsUrlString, robotsTxt);
 
     // Check if the URL is allowed
-    const isAllowed = robots.isAllowed(targetUrlStr, userAgent);
+    const isAllowed = robots.isAllowed(targetUrlString, userAgent);
 
     // No specific rule found, assume allowed as per common convention
     if (isAllowed === undefined) {
       console.log(
-        `No specific robots.txt rule for ${targetUrlStr}, assuming allowed.`,
+        `No specific robots.txt rule for ${targetUrlString}, assuming allowed.`,
       );
-      return true;
+      return { allowed: true };
     }
 
     // Return the result of the robots.txt check
-    if (isAllowed) {
-      return true;
-    } else {
-      return false;
-    }
+    if (!isAllowed) return { allowed: false, reason: "Permission denied" };
+
+    return { allowed: true };
   } catch (error) {
-    console.error("Unknown error while fetching robots.txt:", error);
-    return null;
+    return {
+      allowed: false,
+      reason: `Unknown error while fetching robots.txt: ${error}`,
+    };
   }
 }
 
-// TODO Consider returning [] instead of null
 function extractAndValidateJsonLdRecipes(
   $: cheerio.CheerioAPI,
-): JsonLdRecipe[] | null {
-  const jsonLdScripts = $("script[type='application/ld+json']");
-  const recipes: JsonLdRecipe[] = [];
+): JsonLdRecipe | null {
+  const $jsonLdScripts = $("script[type='application/ld+json']");
 
   // Early return if no scripts are found
-  if (jsonLdScripts.length === 0) return null;
+  if ($jsonLdScripts.length === 0) return null;
 
-  for (const script of jsonLdScripts) {
-    const jsonLdContent = $(script).html();
+  for (const $script of $jsonLdScripts) {
+    const jsonLdContent = $($script).html();
     if (!jsonLdContent) continue;
 
     // Parse to JSON
@@ -97,22 +105,20 @@ function extractAndValidateJsonLdRecipes(
     );
 
     // Validate each JSON-LD object against schema.
-    // Add only successfull validations (i.e. Recipe objects)
+    // Return the first valid recipe found.
     for (const potentialRecipeData of potentialRecipeDataArray) {
       const validatedData = jsonLdRecipeSchema.safeParse(potentialRecipeData);
       if (validatedData.success) {
-        recipes.push(validatedData.data);
+        return validatedData.data;
       } else {
         console.warn(
-          "JSON-LD data failed schema validation:",
-          validatedData.error.issues,
+          "JSON-LD data failed schema validation:\n",
+          z.prettifyError(validatedData.error),
         );
       }
     }
   }
-
-  if (recipes.length === 0) return null;
-  return recipes;
+  return null; // No valid JSON-LD recipes found
 }
 
 function sanitizeRecipeHtml($: cheerio.CheerioAPI): string {
@@ -128,8 +134,6 @@ function sanitizeRecipeHtml($: cheerio.CheerioAPI): string {
     })
     .remove();
 
-  console.log("Removed comments:", $.html().length);
-
   // Remove presentational attributes
   $("*").removeAttr("style, onclick, onmouseover");
 
@@ -141,16 +145,18 @@ function sanitizeRecipeHtml($: cheerio.CheerioAPI): string {
   return normalizedHtmlString.trim();
 }
 
-// TODO remove export
-export function processRecipeHtml(htmlString: string): JsonLdRecipe[] | string {
+function processRecipeHtml(htmlString: string): JsonLdRecipe | string {
   // Load the HTML string into Cheerio
   const $ = cheerio.load(htmlString);
 
   // PLAN A: Search for structured JSON-LD data in script tags
-  const jsonLdRecipes = extractAndValidateJsonLdRecipes($);
-  if (jsonLdRecipes) return jsonLdRecipes;
+  const jsonLdRecipe = extractAndValidateJsonLdRecipes($);
+  if (jsonLdRecipe) return jsonLdRecipe;
 
   // PLAN B: Generic HTML sanitization
+  console.log(
+    "No JSON-LD recipes found, falling back to generic HTML parsing.",
+  );
   return sanitizeRecipeHtml($);
 }
 
@@ -204,6 +210,59 @@ async function getAndValidateRecipeFromLlm(
       error: new Error("Parsed data failed schema validation", {
         cause: z.prettifyError(validatedResponse.error),
       }),
+    };
+  }
+}
+
+export async function scrapeRecipeData(
+  url: string,
+): Promise<Result<Recipe, Error>> {
+  const permissionResult = await checkUrlPermission(url);
+
+  if (!permissionResult.allowed) {
+    return { ok: false, error: new Error(permissionResult.reason) };
+  }
+
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        error: new Error(
+          `Failed to fetch ${url}: HTTP Error ${response.status}`,
+          { cause: response.statusText },
+        ),
+      };
+    }
+
+    const buffer = await response.arrayBuffer();
+    let rawHtmlString: string;
+
+    try {
+      // Try decoding as UTF-8 first.
+      rawHtmlString = new TextDecoder("utf-8", { fatal: true }).decode(buffer);
+    } catch {
+      console.warn("UTF-8 decoding failed, falling back to ISO-8859-1.");
+      rawHtmlString = new TextDecoder("iso-8859-1").decode(buffer);
+    }
+
+    const processedData = processRecipeHtml(rawHtmlString);
+
+    return await getAndValidateRecipeFromLlm(processedData);
+  } catch (error) {
+    if (error instanceof TypeError) {
+      return {
+        ok: false,
+        error: new Error(`An unexpected error occurred while scraping ${url}`, {
+          cause: error,
+        }),
+      };
+    }
+
+    return {
+      ok: false,
+      error: new Error("Unknown error while scraping", { cause: error }),
     };
   }
 }

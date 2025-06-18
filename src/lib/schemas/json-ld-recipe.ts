@@ -74,7 +74,7 @@ export const jsonLdRecipeSchema = z.object({
   totalTime: z.iso.duration().optional(),
   cookingMethod: z.string().optional(),
   recipeCategory: z.string().optional(),
-  recipeCuisine: z.nullish(z.string()).optional(),
+  recipeCuisine: z.nullish(z.string()),
 });
 
 export type JsonLdRecipe = z.infer<typeof jsonLdRecipeSchema>;
