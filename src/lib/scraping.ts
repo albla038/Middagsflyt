@@ -31,7 +31,7 @@ async function checkUrlPermission(
     if (!response.ok) {
       return {
         allowed: false,
-        reason: `Failed to fetch robots.txt from ${robotsUrlString}`,
+        reason: `Failed to fetch robots.txt from ${robotsUrlString} (status: ${response.status})`,
       };
     }
 
@@ -43,22 +43,22 @@ async function checkUrlPermission(
     // Check if the URL is allowed
     const isAllowed = robots.isAllowed(targetUrlString, userAgent);
 
-    // No specific rule found, assume allowed as per common convention
-    if (isAllowed === undefined) {
-      console.log(
-        `No specific robots.txt rule for ${targetUrlString}, assuming allowed.`,
-      );
-      return { allowed: true };
-    }
-
     // Return the result of the robots.txt check
-    if (!isAllowed) return { allowed: false, reason: "Permission denied" };
+    if (isAllowed === false)
+      return {
+        allowed: false,
+        reason: `Scraping disallowed by robots.txt for user agent "${userAgent}"`,
+      };
 
+    // Else isAllowed is true or undefined
+    // If undefined: no specific rule found, assume allowed as per common convention
     return { allowed: true };
   } catch (error) {
+    const reason =
+      error instanceof Error ? error.message : "An unknown error occurred";
     return {
       allowed: false,
-      reason: `Unknown error while fetching robots.txt: ${error}`,
+      reason: `Error while processing robots.txt: ${reason}`,
     };
   }
 }
@@ -71,18 +71,19 @@ function extractAndValidateJsonLdRecipes(
   // Early return if no scripts are found
   if ($jsonLdScripts.length === 0) return null;
 
+  // Iterate over each JSON-LD script tag
   for (const $script of $jsonLdScripts) {
     const jsonLdContent = $($script).html();
-    if (!jsonLdContent) continue;
+    if (!jsonLdContent) continue; // Skip if no content
 
-    // Parse to JSON
+    // Parse the JSON-LD content
     let parsedData: unknown;
     try {
       // Repair JSON before parsing
       parsedData = JSON.parse(jsonrepair(jsonLdContent));
     } catch (error) {
       console.warn(
-        "Failed to parse JSON-LD content:",
+        "Failed to parse JSON-LD content:\n",
         error,
         "\nContent:",
         jsonLdContent,
@@ -123,7 +124,9 @@ function extractAndValidateJsonLdRecipes(
 
 function sanitizeRecipeHtml($: cheerio.CheerioAPI): string {
   // Remove unnecessary tags
-  $("script, noscript, style, img, picture, svg, nav, header, footer").remove();
+  $(
+    "script, noscript, style, nav, header, footer, aside, form, iframe, img, picture, svg, video, audio",
+  ).remove();
   $('link:not([rel="canonical"])').remove();
 
   // Filter for comments and remove
@@ -134,8 +137,10 @@ function sanitizeRecipeHtml($: cheerio.CheerioAPI): string {
     })
     .remove();
 
-  // Remove presentational attributes
-  $("*").removeAttr("style, onclick, onmouseover");
+  // Remove some presentational attributes
+  $("*").removeAttr(
+    "class, id, style, onclick, onmouseover, onmousedown, onkeydown",
+  );
 
   const sanitizedHtmlString = $.html();
 
@@ -184,6 +189,7 @@ async function getAndValidateRecipeFromLlm(
   try {
     parsedResponse = JSON.parse(response.data);
   } catch (error) {
+    console.error("LLM returned a non-JSON response:", response.data);
     return {
       ok: false,
       error: new Error("Failed to parse LLM response text into JSON", {
@@ -202,8 +208,7 @@ async function getAndValidateRecipeFromLlm(
       return { ok: true, data: validatedData.data };
     }
 
-    return {ok: false, error: new Error(validatedData.error)};
-
+    return { ok: false, error: new Error(validatedData.error) };
   } else {
     return {
       ok: false,
@@ -251,18 +256,11 @@ export async function scrapeRecipeData(
 
     return await getAndValidateRecipeFromLlm(processedData);
   } catch (error) {
-    if (error instanceof TypeError) {
-      return {
-        ok: false,
-        error: new Error(`An unexpected error occurred while scraping ${url}`, {
-          cause: error,
-        }),
-      };
-    }
-
     return {
       ok: false,
-      error: new Error("Unknown error while scraping", { cause: error }),
+      error: new Error(`An unexpected error occurred while scraping ${url}`, {
+        cause: error,
+      }),
     };
   }
 }
