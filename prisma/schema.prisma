@@ -23,11 +23,10 @@ enum Unit {
   L
 
   G
-  HG
   KG
 
   ST
-  PKT // or FÖRP
+  KLYFTOR
 }
 
 // The standardized Ingredient model
@@ -42,6 +41,8 @@ model Ingredient {
 
   ingredientCategory   IngredientCategory @relation(fields: [ingredientCategoryId], references: [id])
   ingredientCategoryId String
+
+  ingredientAliases IngredientAlias[] // for alternative spellings
 
   // This ingredient can be part of many recipe ingredients
   recipes RecipeIngredient[]
@@ -64,6 +65,19 @@ model IngredientCategory {
   @@map("ingredient_categories")
 }
 
+model IngredientAlias {
+  id   String @id @default(cuid(2))
+  name String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  ingredientId String
+
+  @@map("ingredient_aliases")
+}
+
 model RecipeIngredient {
   id       String   @id @default(cuid(2))
   text     String
@@ -77,7 +91,7 @@ model RecipeIngredient {
   // Each ingredient is used in at least one instruction (normally)
   instructions RecipeInstruction[]
 
-  Recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   recipeId String
 
   createdAt DateTime @default(now())
@@ -93,7 +107,7 @@ model RecipeInstruction {
   // Each instruction may use multiple ingredients
   recipeIngredients RecipeIngredient[]
 
-  Recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   recipeId String
 
   createdAt DateTime @default(now())
