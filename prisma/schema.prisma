@@ -26,7 +26,18 @@ enum Unit {
   KG
 
   ST
+  FÖRP
   KLYFTOR
+}
+
+enum RecipeMainType {
+  KÖTT
+  FÅGEL
+  FISK
+  VEGETARISK
+  VEGANSK
+  ÖVRIGT
+  // Represent a recipe that does not fit into the main types
 }
 
 // The standardized Ingredient model
@@ -79,11 +90,12 @@ model IngredientAlias {
 }
 
 model RecipeIngredient {
-  id       String   @id @default(cuid(2))
-  text     String
-  note     String?
-  quantity Decimal?
-  unit     Unit?
+  id           String   @id @default(cuid(2))
+  displayOrder Int
+  text         String
+  note         String?
+  quantity     Decimal?
+  unit         Unit?
 
   ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
   ingredientId String
@@ -102,6 +114,7 @@ model RecipeIngredient {
 
 model RecipeInstruction {
   id   String @id @default(cuid(2))
+  step Int
   text String
 
   // Each instruction may use multiple ingredients
@@ -117,10 +130,20 @@ model RecipeInstruction {
 }
 
 model Recipe {
-  id          String  @id @default(cuid(2))
-  slug        String  @unique
+  id          String         @id @default(cuid(2))
+  slug        String         @unique
   name        String
   description String?
+  recipeYield Int?
+  mainType    RecipeMainType
+  imageUrl    String?
+
+  // prepTime 
+  // cookTime
+  // totalTime
+  // cookingMethod
+  // category
+  // cuisine
 
   recipeIngredients  RecipeIngredient[]
   recipeInstructions RecipeInstruction[]
@@ -129,7 +152,7 @@ model Recipe {
 
   // createdBy   User
   originalAuthor String?
-  sourceUrl      String?
+  sourceUrl      String? @unique
   isImported     Boolean @default(false)
 
   createdAt DateTime @default(now())

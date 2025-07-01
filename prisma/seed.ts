@@ -1239,9 +1239,9 @@ const generatedIngredients: GeneratedIngredients = [
 ];
 
 async function main() {
-  // await prisma.ingredientCategory.createMany({
-  //   data: categoryData,
-  // });
+  await prisma.ingredientCategory.createMany({
+    data: categoryData,
+  });
 
   for (const ing of generatedIngredients) {
     const {
