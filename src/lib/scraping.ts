@@ -2,12 +2,12 @@ import robotsParser from "robots-parser";
 import * as cheerio from "cheerio";
 import { JsonLdRecipe, jsonLdRecipeSchema } from "@/lib/schemas/json-ld-recipe";
 import { jsonrepair } from "jsonrepair";
-import { parseHtmlRecipeWithLlm, parseJsonLdRecipeWithLlm } from "@/llm";
+import { parseHtmlRecipeWithLlm, parseJsonLdRecipeWithLlm } from "@/lib/llm";
 import {
-  Recipe,
+  GeneratedRecipe,
   recipeLlmResponseJsonSchema,
   recipeLlmResponseSchema,
-} from "@/lib/schemas/recipe";
+} from "@/lib/schemas/recipe-generation";
 import { PermissionResult, Result } from "@/lib/types";
 import { z } from "zod/v4";
 
@@ -167,7 +167,7 @@ function processRecipeHtml(htmlString: string): JsonLdRecipe | string {
 
 async function getAndValidateRecipeFromLlm(
   data: JsonLdRecipe | string,
-): Promise<Result<Recipe, Error>> {
+): Promise<Result<GeneratedRecipe, Error>> {
   let response: Result<string, Error>;
 
   if (typeof data !== "string") {
@@ -198,10 +198,10 @@ async function getAndValidateRecipeFromLlm(
     };
   }
 
-  const validatedResponse = recipeLlmResponseSchema.safeParse(parsedResponse);
+  const validated = recipeLlmResponseSchema.safeParse(parsedResponse);
 
-  if (validatedResponse.success) {
-    const validatedData = validatedResponse.data;
+  if (validated.success) {
+    const validatedData = validated.data;
 
     if (validatedData.status === "success") {
       // Return the recipe data if the status is success
@@ -213,7 +213,7 @@ async function getAndValidateRecipeFromLlm(
     return {
       ok: false,
       error: new Error("Parsed data failed schema validation", {
-        cause: z.prettifyError(validatedResponse.error),
+        cause: z.prettifyError(validated.error),
       }),
     };
   }
@@ -221,7 +221,7 @@ async function getAndValidateRecipeFromLlm(
 
 export async function scrapeRecipeData(
   url: string,
-): Promise<Result<Recipe, Error>> {
+): Promise<Result<GeneratedRecipe, Error>> {
   const permissionResult = await checkUrlPermission(url);
 
   if (!permissionResult.allowed) {

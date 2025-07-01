@@ -13,14 +13,7 @@ const howToStepSchema = z.object({
 const howToSectionSchema = z.object({
   "@type": z.literal("HowToSection"),
   name: z.string().optional(),
-  itemListElement: z
-    .array(
-      z.object({
-        "@type": z.literal("HowToStep"),
-        text: z.string().min(1),
-      }),
-    )
-    .min(1),
+  itemListElement: z.array(howToStepSchema).min(1),
 });
 
 const recipeInstructionsSchema = z.union([

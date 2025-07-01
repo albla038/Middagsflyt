@@ -1,7 +1,8 @@
-import { JsonLdRecipe } from "@/lib/schemas/json-ld-recipe";
-import { Result } from "@/lib/types";
 import { GoogleGenAI } from "@google/genai";
 import { z } from "zod/v4";
+import { Result } from "@/lib/types";
+import { JsonLdRecipe } from "@/lib/schemas/json-ld-recipe";
+
 
 const llm = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
@@ -90,6 +91,24 @@ Follow these instructions carefully:
   return await callLlmWithSchema({
     taskDescription: htmlTaskDescription,
     data: htmlString,
+    context,
+    jsonSchema,
+  });
+}
+
+export async function generateIngredientsWithLlm(
+  ingredients: string[],
+  jsonSchema: z.core.JSONSchema.JSONSchema,
+): Promise<Result<string, Error>> {
+  const taskDescription =
+    "Use the following array to generate ingredient data based on my system instructions.";
+
+  const context =
+    "You are a Swedish culinary data expert. Generate ingredient data for the provided ingredient names that adheres to the given response schema.";
+
+  return await callLlmWithSchema({
+    taskDescription,
+    data: JSON.stringify(ingredients),
     context,
     jsonSchema,
   });
