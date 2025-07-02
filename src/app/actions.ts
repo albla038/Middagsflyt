@@ -38,7 +38,6 @@ export async function importRecipeFromUrl(
   formData: FormData,
 ): Promise<FormState> {
   // TODO Add auth
-  await new Promise((resolve) => setTimeout(resolve, 3000));
 
   // Validate the form data
   const validated = urlFormSchema.safeParse(Object.fromEntries(formData));

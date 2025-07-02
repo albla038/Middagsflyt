@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FormState, importRecipeFromUrl } from "@/lib/actions";
+import { FormState, importRecipeFromUrl } from "@/app/actions";
 import { LoaderCircle } from "lucide-react";
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
