@@ -1,7 +1,7 @@
 import "server-only";
 
-import { Recipe } from "@/generated/prisma";
-import prisma from "@/lib/prisma";
+import { Recipe } from "@/lib/generated/prisma";
+import prisma from "@/lib/db";
 
 // TODO Authenticate user in private queries
 

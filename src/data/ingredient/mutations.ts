@@ -7,8 +7,8 @@ import {
 } from "@/lib/schemas/ingredient-generation";
 import { generateIngredientsWithLlm } from "@/lib/llm";
 import { z } from "zod/v4";
-import prisma from "@/lib/prisma";
-import { Ingredient } from "@/generated/prisma";
+import prisma from "@/lib/db";
+import { Ingredient } from "@/lib/generated/prisma";
 
 export async function generateAndCreateIngredients(
   ingredients: string[],

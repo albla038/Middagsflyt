@@ -1,10 +1,10 @@
 import "server-only";
 
 import { GeneratedRecipe } from "@/lib/schemas/recipe-generation";
-import prisma from "@/lib/prisma";
+import prisma from "@/lib/db";
 import { generateUniqueSlug, slugify } from "@/lib/utils";
 import { Result } from "@/lib/types";
-import { Recipe } from "@/generated/prisma";
+import { Recipe } from "@/lib/generated/prisma";
 import { fetchMissingIngredients } from "@/data/ingredient/queries";
 import { generateAndCreateIngredients } from "@/data/ingredient/mutations";
 

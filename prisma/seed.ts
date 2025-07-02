@@ -1,5 +1,5 @@
-import prisma from "@/lib/prisma";
-import { Prisma } from "@/generated/prisma";
+import prisma from "@/lib/db";
+import { Prisma } from "@/lib/generated/prisma";
 import { GeneratedIngredients } from "@/lib/schemas/ingredient-generation";
 
 const categoryData: Prisma.IngredientCategoryCreateInput[] = [
