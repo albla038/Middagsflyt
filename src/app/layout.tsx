@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { CircleAlert, CircleCheck } from "lucide-react";
+import ThemeProvider from "@/components/ui/theme-provider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -20,9 +21,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} min-h-svh font-inter antialiased`}>
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
         <Toaster
           icons={{
             success: <CircleCheck className="size-4 text-primary" />,
