@@ -7,6 +7,7 @@ import { FormState, importRecipeFromUrl } from "@/app/actions";
 import { LoaderCircle } from "lucide-react";
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
+import { MiddagsflytLoader } from "@/components/ui/logo/middagsflyt-loader";
 
 const initialState: FormState = { status: "IDLE" };
 
@@ -50,7 +51,8 @@ export default function UrlForm() {
           {pending ? (
             <>
               <span>Importerar...</span>
-              <LoaderCircle className="animate-spin" />
+              {/* <LoaderCircle className="animate-spin" /> */}
+              <MiddagsflytLoader className="size-4" />
             </>
           ) : (
             "Importera"
