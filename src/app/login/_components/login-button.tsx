@@ -17,8 +17,11 @@ export default function LogInButton() {
         provider: "google",
         callbackURL: "/",
         fetchOptions: {
+          onSuccess: () => {
+            toast.loading("Inloggningen lyckades. Omdirigering pågår...");
+          },
           onError: () => {
-            toast.error(`Inloggning misslyckades: Internt serverfel`);
+            toast.error("Inloggning misslyckades: Internt serverfel");
           },
         },
       });
@@ -34,8 +37,8 @@ export default function LogInButton() {
     >
       {logInPending ? (
         <>
-          <LoaderCircle className="size-4 animate-spin" />{" "}
-          <span>Loggar in...</span>{" "}
+          <LoaderCircle className="size-4 animate-spin" />
+          <span>Loggar in...</span>
         </>
       ) : (
         <>

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
-import { CircleAlert, CircleCheck } from "lucide-react";
+import { CircleAlert, CircleCheck, LoaderCircle } from "lucide-react";
 import ThemeProvider from "@/components/ui/theme-provider";
 
 const inter = Inter({
@@ -35,6 +35,9 @@ export default function RootLayout({
           icons={{
             success: <CircleCheck className="size-4 text-primary" />,
             error: <CircleAlert className="size-4 text-destructive" />,
+            loading: (
+              <LoaderCircle className="size-4 animate-spin text-foreground" />
+            ),
           }}
         />
       </body>

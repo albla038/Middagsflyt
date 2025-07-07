@@ -3,7 +3,6 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 
-
 import {
   Card,
   CardContent,
@@ -41,10 +40,10 @@ export default async function LoginPage() {
         <div className="relative hidden md:block">
           <Image
             alt="Login image"
-            src="/raggmunk.webp"
+            src="/raggmunk-2.jpg"
             className="absolute inset-0 size-full object-cover"
-            width={1300}
-            height={1300}
+            width="1000"
+            height="1000"
           />
         </div>
       </CardContent>

@@ -5,6 +5,7 @@ import { authClient } from "@/lib/auth-client";
 import { LoaderCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
+import { toast } from "sonner";
 
 export default function LogOutButton() {
   const [logOutPending, startLogOutTransition] = useTransition();
@@ -14,7 +15,17 @@ export default function LogOutButton() {
     startLogOutTransition(async () => {
       await authClient.signOut({
         fetchOptions: {
-          onSuccess: () => router.push("/login"),
+          onSuccess: () => {
+            router.push("/login");
+          },
+          onError: () => {
+            toast.error("Utloggningen misslyckades", {
+              action: {
+                label: "Försök igen",
+                onClick: logOut,
+              },
+            });
+          },
         },
       });
     });
@@ -24,7 +35,7 @@ export default function LogOutButton() {
     <Button onClick={logOut} variant="outline" disabled={logOutPending}>
       {logOutPending ? (
         <>
-          <LoaderCircle className="size-4 animate-spin" />{" "}
+          <LoaderCircle className="size-4 animate-spin" />
           <span>Loggar ut...</span>
         </>
       ) : (
