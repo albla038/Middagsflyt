@@ -58,7 +58,7 @@ export const generatedRecipeSchema = z.object({
   name: z.string().min(1).meta({
     description: "The provided name of the recipe, in Swedish.",
   }),
-  description: z.string().min(1).optional().meta({
+  description: z.string().optional().meta({
     description:
       "A brief description of the recipe in Swedish, taken directly from the source without modification.",
   }),
@@ -70,7 +70,12 @@ export const generatedRecipeSchema = z.object({
     .meta({
       description: "The most fitting main type for the recipe",
     }),
-  imageUrl: z.string().optional(),
+  imageUrl: z
+    .url({
+      protocol: /^https?$/,
+      hostname: z.regexes.domain,
+    })
+    .optional(),
   recipeIngredients: z.array(recipeIngredient).min(1).meta({
     description: "An array of ingredients used in the recipe.",
   }),

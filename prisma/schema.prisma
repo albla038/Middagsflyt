@@ -27,7 +27,6 @@ enum Unit {
 
   ST
   FÖRP
-  KLYFTOR
 }
 
 enum RecipeMainType {
@@ -96,6 +95,8 @@ model RecipeIngredient {
   note         String?
   quantity     Decimal?
   unit         Unit?
+
+  // label?
 
   ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
   ingredientId String

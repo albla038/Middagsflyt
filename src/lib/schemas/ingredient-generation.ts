@@ -13,7 +13,6 @@ export const unitSchema = z.enum([
   "KG",
   "ST",
   "FÖRP",
-  "KLYFTOR",
 ]);
 
 const ingredientCategorySchema = z.enum([

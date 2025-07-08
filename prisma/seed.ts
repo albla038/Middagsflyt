@@ -126,14 +126,14 @@ const generatedIngredients: GeneratedIngredients = [
     aliases: [],
   },
   {
-    displayNamePlural: "Vitlök",
-    displayNameSingular: "Vitlök",
+    displayNamePlural: "Vitlöksklyftor",
+    displayNameSingular: "vitlöksklyfta",
     ingredientCategory: {
       name: "Frukt & Grönt",
     },
-    name: "vitlök",
-    shoppingUnit: "KLYFTOR",
-    aliases: [],
+    name: "vitlöksklyfta",
+    shoppingUnit: "ST",
+    aliases: ["vitlök", "vitlöksklyftor", "vitlök klyfta", "vitlök klyftor"],
   },
   {
     displayNamePlural: "Rapsolja",
