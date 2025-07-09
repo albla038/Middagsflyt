@@ -7,6 +7,7 @@ import { Result } from "@/lib/types";
 import { Recipe } from "@/lib/generated/prisma";
 import { fetchMissingIngredients } from "@/data/ingredient/queries";
 import { generateAndCreateIngredients } from "@/data/ingredient/mutations";
+import { verifyUser } from "@/data/user/verify-user";
 
 // TODO Authenticate user in all functions
 
@@ -14,6 +15,8 @@ export async function createRecipeFromGeneratedData(
   data: GeneratedRecipe,
   sourceUrl: string,
 ): Promise<Result<Recipe, Error>> {
+  const user = await verifyUser();
+
   const baseSlug = slugify(data.name);
 
   try {
@@ -90,6 +93,11 @@ export async function createRecipeFromGeneratedData(
           mainType: data.mainType,
           imageUrl: data.imageUrl,
 
+          createdBy: {
+            connect: { id: user.id },
+          },
+
+          totalTimeSeconds: data.totalTimeSeconds,
           oven: data.oven,
           originalAuthor: data.originalAuthor,
           isImported: true,

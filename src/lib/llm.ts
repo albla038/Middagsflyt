@@ -2,7 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 import { z } from "zod/v4";
 import { Result } from "@/lib/types";
 import { JsonLdRecipe } from "@/lib/schemas/json-ld-recipe";
-
+import { parse, toSeconds } from "iso8601-duration";
 
 const llm = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
@@ -22,6 +22,7 @@ async function callLlmWithSchema({
   jsonSchema: z.core.JSONSchema.JSONSchema;
 }): Promise<Result<string, Error>> {
   try {
+    const startTime = Date.now();
     const response = await llm.models.generateContent({
       model: LLM_MODEL,
       contents: {
@@ -35,7 +36,10 @@ async function callLlmWithSchema({
       },
     });
 
+    const responseTime = Date.now() - startTime;
+
     console.log("Token count:", response?.usageMetadata?.totalTokenCount);
+    console.log("Response time:", responseTime / 1000, "seconds");
 
     if (response.text) return { ok: true, data: response.text };
 
@@ -52,6 +56,11 @@ export async function parseJsonLdRecipeWithLlm(
   jsonLdRecipe: JsonLdRecipe,
   jsonSchema: z.core.JSONSchema.JSONSchema,
 ): Promise<Result<string, Error>> {
+  // Convert ISO 8601 durations to seconds
+  jsonLdRecipe.totalTime = jsonLdRecipe.totalTime
+    ? String(toSeconds(parse(jsonLdRecipe.totalTime)))
+    : undefined;
+
   const jsonLdTaskDescription =
     "Analyze the following JSON-LD data and extract the recipe data based on my system instructions.";
 

@@ -139,9 +139,7 @@ model Recipe {
   mainType    RecipeMainType
   imageUrl    String?
 
-  // prepTime 
-  // cookTime
-  // totalTime
+  totalTimeSeconds Int?
   // cookingMethod
   // category
   // cuisine
@@ -151,15 +149,32 @@ model Recipe {
 
   oven Int?
 
-  // createdBy   User
+  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdById String
+
   originalAuthor String?
   sourceUrl      String? @unique
   isImported     Boolean @default(false)
+
+  savedBy SavedRecipe[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("recipes")
+}
+
+model SavedRecipe {
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  Recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId String
+
+  savedAt DateTime @default(now())
+
+  @@id([userId, recipeId])
+  @@map("saved_recipes")
 }
 
 model User {
@@ -173,8 +188,26 @@ model User {
   sessions      Session[]
   accounts      Account[]
 
+  createdRecipes Recipe[]
+  savedRecipes   SavedRecipe[]
+
+  profile UserProfile?
+
   @@unique([email])
   @@map("users")
+}
+
+model UserProfile {
+  userId String @id
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Any additional user fields
+  // dietaryRestrictions or dietaryPreferences?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user_profiles")
 }
 
 model Session {

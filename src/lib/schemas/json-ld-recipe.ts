@@ -62,8 +62,6 @@ export const jsonLdRecipeSchema = z.object({
   recipeYield: coercedInt.optional(),
   image: z.union([imageSchema, z.array(imageSchema)]).optional(),
   author: authorSchema.optional(),
-  prepTime: z.iso.duration().optional(),
-  cookTime: z.iso.duration().optional(),
   totalTime: z.iso.duration().optional(),
   cookingMethod: z.string().optional(),
   recipeCategory: z.string().optional(),

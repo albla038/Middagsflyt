@@ -37,7 +37,7 @@ export async function importRecipeFromUrl(
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> {
-  const user = await verifyUser();
+  await verifyUser();
 
   // Validate the form data
   const validated = urlFormSchema.safeParse(Object.fromEntries(formData));

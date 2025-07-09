@@ -1,41 +1,9 @@
 import { z } from "zod/v4";
 
-export const unitSchema = z.enum([
-  "KRM",
-  "TSK",
-  "MSK",
-  "CUP",
-  "ML",
-  "CL",
-  "DL",
-  "L",
-  "G",
-  "KG",
-  "ST",
-  "FÖRP",
-]);
+import { Unit } from "@/lib/generated/prisma";
+import { fetchIngredientCategories } from "@/data/ingredientCategory/queries";
 
-const ingredientCategorySchema = z.enum([
-  "Frukt & Grönt",
-  "Kött & Fågel",
-  "Chark",
-  "Fisk & Skaldjur",
-  "Mejeri",
-  "Ost",
-  "Vegetariskt",
-  "Skafferi",
-  "Bröd, Kex & Bageri",
-  "Frysvaror",
-  "Dryck",
-  "Snacks & Godis",
-  "Glass",
-  "Färdigmat & Sallader",
-  "Hälsa & Skönhet",
-  "Barn",
-  "Hem & Hushåll",
-  "Fritid",
-  "Övrigt",
-]);
+const ingredientCategorySchema = z.enum(await fetchIngredientCategories());
 
 export const generatedIngredientsSchema = z.array(
   z.object({
@@ -55,9 +23,9 @@ export const generatedIngredientsSchema = z.array(
       description:
         "The display name for multiple units of the ingredient. For mass nouns (like 'mjöl'), this should be the same as the singular form. Examples: 'Mjöl', 'Potatisar', 'Gula lökar'.",
     }),
-    shoppingUnit: unitSchema.meta({
+    shoppingUnit: z.enum(Unit).meta({
       description:
-        "The most common swedish unit for purchasing this ingredient. Choose one from the list. Use 'ST' for ingredients bought in pieces (exempel: 3 st ägg, 2 st paprikor).",
+        "The most common swedish unit for purchasing this ingredient. Choose one from the list. Use 'ST' for ingredients bought in pieces (exempel: 3 st ägg, 2 st paprikor). Prefer 'G' over 'KG' for ingredients bought in grams.",
     }),
     ingredientCategory: z.object({
       name: ingredientCategorySchema.meta({
