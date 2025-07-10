@@ -38,3 +38,12 @@ export function generateUniqueSlug(
 
   return candidateSlug;
 }
+
+export function nameToInitials(name: string): string {
+  if (!name) return "";
+
+  const parts = name.split(" ");
+  const initials = parts.map((part) => part.charAt(0).toUpperCase()).join("");
+
+  return initials;
+}
