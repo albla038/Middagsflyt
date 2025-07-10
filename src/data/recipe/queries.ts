@@ -5,6 +5,37 @@ import prisma from "@/lib/db";
 
 // TODO Authenticate user in private queries
 
+export async function fetchRecipeBySlug(slug: string) {
+  try {
+    return await prisma.recipe.findUnique({
+      where: { slug },
+      include: {
+        recipeIngredients: {
+          orderBy: { displayOrder: "asc" },
+        },
+        recipeInstructions: {
+          orderBy: { step: "asc" },
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+            email: true,
+          },
+        },
+      },
+    });
+  } catch (error) {
+    throw new Error(
+      "Något gick fel när receptet hämtades, vänligen försök igen!",
+      {
+        cause: error instanceof Error ? error : new Error(String(error)),
+      },
+    );
+  }
+}
+
 export async function fetchAllRecipes(): Promise<Recipe[]> {
   try {
     return await prisma.recipe.findMany({
