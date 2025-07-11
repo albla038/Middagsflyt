@@ -1,22 +1,14 @@
 import LogOutButton from "@/components/logout-button";
 import RecipeList from "@/components/recipe-list";
 import UrlForm from "@/components/url-form";
-import { auth } from "@/lib/auth";
+import { verifyUser } from "@/data/user/verify-user";
 import { LoaderCircle } from "lucide-react";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 export default async function Home() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const user = await verifyUser();
 
-  if (!session) {
-    redirect("/login");
-  }
-
-  const fullName = session.user.name;
+  const fullName = user.name;
 
   return (
     <div>
