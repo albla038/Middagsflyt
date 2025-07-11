@@ -138,38 +138,38 @@ export default async function Recipe({ slug }: { slug: string }) {
         </div>
 
         {/* Buttons */}
-        <div className="flex items-center justify-evenly">
+        <div className="flex items-center gap-2">
           <Button
             variant={"ghost"}
-            size={"icon"}
-            className="size-10"
+            size={"icon-lg"}
+            className={"grow"}
             // onClick={() => {}} // TODO Add click handler
           >
-            <CalendarPlus className="size-5" />
+            <CalendarPlus className="size-6" />
           </Button>
           <Button
             variant={"ghost"}
-            size={"icon"}
-            className="size-10"
+            size={"icon-lg"}
+            className={"grow"}
             // onClick={() => {}} // TODO Add click handler
           >
-            <ListPlus className="size-5" />
+            <ListPlus className="size-6" />
           </Button>
           <Button
             variant={"ghost"}
-            size={"icon"}
-            className="size-10"
+            size={"icon-lg"}
+            className={"grow"}
             // onClick={() => {}} // TODO Add click handler
           >
-            <BookmarkPlus className="size-5" />
+            <BookmarkPlus className="size-6" />
           </Button>
           <Button
             variant={"ghost"}
-            size={"icon"}
-            className="size-10"
+            size={"icon-lg"}
+            className={"grow"}
             // onClick={() => {}} // TODO Add click handler
           >
-            <LucideLink className="size-5" />
+            <LucideLink className="size-6" />
           </Button>
         </div>
       </div>
@@ -200,3 +200,5 @@ function StatValue({
     </div>
   );
 }
+
+// •
