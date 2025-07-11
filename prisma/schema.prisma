@@ -89,11 +89,11 @@ model IngredientAlias {
 }
 
 model RecipeIngredient {
-  id           String   @id @default(cuid(2))
+  id           String  @id @default(cuid(2))
   displayOrder Int
   text         String
   note         String?
-  quantity     Decimal?
+  quantity     Float?
   unit         Unit?
 
   // label?

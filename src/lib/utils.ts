@@ -47,3 +47,26 @@ export function nameToInitials(name: string): string {
 
   return initials;
 }
+
+export function formatQuantityDecimal(quantity: number): string {
+  if (Number.isInteger(quantity)) {
+    return quantity.toString();
+  }
+
+  const value = Math.round(quantity * 100) / 100; // Round to two decimal places
+  const remainder = value % 1;
+  const truncatedValue = Math.trunc(value);
+
+  const displayValue = truncatedValue ? truncatedValue.toString() + " " : "";
+
+  switch (remainder) {
+    case 0.5:
+      return displayValue + "½";
+    case 0.25:
+      return displayValue + "¼";
+    case 0.75:
+      return displayValue + "¾";
+  }
+
+  return value.toString();
+}

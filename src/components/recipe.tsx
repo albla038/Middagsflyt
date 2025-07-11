@@ -1,3 +1,4 @@
+import RecipeContent from "@/components/recipe-content";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -5,6 +6,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import H1 from "@/components/ui/typography/h1";
 import { fetchRecipeBySlug } from "@/data/recipe/queries";
 import { cn, nameToInitials } from "@/lib/utils";
 import {
@@ -34,9 +36,9 @@ export default async function Recipe({ slug }: { slug: string }) {
   return (
     <article className="flex flex-col gap-8">
       {/* Recipe Header */}
-      <div className="flex flex-col gap-6">
+      <section className="flex flex-col gap-6">
         <div className="flex flex-col items-center gap-3">
-          <h1 className="text-center text-3xl font-semibold">{data.name}</h1>
+          <H1>{data.name}</H1>
 
           {/* "Nyckeltal" / Stats */}
           <div className="flex max-w-[225px] flex-wrap justify-center gap-2 sm:max-w-full">
@@ -137,7 +139,7 @@ export default async function Recipe({ slug }: { slug: string }) {
           </div>
         </div>
 
-        {/* Buttons */}
+        {/* Action buttons */}
         <div className="flex items-center gap-2">
           <Button
             variant={"ghost"}
@@ -172,7 +174,14 @@ export default async function Recipe({ slug }: { slug: string }) {
             <LucideLink className="size-6" />
           </Button>
         </div>
-      </div>
+      </section>
+
+      {/* Recipe ingredients */}
+      <RecipeContent
+        ingredients={data.recipeIngredients}
+        instructions={data.recipeInstructions}
+        recipeYield={data.recipeYield}
+      />
     </article>
   );
 }
@@ -200,5 +209,3 @@ function StatValue({
     </div>
   );
 }
-
-// •
