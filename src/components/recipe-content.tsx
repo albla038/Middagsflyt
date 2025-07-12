@@ -9,7 +9,6 @@ import { useReducer, useState } from "react";
 
 type IngredientContent = {
   id: string;
-  displayOrder: number;
   text: string;
   note: string | null;
   quantity: number | null;

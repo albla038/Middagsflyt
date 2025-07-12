@@ -18,7 +18,6 @@ export async function fetchRecipeBySlug(slug: string) {
             note: true,
             quantity: true,
             unit: true,
-            displayOrder: true,
           },
           orderBy: { displayOrder: "asc" },
         },
@@ -47,58 +46,6 @@ export async function fetchRecipeBySlug(slug: string) {
         },
       },
     });
-
-    // const recipe = await prisma.recipe.findUnique({
-    //   where: { slug },
-    //   select: {
-    //     // Fields fpr Recipe component
-    //     id: true,
-    //     name: true,
-    //     description: true,
-    //     recipeYield: true,
-    //     imageUrl: true,
-    //     totalTimeSeconds: true,
-    //     oven: true,
-    //     sourceUrl: true,
-    //     originalAuthor: true,
-
-    //     // Relation for RecipeIngredient component
-    //     recipeIngredients: {
-    //       select: {
-    //         id: true,
-    //         text: true,
-    //         note: true,
-    //         quantity: true,
-    //         unit: true,
-    //         displayOrder: true,
-    //       },
-    //       orderBy: { displayOrder: "asc" },
-    //     },
-
-    //     // Relation for RecipeInstruction component
-    //     recipeInstructions: {
-    //       select: {
-    //         id: true,
-    //         text: true,
-    //         step: true,
-    //         recipeIngredients: {
-    //           select: {
-    //             id: true,
-    //           },
-    //         },
-    //       },
-    //       orderBy: { step: "asc" },
-    //     },
-    //     // Relation for createdBy HoverCard
-    //     createdBy: {
-    //       select: {
-    //         name: true,
-    //         image: true,
-    //         email: true,
-    //       },
-    //     },
-    //   },
-    // });
 
     if (!recipe) return null;
 
