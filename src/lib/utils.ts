@@ -53,6 +53,10 @@ export function formatQuantityDecimal(quantity: number): string {
     return quantity.toString();
   }
 
+  if (quantity.toFixed(0).length > 2) {
+    return quantity.toFixed(0);
+  }
+
   const value = Math.round(quantity * 100) / 100; // Round to two decimal places
   const remainder = value % 1;
   const truncatedValue = Math.trunc(value);

@@ -29,42 +29,42 @@ import { notFound } from "next/navigation";
 import { ReactNode } from "react";
 
 export default async function Recipe({ slug }: { slug: string }) {
-  const data = await fetchRecipeBySlug(slug);
+  const recipe = await fetchRecipeBySlug(slug);
 
-  if (!data) notFound();
+  if (!recipe) notFound();
 
   return (
     <article className="flex flex-col gap-8">
       {/* Recipe Header */}
       <section className="flex flex-col gap-6">
         <div className="flex flex-col items-center gap-3">
-          <H1>{data.name}</H1>
+          <H1>{recipe.name}</H1>
 
           {/* "Nyckeltal" / Stats */}
           <div className="flex max-w-[225px] flex-wrap justify-center gap-2 sm:max-w-full">
             <StatValue icon={Refrigerator} desc="ingredienser">
-              {data.recipeIngredients.length}
+              {recipe.recipeIngredients.length}
             </StatValue>
-            {data.totalTimeSeconds && (
+            {recipe.totalTimeSeconds && (
               <StatValue icon={ClockFading} desc="min">
-                {data.totalTimeSeconds / 60}
+                {recipe.totalTimeSeconds / 60}
               </StatValue>
             )}
-            {data.recipeYield && (
+            {recipe.recipeYield && (
               <StatValue icon={ForkKnife} desc="portioner">
-                {data.recipeYield}
+                {recipe.recipeYield}
               </StatValue>
             )}
-            {data.oven && <StatValue icon={Microwave}>{data.oven}º</StatValue>}
+            {recipe.oven && <StatValue icon={Microwave}>{recipe.oven}º</StatValue>}
           </div>
         </div>
 
         {/* Image */}
         <div className="flex w-full items-center justify-center overflow-clip rounded-xl">
-          {data.imageUrl ? (
+          {recipe.imageUrl ? (
             <Image
-              src={data.imageUrl}
-              alt={data.name}
+              src={recipe.imageUrl}
+              alt={recipe.name}
               width={1000}
               height={1000}
               priority
@@ -80,14 +80,14 @@ export default async function Recipe({ slug }: { slug: string }) {
         {/* Recipe Description */}
         <div className="flex flex-col gap-4">
           <p className="px-4 text-justify text-sm text-muted-foreground">
-            {data.description}
+            {recipe.description}
           </p>
           <div className="flex flex-wrap items-center justify-center gap-1 text-sm font-medium text-muted-foreground">
             <span className="">Författare: </span>
-            {data.sourceUrl && data.originalAuthor && (
+            {recipe.sourceUrl && recipe.originalAuthor && (
               <>
                 <Link
-                  href={data.sourceUrl}
+                  href={recipe.sourceUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={cn(
@@ -95,7 +95,7 @@ export default async function Recipe({ slug }: { slug: string }) {
                     "hover:gap-0.5 hover:pr-1.5 hover:no-underline",
                   )}
                 >
-                  {data.originalAuthor}
+                  {recipe.originalAuthor}
                   <ArrowUpRight className="size-3" />
                 </Link>
                 <span>Importerad av: </span>
@@ -104,32 +104,32 @@ export default async function Recipe({ slug }: { slug: string }) {
             <HoverCard>
               <HoverCardTrigger asChild>
                 <button className="cursor-pointer border-none bg-transparent p-0 text-left text-foreground underline hover:no-underline">
-                  {data.createdBy.name}
+                  {recipe.createdBy.name}
                 </button>
               </HoverCardTrigger>
               <HoverCardContent className="w-fit">
                 <div className="flex justify-between gap-4">
                   <Avatar>
-                    {data.createdBy.image ? (
-                      <AvatarImage src={data.createdBy.image} />
+                    {recipe.createdBy.image ? (
+                      <AvatarImage src={recipe.createdBy.image} />
                     ) : (
                       <AvatarFallback>
-                        {nameToInitials(data.createdBy.name)}
+                        {nameToInitials(recipe.createdBy.name)}
                       </AvatarFallback>
                     )}
                   </Avatar>
                   <div className="grid gap-0.5">
                     <span className="text-sm font-medium">
-                      {data.createdBy.name}
+                      {recipe.createdBy.name}
                     </span>
                     <Link
                       className={cn(
                         "flex gap-0.5 pr-2 text-sm text-muted-foreground underline",
                         "hover:gap-1 hover:pr-1.5 hover:no-underline",
                       )}
-                      href={`mailto:${data.createdBy.email}`}
+                      href={`mailto:${recipe.createdBy.email}`}
                     >
-                      {data.createdBy.email}
+                      {recipe.createdBy.email}
                       <Mail className="size-3" />
                     </Link>
                   </div>
@@ -178,9 +178,9 @@ export default async function Recipe({ slug }: { slug: string }) {
 
       {/* Recipe ingredients */}
       <RecipeContent
-        ingredients={data.recipeIngredients}
-        instructions={data.recipeInstructions}
-        recipeYield={data.recipeYield}
+        ingredients={recipe.recipeIngredients}
+        instructions={recipe.recipeInstructions}
+        recipeYield={recipe.recipeYield}
       />
     </article>
   );
