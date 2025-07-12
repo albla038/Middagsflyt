@@ -1,6 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Switch } from "@/components/ui/switch";
 import H2 from "@/components/ui/typography/h2";
 import { Unit } from "@/lib/generated/prisma";
 import { cn, formatQuantityDecimal } from "@/lib/utils";
@@ -17,7 +21,6 @@ type IngredientContent = {
 
 type InstructionContent = {
   id: string;
-  step: number;
   text: string;
   recipeIngredients: string[];
 };
@@ -41,7 +44,11 @@ type ContentAction =
     }
   | {
       type: "CHECK_INSTRUCTION";
-      payload: { id: string; ingredientIds: string[] };
+      payload: {
+        id: string;
+        ingredientIds: string[];
+        checked: string | boolean;
+      };
     }
   | {
       type: "HOVER_INSTRUCTION";
@@ -65,6 +72,11 @@ function contentReducer(
         ),
       };
     case "CHECK_INSTRUCTION":
+      let checked = false;
+      if (typeof action.payload.checked === "boolean") {
+        checked = action.payload.checked;
+      }
+
       return {
         ...state,
         instructions: state.instructions.map((instruction) =>
@@ -73,8 +85,8 @@ function contentReducer(
             : instruction,
         ),
         ingredients: state.ingredients.map((ingredient) =>
-          ingredient.id in payload.ingredientIds
-            ? { ...ingredient, isChecked: true }
+          payload.ingredientIds.includes(ingredient.id)
+            ? { ...ingredient, isChecked: checked }
             : ingredient,
         ),
       };
@@ -129,96 +141,157 @@ export default function RecipeContent({
   const servingsScale = servings / defaultServings;
 
   return (
-    <section className="flex flex-col gap-3 rounded-xl bg-zinc-50 p-4">
-      {/* Header */}
-      <div className="flex justify-between border-b border-border pb-3">
-        <H2>Ingredienser</H2>
-        {/* Portion control */}
-        <div className="flex items-center gap-2">
-          <Button
-            variant={"ghost"}
-            className="h-7"
-            onClick={() =>
-              setServings((prevState) =>
-                prevState - defaultServings / 2 > 0
-                  ? prevState - defaultServings / 2
-                  : prevState,
-              )
-            }
-          >
-            <Minus className="size-5" />
-          </Button>
-          <span className="flex items-center gap-1 font-medium">
-            <ForkKnife className="size-5" />
-            {servings}
-          </span>
-          <Button
-            variant="ghost"
-            className="h-7"
-            onClick={() =>
-              setServings((prevState) =>
-                prevState + defaultServings / 2 > 0
-                  ? prevState + defaultServings / 2
-                  : prevState,
-              )
-            }
-          >
-            <Plus className="size-5" />
-          </Button>
-        </div>
-      </div>
-
-      {/* Ingredients list */}
-      <ul>
-        {state.ingredients.map((ingredient) => {
-          const { id, quantity, unit, text, note, isChecked } = ingredient;
-          return (
-            <li
-              key={id}
-              className={cn(
-                "w-fit hover:cursor-pointer",
-                "*:after:content-['_']",
-                {
-                  "text-muted-foreground line-through": isChecked,
-                },
-              )}
+    <div className="flex flex-col gap-4">
+      {/* Recipe ingredients */}
+      <section className="flex flex-col gap-3 rounded-xl bg-zinc-50 p-4">
+        {/* Header */}
+        <div className="flex justify-between border-b border-border pb-3">
+          <H2>Ingredienser</H2>
+          {/* Portion control */}
+          <div className="flex items-center gap-2">
+            <Button
+              variant={"ghost"}
+              className="h-7"
+              disabled={servings <= 2}
               onClick={() =>
-                dispatch({ type: "CHECK_INGREDIENT", payload: { id } })
+                setServings((prevState) =>
+                  prevState - defaultServings / 2 > 0
+                    ? prevState - defaultServings / 2
+                    : prevState,
+                )
               }
             >
-              {quantity && (
-                <span className="font-medium">
-                  {formatQuantityDecimal(quantity * servingsScale)}
-                </span>
-              )}
-              {unit && unit !== "ST" && (
-                <span className="font-medium">{unit.toLowerCase()}</span>
-              )}
-              <p className="inline">{text}</p>
-              {note && (
-                <span className="text-xs text-muted-foreground">({note})</span>
-              )}
-            </li>
-          );
-        })}
-      </ul>
+              <Minus className="size-5" />
+            </Button>
+            <span className="flex items-center gap-1 font-medium">
+              <ForkKnife className="size-5" />
+              {servings}
+            </span>
+            <Button
+              variant="ghost"
+              className="h-7"
+              onClick={() =>
+                setServings((prevState) =>
+                  prevState + defaultServings / 2 > 0
+                    ? prevState + defaultServings / 2
+                    : prevState,
+                )
+              }
+            >
+              <Plus className="size-5" />
+            </Button>
+          </div>
+        </div>
 
-      {/* Action buttons */}
-      <div className="flex justify-end gap-2">
-        <Button
-          variant={"secondary"}
-          onClick={() => {}} // TODO Add click handler
-        >
-          <ListPlus />
-          <span>Lägg i inköpslista</span>
-        </Button>
-        <Button
-          onClick={() => {}} // TODO Add click handler
-        >
-          <CalendarPlus />
-          <span>Planera</span>
-        </Button>
-      </div>
-    </section>
+        {/* Ingredients list */}
+        <ul>
+          {state.ingredients.map((ingredient) => {
+            const { id, quantity, unit, text, note, isChecked } = ingredient;
+            return (
+              <li
+                key={id}
+                className={cn(
+                  "w-fit hover:cursor-pointer",
+                  "*:after:content-['_']",
+                  {
+                    "text-muted-foreground line-through": isChecked,
+                  },
+                )}
+                onClick={() =>
+                  dispatch({ type: "CHECK_INGREDIENT", payload: { id } })
+                }
+              >
+                {quantity && (
+                  <span className="font-medium">
+                    {formatQuantityDecimal(quantity * servingsScale)}
+                  </span>
+                )}
+                {unit && unit !== "ST" && (
+                  <span className="font-medium">{unit.toLowerCase()}</span>
+                )}
+                <p
+                  className={cn("inline-flex", {
+                    "text-muted-foreground line-through": isChecked,
+                  })}
+                >
+                  {text}{" "}
+                  {note && (
+                    <span className="text-xs text-muted-foreground no-underline">
+                      ({note})
+                    </span>
+                  )}
+                </p>
+              </li>
+            );
+          })}
+        </ul>
+
+        {/* Action buttons */}
+        <div className="flex justify-end gap-2">
+          <Button
+            variant={"secondary"}
+            onClick={() => {}} // TODO Add click handler
+          >
+            <ListPlus />
+            <span>Lägg i inköpslista</span>
+          </Button>
+          <Button
+            onClick={() => {}} // TODO Add click handler
+          >
+            <CalendarPlus />
+            <span>Planera</span>
+          </Button>
+        </div>
+      </section>
+
+      {/* Recipe instructions */}
+      <section className="flex flex-col gap-3 p-4">
+        {/* Header */}
+        <div className="flex items-baseline justify-between border-b border-border pb-3">
+          <H2>Gör så här</H2>
+          <span className="flex items-center gap-2">
+            {/*  TODO Implement functionality */}
+            <Label htmlFor="keep-screen-on">Håll skärmen tänd</Label>
+            <Switch id="keep-screen-on" />
+          </span>
+        </div>
+
+        {/* Instructions list */}
+        <ScrollArea>
+          <ul className="flex flex-col gap-3">
+            {state.instructions.map((instruction) => {
+              const { id, text, isChecked, isFocused, recipeIngredients } =
+                instruction;
+              return (
+                <li key={id}>
+                  <Label
+                    className={cn(
+                      "flex items-baseline gap-2 rounded-md border border-border p-3",
+                      "has-[[aria-checked=true]]:text-muted-foreground has-[[aria-checked=true]]:line-through has-[[aria-checked=true]]:[&>p]:line-clamp-1",
+                      "hover:bg-accent",
+                    )}
+                  >
+                    <Checkbox
+                      checked={isChecked}
+                      onCheckedChange={(e) =>
+                        dispatch({
+                          type: "CHECK_INSTRUCTION",
+                          payload: {
+                            id,
+                            ingredientIds: recipeIngredients,
+                            checked: e.valueOf(),
+                          },
+                        })
+                      }
+                    />
+                    <p className="text-sm font-normal">{text}</p>
+                  </Label>
+                </li>
+              );
+            })}
+          </ul>
+        </ScrollArea>
+      </section>
+    </div>
   );
 }

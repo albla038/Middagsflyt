@@ -27,7 +27,6 @@ export async function fetchRecipeBySlug(slug: string) {
           select: {
             id: true,
             text: true,
-            step: true,
             recipeIngredients: {
               select: {
                 id: true,
