@@ -116,11 +116,14 @@ export default function RecipeContent({
   instructions: InstructionContent[];
   recipeYield?: number | null;
 }) {
+  // State
   const [state, dispatch] = useReducer(
     contentReducer,
     { ingredients, instructions },
     createInitialState,
   );
+
+  // Servings state
   const defaultServings = recipeYield ?? 4;
   const [servings, setServings] = useState(defaultServings);
   const servingsScale = servings / defaultServings;
@@ -137,7 +140,9 @@ export default function RecipeContent({
             className="h-7"
             onClick={() =>
               setServings((prevState) =>
-                prevState - 2 > 0 ? prevState - 2 : prevState,
+                prevState - defaultServings / 2 > 0
+                  ? prevState - defaultServings / 2
+                  : prevState,
               )
             }
           >
@@ -152,7 +157,9 @@ export default function RecipeContent({
             className="h-7"
             onClick={() =>
               setServings((prevState) =>
-                prevState + 2 > 0 ? prevState + 2 : prevState,
+                prevState + defaultServings / 2 > 0
+                  ? prevState + defaultServings / 2
+                  : prevState,
               )
             }
           >
