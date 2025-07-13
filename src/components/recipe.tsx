@@ -55,7 +55,9 @@ export default async function Recipe({ slug }: { slug: string }) {
                 {recipe.recipeYield}
               </StatValue>
             )}
-            {recipe.oven && <StatValue icon={Microwave}>{recipe.oven}º</StatValue>}
+            {recipe.oven && (
+              <StatValue icon={Microwave}>{recipe.oven}º</StatValue>
+            )}
           </div>
         </div>
 
@@ -181,6 +183,7 @@ export default async function Recipe({ slug }: { slug: string }) {
         ingredients={recipe.recipeIngredients}
         instructions={recipe.recipeInstructions}
         recipeYield={recipe.recipeYield}
+        slug={slug}
       />
     </article>
   );

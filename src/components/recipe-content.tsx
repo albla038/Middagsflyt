@@ -8,8 +8,17 @@ import { Switch } from "@/components/ui/switch";
 import H2 from "@/components/ui/typography/h2";
 import { Unit } from "@/lib/generated/prisma";
 import { cn, formatQuantityDecimal } from "@/lib/utils";
-import { CalendarPlus, ForkKnife, ListPlus, Minus, Plus } from "lucide-react";
+import {
+  BookmarkPlus,
+  CalendarPlus,
+  ForkKnife,
+  ListPlus,
+  LucideLink,
+  Minus,
+  Plus,
+} from "lucide-react";
 import { useReducer, useState } from "react";
+import { toast } from "sonner";
 
 type IngredientContent = {
   id: string;
@@ -133,10 +142,12 @@ export default function RecipeContent({
   ingredients,
   instructions,
   recipeYield,
+  slug,
 }: {
   ingredients: IngredientContent[];
   instructions: InstructionContent[];
   recipeYield?: number | null;
+  slug: string;
 }) {
   // State
   const [state, dispatch] = useReducer(
@@ -316,6 +327,30 @@ export default function RecipeContent({
             })}
           </ul>
         </ScrollArea>
+
+        {/* Action buttons */}
+        <div className="flex justify-end gap-2">
+          <Button
+            variant={"secondary"}
+            onClick={() => {
+              navigator.clipboard.writeText(`/recipe/${slug}`);
+              toast.success(`Länk kopierad till urklipp`, {
+                position: "top-center",
+                description: `/recipe/${slug}`, // TODO Add domain to URL
+                closeButton: true,
+              });
+            }}
+          >
+            <LucideLink />
+            <span>Kopiera länk</span>
+          </Button>
+          <Button
+            onClick={() => {}} // TODO Add click handler
+          >
+            <BookmarkPlus />
+            <span>Spara recept</span>
+          </Button>
+        </div>
       </section>
     </div>
   );
