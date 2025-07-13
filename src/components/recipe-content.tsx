@@ -277,7 +277,7 @@ export default function RecipeContent({
                 <li key={id}>
                   <Label
                     className={cn(
-                      "flex items-baseline gap-2 rounded-md border border-border p-3",
+                      "flex items-start gap-2 rounded-md border border-border p-3 text-base font-normal",
                       "has-[[aria-checked=true]]:text-muted-foreground has-[[aria-checked=true]]:line-through has-[[aria-checked=true]]:[&>p]:line-clamp-1",
                       "hover:bg-accent",
                     )}
@@ -293,21 +293,23 @@ export default function RecipeContent({
                       })
                     }
                   >
-                    <Checkbox
-                      checked={isChecked}
-                      onCheckedChange={(event) => {
-                        if (typeof event !== "boolean") return;
-                        dispatch({
-                          type: "CHECK_INSTRUCTION",
-                          payload: {
-                            id,
-                            ingredientIds: recipeIngredients,
-                            checked: event,
-                          },
-                        });
-                      }}
-                    />
-                    <p className="text-sm font-normal">{text}</p>
+                    <span className="flex h-[1lh] items-center">
+                      <Checkbox
+                        checked={isChecked}
+                        onCheckedChange={(event) => {
+                          if (typeof event !== "boolean") return;
+                          dispatch({
+                            type: "CHECK_INSTRUCTION",
+                            payload: {
+                              id,
+                              ingredientIds: recipeIngredients,
+                              checked: event,
+                            },
+                          });
+                        }}
+                      />
+                    </span>
+                    <p>{text}</p>
                   </Label>
                 </li>
               );
