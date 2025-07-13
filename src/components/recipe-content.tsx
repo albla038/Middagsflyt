@@ -96,6 +96,8 @@ function contentReducer(
       };
 
     case "HOVER_INSTRUCTION":
+      if (action.payload.ingredientIds.length === 0) return state;
+
       return {
         ...state,
         ingredients: state.ingredients.map((ingredient) => ({
