@@ -28,13 +28,11 @@ type InstructionContent = {
 type ContentState = {
   ingredients: (IngredientContent & {
     isChecked: boolean;
-    isFocused: boolean;
+    isMuted: boolean;
   })[];
   instructions: (InstructionContent & {
     isChecked: boolean;
-    isFocused: boolean;
   })[];
-  isHovering: boolean;
 };
 
 type ContentAction =
@@ -47,51 +45,65 @@ type ContentAction =
       payload: {
         id: string;
         ingredientIds: string[];
-        checked: string | boolean;
+        checked: boolean;
       };
     }
   | {
       type: "HOVER_INSTRUCTION";
-      payload: { isHovering: boolean; id: string; ingredientIds: string[] };
+      payload: { ingredientIds: string[] };
+    }
+  | {
+      type: "CLEAR_HOVER";
     };
 
 function contentReducer(
   state: ContentState,
   action: ContentAction,
 ): ContentState {
-  const { type, payload } = action;
-
-  switch (type) {
+  switch (action.type) {
     case "CHECK_INGREDIENT":
       return {
         ...state,
         ingredients: state.ingredients.map((ingredient) =>
-          ingredient.id === payload.id
+          ingredient.id === action.payload.id
             ? { ...ingredient, isChecked: !ingredient.isChecked }
             : ingredient,
         ),
       };
-    case "CHECK_INSTRUCTION":
-      let checked = false;
-      if (typeof action.payload.checked === "boolean") {
-        checked = action.payload.checked;
-      }
 
+    case "CHECK_INSTRUCTION":
       return {
         ...state,
         instructions: state.instructions.map((instruction) =>
-          instruction.id === payload.id
+          instruction.id === action.payload.id
             ? { ...instruction, isChecked: !instruction.isChecked }
             : instruction,
         ),
         ingredients: state.ingredients.map((ingredient) =>
-          payload.ingredientIds.includes(ingredient.id)
-            ? { ...ingredient, isChecked: checked }
+          action.payload.ingredientIds.includes(ingredient.id)
+            ? { ...ingredient, isChecked: action.payload.checked }
             : ingredient,
         ),
       };
+
     case "HOVER_INSTRUCTION":
-      return state;
+      return {
+        ...state,
+        ingredients: state.ingredients.map((ingredient) => ({
+          ...ingredient,
+          isMuted: !action.payload.ingredientIds.includes(ingredient.id),
+        })),
+      };
+
+    case "CLEAR_HOVER":
+      return {
+        ...state,
+        ingredients: state.ingredients.map((ingredient) => ({
+          ...ingredient,
+          isMuted: false,
+        })),
+      };
+
     default:
       throw new Error("Unknown reducer action!");
   }
@@ -108,14 +120,12 @@ function createInitialState({
     ingredients: ingredients.map((ingredient) => ({
       ...ingredient,
       isChecked: false,
-      isFocused: false,
+      isMuted: false,
     })),
     instructions: instructions.map((instruction) => ({
       ...instruction,
       isChecked: false,
-      isFocused: false,
     })),
-    isHovering: false,
   };
 }
 
@@ -143,7 +153,7 @@ export default function RecipeContent({
   return (
     <div className="flex flex-col gap-4">
       {/* Recipe ingredients */}
-      <section className="flex flex-col gap-3 rounded-xl bg-zinc-50 p-4">
+      <section className="flex flex-col gap-3 rounded-xl bg-subtle p-4">
         {/* Header */}
         <div className="flex justify-between border-b border-border pb-3">
           <H2>Ingredienser</H2>
@@ -186,7 +196,8 @@ export default function RecipeContent({
         {/* Ingredients list */}
         <ul>
           {state.ingredients.map((ingredient) => {
-            const { id, quantity, unit, text, note, isChecked } = ingredient;
+            const { id, quantity, unit, text, note, isChecked, isMuted } =
+              ingredient;
             return (
               <li
                 key={id}
@@ -195,6 +206,7 @@ export default function RecipeContent({
                   "*:after:content-['_']",
                   {
                     "text-muted-foreground line-through": isChecked,
+                    "text-muted-foreground": isMuted,
                   },
                 )}
                 onClick={() =>
@@ -260,8 +272,7 @@ export default function RecipeContent({
         <ScrollArea>
           <ul className="flex flex-col gap-3">
             {state.instructions.map((instruction) => {
-              const { id, text, isChecked, isFocused, recipeIngredients } =
-                instruction;
+              const { id, text, isChecked, recipeIngredients } = instruction;
               return (
                 <li key={id}>
                   <Label
@@ -270,19 +281,31 @@ export default function RecipeContent({
                       "has-[[aria-checked=true]]:text-muted-foreground has-[[aria-checked=true]]:line-through has-[[aria-checked=true]]:[&>p]:line-clamp-1",
                       "hover:bg-accent",
                     )}
+                    onMouseEnter={() =>
+                      dispatch({
+                        type: "HOVER_INSTRUCTION",
+                        payload: { ingredientIds: recipeIngredients },
+                      })
+                    }
+                    onMouseLeave={() =>
+                      dispatch({
+                        type: "CLEAR_HOVER",
+                      })
+                    }
                   >
                     <Checkbox
                       checked={isChecked}
-                      onCheckedChange={(e) =>
+                      onCheckedChange={(event) => {
+                        if (typeof event !== "boolean") return;
                         dispatch({
                           type: "CHECK_INSTRUCTION",
                           payload: {
                             id,
                             ingredientIds: recipeIngredients,
-                            checked: e.valueOf(),
+                            checked: event,
                           },
-                        })
-                      }
+                        });
+                      }}
                     />
                     <p className="text-sm font-normal">{text}</p>
                   </Label>
