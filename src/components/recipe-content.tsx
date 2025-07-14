@@ -182,7 +182,7 @@ export default function RecipeContent({
               <Button
                 variant={"ghost"}
                 className="h-7"
-                disabled={servings <= 2}
+                disabled={servings <= 1}
                 onClick={() =>
                   setServings((prevState) =>
                     prevState - defaultServings / 2 > 0
