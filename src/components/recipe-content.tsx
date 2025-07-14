@@ -164,113 +164,117 @@ export default function RecipeContent({
   const servingsScale = servings / defaultServings;
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* Recipe ingredients */}
-      <section className="flex flex-col gap-3 rounded-xl bg-subtle p-4">
-        {/* Header */}
-        <div className="flex justify-between border-b border-border pb-3">
-          <H2>Ingredienser</H2>
-          {/* Portion control */}
-          <div className="flex items-center gap-2">
-            <Button
-              variant={"ghost"}
-              className="h-7"
-              disabled={servings <= 2}
-              onClick={() =>
-                setServings((prevState) =>
-                  prevState - defaultServings / 2 > 0
-                    ? prevState - defaultServings / 2
-                    : prevState,
-                )
-              }
-            >
-              <Minus className="size-5" />
-            </Button>
-            <span className="flex items-center gap-1 font-medium">
-              <ForkKnife className="size-5" />
-              {servings}
-            </span>
-            <Button
-              variant="ghost"
-              className="h-7"
-              onClick={() =>
-                setServings((prevState) =>
-                  prevState + defaultServings / 2 > 0
-                    ? prevState + defaultServings / 2
-                    : prevState,
-                )
-              }
-            >
-              <Plus className="size-5" />
-            </Button>
-          </div>
-        </div>
-
-        {/* Ingredients list */}
-        <ul>
-          {state.ingredients.map((ingredient) => {
-            const { id, quantity, unit, text, note, isChecked, isMuted } =
-              ingredient;
-            return (
-              <li
-                key={id}
-                className={cn(
-                  "w-fit hover:cursor-pointer",
-                  "*:after:content-['_']",
-                  {
-                    "text-muted-foreground line-through": isChecked,
-                    "text-muted-foreground": isMuted,
-                  },
-                )}
+    <div
+      className={cn("flex flex-col gap-4", "sm:grid sm:grid-cols-2 sm:gap-0")}
+    >
+      <div className="flex flex-col">
+        {/* Recipe ingredients */}
+        <section className="flex flex-col rounded-xl bg-subtle p-4">
+          {/* Header */}
+          <div className="flex justify-between border-b border-border pb-3">
+            <H2>Ingredienser</H2>
+            {/* Portion control */}
+            <div className="flex items-center gap-2">
+              <Button
+                variant={"ghost"}
+                className="h-7"
+                disabled={servings <= 2}
                 onClick={() =>
-                  dispatch({ type: "CHECK_INGREDIENT", payload: { id } })
+                  setServings((prevState) =>
+                    prevState - defaultServings / 2 > 0
+                      ? prevState - defaultServings / 2
+                      : prevState,
+                  )
                 }
               >
-                {quantity && (
-                  <span className="font-medium">
-                    {formatQuantityDecimal(quantity * servingsScale)}
-                  </span>
-                )}
-                {unit && unit !== "ST" && (
-                  <span className="font-medium">{unit.toLowerCase()}</span>
-                )}
-                <p
-                  className={cn("inline-flex", {
-                    "text-muted-foreground line-through": isChecked,
-                  })}
-                >
-                  {text}{" "}
-                  {note && (
-                    <span className="text-xs text-muted-foreground no-underline">
-                      ({note})
-                    </span>
-                  )}
-                </p>
-              </li>
-            );
-          })}
-        </ul>
-
-        {/* Action buttons */}
-        <div className="flex justify-end gap-2">
-          <Button
-            variant={"secondary"}
-            onClick={() => {}} // TODO Add click handler
-          >
-            <ListPlus />
-            <span>Lägg i inköpslista</span>
-          </Button>
-          <Button
-            onClick={() => {}} // TODO Add click handler
-          >
-            <CalendarPlus />
-            <span>Planera</span>
-          </Button>
-        </div>
-      </section>
+                <Minus className="size-5" />
+              </Button>
+              <span className="flex items-center gap-1 font-medium">
+                <ForkKnife className="size-5" />
+                {servings}
+              </span>
+              <Button
+                variant="ghost"
+                className="h-7"
+                onClick={() =>
+                  setServings((prevState) =>
+                    prevState + defaultServings / 2 > 0
+                      ? prevState + defaultServings / 2
+                      : prevState,
+                  )
+                }
+              >
+                <Plus className="size-5" />
+              </Button>
+            </div>
+          </div>
+          {/* Ingredients list */}
+          <ScrollArea className="grow sm:max-h-[calc(100svh-150px)]">
+            <ul className="flex flex-col pt-3 pr-3">
+              {state.ingredients.map((ingredient) => {
+                const { id, quantity, unit, text, note, isChecked, isMuted } =
+                  ingredient;
+                return (
+                  <li
+                    key={id}
+                    className={cn(
+                      "w-fit transition duration-300 hover:cursor-pointer",
+                      "*:after:content-['_']",
+                      {
+                        "text-muted-foreground line-through": isChecked,
+                        "text-muted-foreground": isMuted,
+                      },
+                    )}
+                    onClick={() =>
+                      dispatch({ type: "CHECK_INGREDIENT", payload: { id } })
+                    }
+                  >
+                    {quantity && (
+                      <span className="font-medium">
+                        {formatQuantityDecimal(quantity * servingsScale)}
+                      </span>
+                    )}
+                    {unit && unit !== "ST" && (
+                      <span className="font-medium">{unit.toLowerCase()}</span>
+                    )}
+                    <p
+                      className={cn("inline-flex", {
+                        "text-muted-foreground line-through": isChecked,
+                      })}
+                    >
+                      <span>{text}</span>
+                      {note && (
+                        <span className="text-xs text-muted-foreground no-underline">
+                          ({note})
+                        </span>
+                      )}
+                    </p>
+                  </li>
+                );
+              })}
+            </ul>
+          </ScrollArea>
+          {/* Action buttons */}
+          <div className="mt-3 flex justify-end gap-2">
+            <Button 
+              variant={"secondary"}
+              onClick={() => {}} // TODO Add click handler
+            >
+              <ListPlus />
+              <span>Lägg i inköpslista</span>
+            </Button>
+            <Button
+              onClick={() => {}} // TODO Add click handler
+            >
+              <CalendarPlus />
+              <span>Planera</span>
+            </Button>
+          </div>
+        </section>
+      </div>
 
       {/* Recipe instructions */}
-      <section className="flex flex-col gap-3 p-4">
+      <section className={cn("flex flex-col p-4", "sm:px-6")}>
         {/* Header */}
         <div className="flex items-baseline justify-between border-b border-border pb-3">
           <H2>Gör så här</H2>
@@ -281,16 +285,16 @@ export default function RecipeContent({
           </span>
         </div>
 
-        {/* Instructions list */}
-        <ScrollArea>
-          <ul className="flex flex-col gap-3">
+        {/* Instructions list sm:max-h-[calc(100svh-150px)] */}
+        <ScrollArea className="sm:max-h-[calc(100svh-150px)]">
+          <ul className="flex flex-col gap-3 pt-3 pr-3">
             {state.instructions.map((instruction) => {
               const { id, text, isChecked, recipeIngredients } = instruction;
               return (
                 <li key={id}>
                   <Label
                     className={cn(
-                      "flex items-start gap-2 rounded-md border border-border p-3 text-base font-normal",
+                      "flex items-start gap-2 rounded-md border border-border p-3 text-base font-normal transition duration-300",
                       "has-[[aria-checked=true]]:text-muted-foreground has-[[aria-checked=true]]:line-through has-[[aria-checked=true]]:[&>p]:line-clamp-1",
                       "hover:bg-accent",
                     )}
@@ -331,7 +335,7 @@ export default function RecipeContent({
         </ScrollArea>
 
         {/* Action buttons */}
-        <div className="flex justify-end gap-2">
+        <div className="mt-3 flex justify-end gap-2">
           <Button
             variant={"secondary"}
             onClick={() => {

@@ -8,7 +8,7 @@ export default async function Page({
 }) {
   const { slug } = await params;
   return (
-    <main className="px-2 py-4">
+    <main className="max-w-5xl px-2 py-4">
       <Suspense fallback={<div>Läser in recept...</div>}>
         <Recipe slug={slug} />
       </Suspense>
