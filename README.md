@@ -1,3 +1,21 @@
+<img width="262" height="60" alt="image" src="https://github.com/user-attachments/assets/5a9c0356-0bfe-444a-a103-a9493df3bd3b" />
+
+My project for this summer is to develop an advanced but user-friendly meal planner. The aim is that this web appplication should allow the user to
+* Import recipes from swedish recipe website URLs, or manually create recipes
+* Display recipes in a clean and optimized UI (to be used while cooking)
+* Explore all currently available recipes in a public "recipe community library"
+* Bookmark recipes from the public community library
+* Schedule recipes for the coming week(s) in a meal calendar
+* Get smart recipe recommendations based on user-defined parameters (such as number of servings per scheduled week, dietary preferences etc.) 
+* Generate shopping lists from scheduled recipes
+* Use a highly interactive and user-friendly shoppling list optimized for smartphones
+* Sort shopping lists based on ingredient/article categories
+* ... and more!
+
+This project utilizes generative AI with structured outputs to enrich web scraped recipe data, to generate shopping ingredient data (such as prefered shopping units, canonical names and ingredient name aliases). I plan to use it to give the user recipe recommendations in an intelligent manner, and to convert ingredient units and quantities in the shopping lists.
+
+---
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
