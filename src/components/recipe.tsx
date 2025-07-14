@@ -6,6 +6,11 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import H1 from "@/components/ui/typography/h1";
 import { fetchRecipeBySlug } from "@/data/recipe/queries";
 import { cn, nameToInitials } from "@/lib/utils";
@@ -139,38 +144,66 @@ export default async function Recipe({ slug }: { slug: string }) {
           </div>
           {/* Action buttons */}
           <div className="flex items-center gap-2">
-            <Button
-              variant={"ghost"}
-              size={"icon-lg"}
-              className={"grow"}
-              // onClick={() => {}} // TODO Add click handler
-            >
-              <CalendarPlus className="size-6" />
-            </Button>
-            <Button
-              variant={"ghost"}
-              size={"icon-lg"}
-              className={"grow"}
-              // onClick={() => {}} // TODO Add click handler
-            >
-              <ListPlus className="size-6" />
-            </Button>
-            <Button
-              variant={"ghost"}
-              size={"icon-lg"}
-              className={"grow"}
-              // onClick={() => {}} // TODO Add click handler
-            >
-              <BookmarkPlus className="size-6" />
-            </Button>
-            <Button
-              variant={"ghost"}
-              size={"icon-lg"}
-              className={"grow"}
-              // onClick={() => {}} // TODO Add click handler
-            >
-              <LucideLink className="size-6" />
-            </Button>
+            <Tooltip delayDuration={200}>
+              <TooltipTrigger asChild>
+                <Button
+                  variant={"ghost"}
+                  size={"icon-lg"}
+                  className={"grow"}
+                  // onClick={() => {}} // TODO Add click handler
+                >
+                  <CalendarPlus className="size-6" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Planera recept</p>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip delayDuration={200}>
+              <TooltipTrigger asChild>
+                <Button
+                  variant={"ghost"}
+                  size={"icon-lg"}
+                  className={"grow"}
+                  // onClick={() => {}} // TODO Add click handler
+                >
+                  <ListPlus className="size-6" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Lägg till recept i inköpslista</p>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip delayDuration={200}>
+              <TooltipTrigger asChild>
+                <Button
+                  variant={"ghost"}
+                  size={"icon-lg"}
+                  className={"grow"}
+                  // onClick={() => {}} // TODO Add click handler
+                >
+                  <BookmarkPlus className="size-6" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Spara i Mina recept</p>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip delayDuration={200}>
+              <TooltipTrigger asChild>
+                <Button
+                  variant={"ghost"}
+                  size={"icon-lg"}
+                  className={"grow"}
+                  // onClick={() => {}} // TODO Add click handler
+                >
+                  <LucideLink className="size-6" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Kopiera länk</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
         </div>
       </section>
