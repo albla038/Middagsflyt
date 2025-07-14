@@ -28,6 +28,15 @@ This project utilizes generative AI with structured outputs to enrich web scrape
 - Cheerio
 - React Query (planned)
 
+## Figma design prototype (Recipe page)
+### Desktop
+<img width="1440" height="1024" alt="RecipeDesktopDesign" src="https://github.com/user-attachments/assets/03f33b36-28b8-4a47-b621-ad199d4b32e5" />
+
+### Phone
+<img width="390" height="1743" alt="RecipeMobileDesign" src="https://github.com/user-attachments/assets/d8b7ca34-980d-4154-8f6c-e6ba08d800b1" />
+
+
+
 ---
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
