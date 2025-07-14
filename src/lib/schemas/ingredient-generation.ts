@@ -1,7 +1,7 @@
 import { z } from "zod/v4";
 
 import { Unit } from "@/lib/generated/prisma";
-import { fetchIngredientCategories } from "@/data/ingredientCategory/queries";
+import { fetchIngredientCategories } from "@/data/ingredient-category/queries";
 
 const ingredientCategorySchema = z.enum(await fetchIngredientCategories());
 
