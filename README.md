@@ -1,7 +1,8 @@
 <img width="262" height="60" alt="image" src="https://github.com/user-attachments/assets/5a9c0356-0bfe-444a-a103-a9493df3bd3b" />
 
-My project for this summer is to develop an advanced but user-friendly meal planner. The aim is that this web appplication should allow the user to
-- Import recipes from swedish recipe website URLs, or manually create recipes
+My project for this summer is to develop an advanced but user-friendly meal planner. The aim of this web appplication is to allow the user to
+
+- Import recipes from Swedish recipe website URLs, as well as manually create recipes
 - Display recipes in a clean and optimized UI (to be used while cooking)
 - Explore all currently available recipes in a public "recipe community library"
 - Bookmark recipes from the public community library
@@ -12,30 +13,31 @@ My project for this summer is to develop an advanced but user-friendly meal plan
 - Sort shopping lists based on ingredient/article categories
 - ... and more!
 
-This project utilizes generative AI with structured outputs to enrich web scraped recipe data, and to generate shopping ingredient data (such as prefered shopping units, canonical names and ingredient name aliases). I plan to use it to give the user recipe recommendations in an intelligent manner, and to convert ingredient units and quantities in the shopping lists.
+This project utilizes generative AI with structured outputs to enrich web scraped recipe data, and to generate shopping ingredient data (such as prefered shopping units, canonical names and ingredient name aliases). I plan to use AI to give the user tailored recipe recommendations, and to convert ingredient units and quantities in the shopping lists.
 
 ### Current stack
 
-- Next.js 15 App Router
-- TypeScript
-- Prisma ORM
-- Prisma Postgres (planned for production)
-- Zod 4
-- Gemini AI API
-- Better-Auth
-- Tailwind CSS
-- shadcn/ui
-- Cheerio
-- React Query (planned)
+- [Next.js 15 App Router](https://nextjs.org/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Prisma ORM](https://www.prisma.io/)
+- [Prisma Postgres](https://www.prisma.io/postgresql) (planned for production)
+- [Zod 4](https://zod.dev/)
+- [Gemini AI API](https://ai.google.dev/)
+- [Better-Auth](https://github.com/from-a-to-b/better-auth)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [shadcn/ui](https://ui.shadcn.com/)
+- [Cheerio](https://cheerio.js.org/)
+- [TanStack Query](https://tanstack.com/query/latest) (planned)
 
 ## Figma design prototype (Recipe page)
+
 ### Desktop
+
 <img width="1440" height="1024" alt="RecipeDesktopDesign" src="https://github.com/user-attachments/assets/03f33b36-28b8-4a47-b621-ad199d4b32e5" />
 
 ### Phone
+
 <img width="390" height="1743" alt="RecipeMobileDesign" src="https://github.com/user-attachments/assets/d8b7ca34-980d-4154-8f6c-e6ba08d800b1" />
-
-
 
 ---
 
