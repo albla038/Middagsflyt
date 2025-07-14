@@ -29,14 +29,45 @@ enum Unit {
   FÖRP
 }
 
-enum RecipeMainType {
+enum RecipeType {
+  FÖRRÄTT
+  HUVUDRÄTT
+  EFTERRÄTT
+  FRUKOST
+  BRUNCH
+  FIKA
+  BAKVERK
+  PLOCKMAT
+  SNACKS
+  DRYCK
+  ÖVRIGT // Represent a recipe that does not fit into the main types
+}
+
+enum ProteinType {
   KÖTT
   FÅGEL
   FISK
+  SKALDJUR
+  MEJERI
+  SOJA
+  TOFU
+  QOURN
+  BÖNOR
+  LINSER
+  VEGOKÖTT
+  TEMPEH
+}
+
+enum DietaryType {
+  GLUTENFRI
+  LAKTOSFRI
+  MJÖLKFRI
+  NÖTFRI
+  SOJAFRI
+  ÄGGFRI
   VEGETARISK
   VEGANSK
-  ÖVRIGT
-  // Represent a recipe that does not fit into the main types
+  LCHF
 }
 
 // The standardized Ingredient model
@@ -131,13 +162,16 @@ model RecipeInstruction {
 }
 
 model Recipe {
-  id          String         @id @default(cuid(2))
-  slug        String         @unique
+  id          String  @id @default(cuid(2))
+  slug        String  @unique
   name        String
   description String?
   recipeYield Int?
-  mainType    RecipeMainType
   imageUrl    String?
+
+  recipeType  RecipeType
+  proteinType ProteinType?
+  // dietaryType DietaryType[] // not supported by sqlite
 
   totalTimeSeconds Int?
   // cookingMethod

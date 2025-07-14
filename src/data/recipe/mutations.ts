@@ -90,7 +90,8 @@ export async function createRecipeFromGeneratedData(
           name: data.name,
           description: data.description,
           recipeYield: data.recipeYield,
-          mainType: data.mainType,
+          recipeType: data.recipeType,
+          proteinType: data.proteinType,
           imageUrl: data.imageUrl,
 
           createdBy: {

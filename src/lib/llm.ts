@@ -70,7 +70,7 @@ Follow these instructions carefully:
 - Map the extracted information to the fields defined in the response schema.
 - Do not invent data. If a value for an optional field is not found, omit its key from the object.
 - For ingredient quantities, prefer measured units (e.g., "200 g", "1 dl") over simple counts (e.g., "1 onion") when possible.
-`;
+`; // TODO Allow LLM to generate fields if they are missing, but not invent data
 
   return await callLlmWithSchema({
     taskDescription: jsonLdTaskDescription,
@@ -95,7 +95,7 @@ Follow these instructions carefully:
 - Map the extracted information to the fields defined in the response schema.
 - Do not invent data. If a value for an optional field is not found, omit its key from the object.
 - For ingredient quantities, prefer measured units (e.g., "200 g", "1 dl") over simple counts (e.g., "1 onion") when possible.
-`;
+`; // TODO Allow LLM to generate fields if they are missing, but not invent data
 
   return await callLlmWithSchema({
     taskDescription: htmlTaskDescription,

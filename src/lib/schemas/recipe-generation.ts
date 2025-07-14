@@ -1,4 +1,4 @@
-import { RecipeMainType, Unit } from "@/lib/generated/prisma";
+import { ProteinType, RecipeType, Unit } from "@/lib/generated/prisma";
 import { z } from "zod/v4";
 
 const recipeIngredient = z.object({
@@ -65,12 +65,17 @@ export const generatedRecipeSchema = z.object({
   recipeYield: z.int().optional().meta({
     description: "The number of servings the recipe yields.",
   }),
-  mainType: z.enum(RecipeMainType).meta({
-    description: "The most fitting main type for the recipe",
-  }),
   imageUrl: z.string().optional().meta({
     description:
       "This should be a valid Web URL pointing to an image file. If not available, this field should be omitted.",
+  }),
+  recipeType: z.enum(RecipeType).meta({
+    description:
+      "The type of the recipe, such as 'HUVUDRÄTT', 'EFTERRÄTT', etc. This should be one of the predefined types.",
+  }),
+  proteinType: z.enum(ProteinType).optional().meta({
+    description:
+      "The main protein type of the recipe, if applicable. If not applicable, this field should be omitted.",
   }),
   recipeIngredients: z.array(recipeIngredient).min(1).meta({
     description: "An array of ingredients used in the recipe.",
