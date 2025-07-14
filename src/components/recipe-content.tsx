@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
 import H2 from "@/components/ui/typography/h2";
+import useScreenWakeLock from "@/hooks/use-screen-wake-lock";
 import { Unit } from "@/lib/generated/prisma";
 import { cn, formatQuantityDecimal } from "@/lib/utils";
 import {
@@ -163,6 +164,9 @@ export default function RecipeContent({
   const [servings, setServings] = useState(defaultServings);
   const servingsScale = servings / defaultServings;
 
+  // Keep screen on hook
+  const { isLocked, toggleWakeLock } = useScreenWakeLock();
+
   return (
     <div
       className={cn("flex flex-col gap-4", "sm:grid sm:grid-cols-2 sm:gap-0")}
@@ -210,7 +214,7 @@ export default function RecipeContent({
           </div>
           {/* Ingredients list */}
           <ScrollArea className="grow sm:max-h-[calc(100svh-150px)]">
-            <ul className="flex flex-col pt-3 pr-3">
+            <ul className="flex flex-col py-3 pr-3">
               {state.ingredients.map((ingredient) => {
                 const { id, quantity, unit, text, note, isChecked, isMuted } =
                   ingredient;
@@ -255,8 +259,8 @@ export default function RecipeContent({
             </ul>
           </ScrollArea>
           {/* Action buttons */}
-          <div className="mt-3 flex justify-end gap-2">
-            <Button 
+          <div className="flex justify-end gap-2">
+            <Button
               variant={"secondary"}
               onClick={() => {}} // TODO Add click handler
             >
@@ -279,15 +283,18 @@ export default function RecipeContent({
         <div className="flex items-baseline justify-between border-b border-border pb-3">
           <H2>Gör så här</H2>
           <span className="flex items-center gap-2">
-            {/*  TODO Implement functionality */}
             <Label htmlFor="keep-screen-on">Håll skärmen tänd</Label>
-            <Switch id="keep-screen-on" />
+            <Switch
+              id="keep-screen-on"
+              checked={isLocked}
+              onCheckedChange={toggleWakeLock}
+            />
           </span>
         </div>
 
-        {/* Instructions list sm:max-h-[calc(100svh-150px)] */}
+        {/* Instructions list */}
         <ScrollArea className="sm:max-h-[calc(100svh-150px)]">
-          <ul className="flex flex-col gap-3 pt-3 pr-3">
+          <ul className="flex flex-col gap-3 py-3 pr-3">
             {state.instructions.map((instruction) => {
               const { id, text, isChecked, recipeIngredients } = instruction;
               return (
@@ -335,7 +342,7 @@ export default function RecipeContent({
         </ScrollArea>
 
         {/* Action buttons */}
-        <div className="mt-3 flex justify-end gap-2">
+        <div className="flex justify-end gap-2">
           <Button
             variant={"secondary"}
             onClick={() => {
