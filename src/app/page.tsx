@@ -1,12 +1,12 @@
 import LogOutButton from "@/components/logout-button";
 import RecipeList from "@/components/recipe-list";
 import UrlForm from "@/components/url-form";
-import { verifyUser } from "@/data/user/verify-user";
+import { requireUser } from "@/data/user/verify-user";
 import { LoaderCircle } from "lucide-react";
 import { Suspense } from "react";
 
 export default async function Home() {
-  const user = await verifyUser();
+  const user = await requireUser();
 
   const fullName = user.name;
 

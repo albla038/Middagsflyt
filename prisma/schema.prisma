@@ -202,7 +202,7 @@ model SavedRecipe {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
 
-  Recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   recipeId String
 
   savedAt DateTime @default(now())

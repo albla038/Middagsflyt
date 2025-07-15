@@ -5,7 +5,7 @@ import { scrapeRecipeData } from "@/lib/scraping";
 import { createRecipeFromGeneratedData } from "@/data/recipe/mutations";
 import { revalidatePath } from "next/cache";
 import { checkIfRecipeExistsByUrl } from "@/data/recipe/queries";
-import { verifyUser } from "@/data/user/verify-user";
+import { requireUser } from "@/data/user/verify-user";
 
 export type FormState =
   | {
@@ -37,7 +37,7 @@ export async function importRecipeFromUrl(
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> {
-  await verifyUser();
+  await requireUser();
 
   // Validate the form data
   const validated = urlFormSchema.safeParse(Object.fromEntries(formData));

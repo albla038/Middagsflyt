@@ -11,8 +11,18 @@ export const verifyUser = cache(async () => {
   });
 
   if (!session) {
-    redirect("/login");
+    return null;
   }
 
   return session.user;
 });
+
+export async function requireUser() {
+  const user = await verifyUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  return user;
+}
