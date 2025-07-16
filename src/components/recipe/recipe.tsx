@@ -1,4 +1,5 @@
-import RecipeContent from "@/components/recipe-content";
+import BookmarkToggle from "@/components/recipe/bookmark-toggle";
+import RecipeContent from "@/components/recipe/recipe-content";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +14,8 @@ import {
 } from "@/components/ui/tooltip";
 import H1 from "@/components/ui/typography/h1";
 import { fetchRecipeBySlug } from "@/data/recipe/queries";
+import { checkIfRecipeIsSaved } from "@/data/saved-recipe/queries";
+import { verifyUser } from "@/data/user/verify-user";
 import { cn, nameToInitials } from "@/lib/utils";
 import {
   ClockFading,
@@ -25,7 +28,6 @@ import {
   Soup,
   CalendarPlus,
   ListPlus,
-  BookmarkPlus,
   LucideLink,
 } from "lucide-react";
 import Image from "next/image";
@@ -37,6 +39,12 @@ export default async function Recipe({ slug }: { slug: string }) {
   const recipe = await fetchRecipeBySlug(slug);
 
   if (!recipe) notFound();
+
+  let isBookmarked = false;
+  const user = await verifyUser();
+  if (user) {
+    isBookmarked = await checkIfRecipeIsSaved(recipe.id);
+  }
 
   return (
     <article className="flex flex-col gap-8">
@@ -159,6 +167,7 @@ export default async function Recipe({ slug }: { slug: string }) {
                 <p>Planera recept</p>
               </TooltipContent>
             </Tooltip>
+
             <Tooltip delayDuration={200}>
               <TooltipTrigger asChild>
                 <Button
@@ -174,21 +183,24 @@ export default async function Recipe({ slug }: { slug: string }) {
                 <p>Lägg till recept i inköpslista</p>
               </TooltipContent>
             </Tooltip>
+
             <Tooltip delayDuration={200}>
               <TooltipTrigger asChild>
-                <Button
-                  variant={"ghost"}
-                  size={"icon-lg"}
-                  className={"grow"}
-                  // onClick={() => {}} // TODO Add click handler
-                >
-                  <BookmarkPlus className="size-6" />
-                </Button>
+                <BookmarkToggle
+                  isBookmarked={isBookmarked}
+                  recipeId={recipe.id}
+                  slug={slug}
+                />
               </TooltipTrigger>
               <TooltipContent>
-                <p>Spara i Mina recept</p>
+                {isBookmarked ? (
+                  <p>Ta bort från Mina recept</p>
+                ) : (
+                  <p>Spara i Mina recept</p>
+                )}
               </TooltipContent>
             </Tooltip>
+
             <Tooltip delayDuration={200}>
               <TooltipTrigger asChild>
                 <Button

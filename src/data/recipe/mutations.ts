@@ -98,6 +98,10 @@ export async function createRecipeFromGeneratedData(
             connect: { id: user.id },
           },
 
+          savedBy: {
+            create: { user: { connect: { id: user.id } } },
+          },
+
           totalTimeSeconds: data.totalTimeSeconds,
           oven: data.oven,
           originalAuthor: data.originalAuthor,
