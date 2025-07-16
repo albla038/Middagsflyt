@@ -1,5 +1,6 @@
 "use client";
 
+import BookmarkToggle from "@/components/recipe/bookmark-toggle";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -10,7 +11,6 @@ import useScreenWakeLock from "@/hooks/use-screen-wake-lock";
 import { Unit } from "@/lib/generated/prisma";
 import { cn, formatQuantityDecimal } from "@/lib/utils";
 import {
-  BookmarkPlus,
   CalendarPlus,
   ForkKnife,
   ListPlus,
@@ -141,17 +141,23 @@ function createInitialState({
   };
 }
 
+type RecipeContentProps = {
+  ingredients: IngredientContent[];
+  instructions: InstructionContent[];
+  recipeYield?: number | null;
+  slug: string;
+  recipeId: string;
+  isBookmarked?: boolean;
+};
+
 export default function RecipeContent({
   ingredients,
   instructions,
   recipeYield,
   slug,
-}: {
-  ingredients: IngredientContent[];
-  instructions: InstructionContent[];
-  recipeYield?: number | null;
-  slug: string;
-}) {
+  recipeId,
+  isBookmarked,
+}: RecipeContentProps) {
   // State
   const [state, dispatch] = useReducer(
     contentReducer,
@@ -357,12 +363,11 @@ export default function RecipeContent({
             <LucideLink />
             <span>Kopiera länk</span>
           </Button>
-          <Button
-            onClick={() => {}} // TODO Add click handler
-          >
-            <BookmarkPlus />
-            <span>Spara recept</span>
-          </Button>
+          <BookmarkToggle
+            isBookmarked={isBookmarked ?? false}
+            recipeId={recipeId}
+            slug={slug}
+          />
         </div>
       </section>
     </div>

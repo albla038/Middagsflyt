@@ -8,12 +8,14 @@ import { useTransition } from "react";
 import { toast } from "sonner";
 
 type ActionButtonProps = React.ComponentPropsWithRef<"button"> & {
+  variant?: "primary" | "icon-lg";
   isBookmarked: boolean;
   recipeId: string;
   slug: string;
 };
 
 export default function BookmarkToggle({
+  variant = "primary",
   isBookmarked,
   recipeId,
   slug,
@@ -33,32 +35,50 @@ export default function BookmarkToggle({
       if (result.ok) {
         toast.success(
           result.data.isSaved
-            ? "Recept sparat i Mina Recept"
-            : "Recept borttaget från Mina Recept",
+            ? "Recept sparat i Mina recept"
+            : "Recept borttaget från Mina recept",
         );
       } else {
         toast.error(
-          `Kunde inte ${isBookmarked ? "ta bort" : "spara"} receptet i Mina Recept. Vänligen försök igen.`,
+          `Kunde inte ${isBookmarked ? "ta bort" : "spara"} receptet i Mina recept. Vänligen försök igen.`,
         );
       }
     });
   }
 
+  const saveContent =
+    variant === "primary" ? (
+      <>
+        <BookmarkPlus /> <span>Spara i Mina recept</span>
+      </>
+    ) : (
+      <BookmarkPlus className="size-6" />
+    );
+
+  const unsaveContent =
+    variant === "primary" ? (
+      <>
+        <BookmarkMinus /> <span>Ta bort från Mina recept</span>
+      </>
+    ) : (
+      <BookmarkMinus className="size-6" />
+    );
+
   return (
     <Button
       {...rest}
-      variant={"ghost"}
-      size={"icon-lg"}
-      className={"grow"}
+      variant={variant === "primary" ? "default" : "ghost"}
+      size={variant === "primary" ? "default" : "icon-lg"}
+      className={variant === "icon-lg" ? "grow" : ""}
       disabled={isPending}
       onClick={handleClick}
     >
       {isPending ? (
         <Loader2 className="size-4 animate-spin" />
       ) : isBookmarked ? (
-        <BookmarkMinus className="size-6" />
+        unsaveContent
       ) : (
-        <BookmarkPlus className="size-6" />
+        saveContent
       )}
     </Button>
   );
