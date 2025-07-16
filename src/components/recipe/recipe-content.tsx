@@ -90,15 +90,27 @@ function contentReducer(
       };
 
     case "HOVER_INSTRUCTION":
-      if (action.payload.ingredientIds.length === 0) return state;
+      const { ingredientIds } = action.payload;
+      if (ingredientIds.length === 0) return state;
 
-      return {
-        ...state,
-        ingredients: state.ingredients.map((ingredient) => ({
-          ...ingredient,
-          isMuted: !action.payload.ingredientIds.includes(ingredient.id),
-        })),
-      };
+      const ingredientIdSet = new Set(ingredientIds);
+
+      const shouldHighlight = state.ingredients.some(
+        (ingredient) =>
+          ingredientIdSet.has(ingredient.id) && !ingredient.isChecked,
+      );
+
+      if (shouldHighlight) {
+        return {
+          ...state,
+          ingredients: state.ingredients.map((ingredient) => ({
+            ...ingredient,
+            isMuted: !ingredientIds.includes(ingredient.id),
+          })),
+        };
+      }
+
+      return state;
 
     case "CLEAR_HOVER":
       return {
