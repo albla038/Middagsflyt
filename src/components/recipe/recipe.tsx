@@ -1,4 +1,5 @@
 import BookmarkToggle from "@/components/recipe/bookmark-toggle";
+import CopyLinkButton from "@/components/recipe/copy-link-button";
 import RecipeContent from "@/components/recipe/recipe-content";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -28,7 +29,6 @@ import {
   Soup,
   CalendarPlus,
   ListPlus,
-  LucideLink,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -204,14 +204,11 @@ export default async function Recipe({ slug }: { slug: string }) {
 
             <Tooltip delayDuration={200}>
               <TooltipTrigger asChild>
-                <Button
-                  variant={"ghost"}
-                  size={"icon-lg"}
-                  className={"grow"}
-                  // onClick={() => {}} // TODO Add click handler
-                >
-                  <LucideLink className="size-6" />
-                </Button>
+                <CopyLinkButton
+                  variant="icon-lg"
+                  slug={slug}
+                  className="grow"
+                />
               </TooltipTrigger>
               <TooltipContent>
                 <p>Kopiera länk</p>

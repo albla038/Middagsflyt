@@ -1,6 +1,7 @@
 "use client";
 
 import BookmarkToggle from "@/components/recipe/bookmark-toggle";
+import CopyLinkButton from "@/components/recipe/copy-link-button";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -10,16 +11,8 @@ import H2 from "@/components/ui/typography/h2";
 import useScreenWakeLock from "@/hooks/use-screen-wake-lock";
 import { Unit } from "@/lib/generated/prisma";
 import { cn, formatQuantityDecimal } from "@/lib/utils";
-import {
-  CalendarPlus,
-  ForkKnife,
-  ListPlus,
-  LucideLink,
-  Minus,
-  Plus,
-} from "lucide-react";
+import { CalendarPlus, ForkKnife, ListPlus, Minus, Plus } from "lucide-react";
 import { useReducer, useState } from "react";
-import { toast } from "sonner";
 
 type IngredientContent = {
   id: string;
@@ -349,20 +342,8 @@ export default function RecipeContent({
 
         {/* Action buttons */}
         <div className="flex justify-end gap-2">
-          <Button
-            variant={"secondary"}
-            onClick={() => {
-              navigator.clipboard.writeText(`/recipe/${slug}`);
-              toast.success(`Länk kopierad till urklipp`, {
-                position: "top-center",
-                description: `/recipe/${slug}`, // TODO Add domain to URL
-                closeButton: true,
-              });
-            }}
-          >
-            <LucideLink />
-            <span>Kopiera länk</span>
-          </Button>
+          <CopyLinkButton slug={slug} />
+
           <BookmarkToggle
             isBookmarked={isBookmarked ?? false}
             recipeId={recipeId}
