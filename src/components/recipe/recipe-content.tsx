@@ -180,7 +180,10 @@ export default function RecipeContent({
 
   return (
     <div
-      className={cn("flex flex-col gap-4", "sm:grid sm:grid-cols-2 sm:gap-0")}
+      className={cn(
+        "flex min-h-[calc(100svh-32px)] flex-col gap-4",
+        "sm:grid sm:grid-cols-2 sm:gap-0",
+      )}
     >
       <div className="flex flex-col">
         {/* Recipe ingredients */}
