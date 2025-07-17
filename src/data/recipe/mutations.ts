@@ -8,6 +8,7 @@ import { Recipe } from "@/lib/generated/prisma";
 import { fetchMissingIngredients } from "@/data/ingredient/queries";
 import { generateAndCreateIngredients } from "@/data/ingredient/mutations";
 import { requireUser } from "@/data/user/verify-user";
+import { safeQuery } from "@/lib/safe-query";
 
 // TODO Authenticate user in all functions
 
@@ -42,7 +43,16 @@ export async function createRecipeFromGeneratedData(
       (ingredient) => ingredient.name,
     );
 
-    const missingIngredients = await fetchMissingIngredients(ingredientList);
+    const missingIngredientsRes = await safeQuery(() =>
+      fetchMissingIngredients(ingredientList),
+    );
+    if (!missingIngredientsRes.ok) {
+      return {
+        ok: false,
+        error: missingIngredientsRes.error,
+      };
+    }
+    const missingIngredients = missingIngredientsRes.data;
 
     // If there are missing ingredients, generate and create them
     if (missingIngredients.length > 0) {

@@ -6,6 +6,7 @@ import { createRecipeFromGeneratedData } from "@/data/recipe/mutations";
 import { revalidatePath } from "next/cache";
 import { checkIfRecipeExistsByUrl } from "@/data/recipe/queries";
 import { requireUser } from "@/data/user/verify-user";
+import { safeQuery } from "@/lib/safe-query";
 
 export type FormState =
   | {
@@ -49,7 +50,7 @@ export async function importRecipeFromUrl(
 
     return {
       status: "ERROR",
-      message: "Ogiltig inmatning, vänligen försök igen",
+      message: "Ogiltig inmatning. Vänligen försök igen",
       errors,
     };
   }
@@ -57,7 +58,14 @@ export async function importRecipeFromUrl(
   const url = validated.data.url;
 
   // Check if the URL is already imported
-  if (await checkIfRecipeExistsByUrl(url)) {
+  const recipeExistsRes = await safeQuery(() => checkIfRecipeExistsByUrl(url));
+  if (!recipeExistsRes.ok) {
+    return {
+      status: "ERROR",
+      message: "Internt serverfel, vänligen försök igen",
+    };
+  }
+  if (recipeExistsRes.data) {
     return {
       status: "SUCCESS",
       message: "Receptet finns redan i receptbiblioteket!",
