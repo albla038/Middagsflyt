@@ -53,6 +53,7 @@ export async function createRecipeFromGeneratedData(
       };
     }
     const missingIngredients = missingIngredientsRes.data;
+    console.log("Missing ingredients:", missingIngredients);
 
     // If there are missing ingredients, generate and create them
     if (missingIngredients.length > 0) {
@@ -87,9 +88,11 @@ export async function createRecipeFromGeneratedData(
         },
       },
     });
-    aliasMatches.forEach((alias) =>
-      nameToCanonicalNameMap.set(alias.name, alias.ingredient.name),
-    );
+    aliasMatches.forEach((alias) => {
+      if (!nameToCanonicalNameMap.has(alias.name)) {
+        nameToCanonicalNameMap.set(alias.name, alias.ingredient.name);
+      }
+    });
 
     // Create the recipe in the database
     const result = await prisma.$transaction(async (tx) => {

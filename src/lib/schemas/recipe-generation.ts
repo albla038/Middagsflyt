@@ -12,7 +12,7 @@ const recipeIngredient = z.object({
   }),
   name: z.string().min(1).meta({
     description:
-      "The unique, internal identifier for the ingredient. Must be in singular, lowercase form. Use spaces for multi-word ingredients. Examples: 'mjöl', 'potatis', 'gul lök'.",
+      "The unique, internal identifier for a single ingredient. The name must be in singular, lowercase form and contain no special characters like '&'. Use spaces for multi-word ingredients. Examples: 'mjöl', 'potatis', 'gul lök'. This must represent only one item. If the source text suggests alternatives (e.g., 'ris eller couscous', 'mat & bak smör'), you MUST choose only the most essential term ('ris', 'smör').",
   }),
   note: z.string().optional().meta({
     description:
