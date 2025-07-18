@@ -1,6 +1,6 @@
 "use client";
 
-import { toggleBookmark } from "@/app/recipe/[slug]/actions";
+import { toggleBookmark } from "@/components/recipe/actions";
 import { Button } from "@/components/ui/button";
 
 import { BookmarkMinus, BookmarkPlus, Loader2 } from "lucide-react";
