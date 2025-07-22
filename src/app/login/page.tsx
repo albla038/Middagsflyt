@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import LogInButton from "@/app/login/_components/login-button";
+import { cn } from "@/lib/utils";
 
 export default async function LoginPage() {
   const session = await auth.api.getSession({
@@ -21,7 +22,12 @@ export default async function LoginPage() {
   }
 
   return (
-    <Card className="overflow-clip border-none p-0 shadow-none sm:border sm:shadow-sm">
+    <Card
+      className={cn(
+        "overflow-clip border-none p-0",
+        "sm:border sm:border-solid sm:border-border",
+      )}
+    >
       <CardContent className="grid gap-0 p-0 md:grid-cols-2">
         <div className="flex flex-col items-center justify-center p-6 md:h-[512px]">
           <div className="grid gap-6">
