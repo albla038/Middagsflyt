@@ -2,6 +2,7 @@ import "server-only";
 
 import { Recipe } from "@/lib/generated/prisma";
 import prisma from "@/lib/db";
+import { requireUser } from "@/data/user/verify-user";
 
 // TODO Authenticate user in private queries
 
@@ -101,6 +102,37 @@ export async function fetchAllRecipes(): Promise<Recipe[]> {
     throw new Error(
       "Något gick fel när recepten hämtades, vänligen försök igen!",
       { cause: error instanceof Error ? error : new Error(String(error)) },
+    );
+  }
+}
+
+export async function fetchAllSavedRecipes() {
+  const user = await requireUser();
+
+  try {
+    return await prisma.recipe.findMany({
+      where: {
+        savedBy: {
+          every: { userId: user.id },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        imageUrl: true,
+        proteinType: true,
+        totalTimeSeconds: true,
+        recipeYield: true,
+      },
+    });
+  } catch (error) {
+    throw new Error(
+      "Något gick fel när Mina recept hämtades, vänligen försök igen!",
+      { cause: error instanceof Error ? Error : new Error(String(error)) },
     );
   }
 }
