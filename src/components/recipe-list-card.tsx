@@ -52,7 +52,7 @@ export default function RecipeListCard({
       <Card
         className={cn(
           "group gap-0 overflow-hidden border-transparent p-0",
-          "transition-all duration-300 hover:scale-[101%] hover:border-border hover:bg-subtle", // TODO Image res glitches when scaling
+          "transition-all duration-300 hover:border-border hover:bg-subtle", // TODO Image res glitches when scaling
         )}
       >
         <Link href={`/my-recipes/${slug}`}>
@@ -64,6 +64,7 @@ export default function RecipeListCard({
                 width={1000}
                 height={750}
                 className="size-full object-cover"
+                priority
               />
             ) : (
               <div className="flex size-full items-center justify-center rounded-xl bg-muted">
@@ -86,7 +87,7 @@ export default function RecipeListCard({
 
             <div
               className={cn(
-                "absolute top-2 right-2 z-100 hidden flex-col items-center gap-1",
+                "absolute top-2 right-2 hidden flex-col items-center gap-1",
                 "group-hover:flex",
                 "transition-all duration-300 ease-in-out",
               )}
