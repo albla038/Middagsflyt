@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import H3 from "@/components/ui/typography/h3";
@@ -23,6 +23,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type RecipeListCardProps = {
   recipe: {
@@ -44,6 +45,8 @@ export default function RecipeListCard({
   createdByUser,
   scheduledDate,
 }: RecipeListCardProps) {
+  const [isLoading, setIsLoading] = useState(true);
+
   const { name, slug, recipeYield, imageUrl, proteinType, totalTimeSeconds } =
     recipe;
 
@@ -56,16 +59,23 @@ export default function RecipeListCard({
         )}
       >
         <Link href={`/my-recipes/${slug}`}>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-b-xl">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-b-xl bg-accent">
             {imageUrl ? (
-              <Image
-                src={imageUrl}
-                alt="Receptbild"
-                width={1000}
-                height={750}
-                className="size-full object-cover"
-                priority
-              />
+              <>
+                {isLoading && <Skeleton className="size-full rounded-xl" />}
+                <Image
+                  src={imageUrl}
+                  alt="Receptbild"
+                  width={1000}
+                  height={750}
+                  className={cn(
+                    "size-full object-cover transition-opacity duration-500",
+                    isLoading ? "opacity-0" : "opacity-100",
+                  )}
+                  onLoad={() => setIsLoading(false)}
+                  priority
+                />
+              </>
             ) : (
               <div className="flex size-full items-center justify-center rounded-xl bg-muted">
                 <Soup className="size-8 text-muted-foreground" />
