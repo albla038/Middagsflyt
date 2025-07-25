@@ -356,7 +356,7 @@ export default function RecipeContent({
         </ScrollArea>
 
         {/* Action buttons */}
-        <div className="flex justify-end gap-2">
+        <div className="flex flex-wrap justify-end gap-2">
           <CopyLinkButton slug={slug} />
 
           <BookmarkToggle

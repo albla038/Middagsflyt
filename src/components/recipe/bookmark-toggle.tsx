@@ -2,6 +2,7 @@
 
 import { toggleBookmark } from "@/components/recipe/actions";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 import { BookmarkMinus, BookmarkPlus, Loader2 } from "lucide-react";
 import { useTransition } from "react";
@@ -9,6 +10,7 @@ import { toast } from "sonner";
 
 type ActionButtonProps = React.ComponentPropsWithRef<"button"> & {
   variant?: "primary" | "icon-lg";
+  className?: string;
   isBookmarked: boolean;
   recipeId: string;
   slug: string;
@@ -16,6 +18,7 @@ type ActionButtonProps = React.ComponentPropsWithRef<"button"> & {
 
 export default function BookmarkToggle({
   variant = "primary",
+  className,
   isBookmarked,
   recipeId,
   slug,
@@ -69,7 +72,7 @@ export default function BookmarkToggle({
       {...rest}
       variant={variant === "primary" ? "default" : "ghost"}
       size={variant === "primary" ? "default" : "icon-lg"}
-      className={variant === "icon-lg" ? "grow" : ""}
+      className={cn(className, "")}
       disabled={isPending}
       onClick={handleClick}
     >

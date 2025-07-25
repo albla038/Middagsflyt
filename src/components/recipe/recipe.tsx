@@ -52,8 +52,8 @@ export default async function Recipe({ slug }: { slug: string }) {
       <section className="relative">
         <div
           className={cn(
-            "flex flex-col gap-6",
-            "justify-center sm:min-h-[504px] sm:w-1/2 sm:gap-8 sm:px-8 sm:py-6",
+            "flex aspect-square flex-col justify-center gap-6",
+            "sm:w-1/2 sm:gap-8 sm:px-8 sm:py-6",
           )}
         >
           <div className="flex flex-col items-center gap-3">
@@ -188,6 +188,7 @@ export default async function Recipe({ slug }: { slug: string }) {
               <TooltipTrigger asChild>
                 <BookmarkToggle
                   variant="icon-lg"
+                  className="grow"
                   isBookmarked={isBookmarked}
                   recipeId={recipe.id}
                   slug={slug}
