@@ -71,6 +71,25 @@ export async function fetchRecipeBySlug(slug: string) {
   }
 }
 
+export async function fetchRecipeNameBySlug(slug: string) {
+  try {
+    const recipe = await prisma.recipe.findUnique({
+      where: { slug },
+      select: {
+        name: true,
+      },
+    });
+    return recipe ? recipe.name : null;
+  } catch (error) {
+    throw new Error(
+      "Något gick fel när receptet hämtades, vänligen försök igen!",
+      {
+        cause: error instanceof Error ? error : new Error(String(error)),
+      },
+    );
+  }
+}
+
 export async function fetchAllRecipes(): Promise<Recipe[]> {
   try {
     return await prisma.recipe.findMany({
