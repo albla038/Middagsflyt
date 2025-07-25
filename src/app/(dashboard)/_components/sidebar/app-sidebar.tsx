@@ -36,9 +36,11 @@ export default function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu>
-              <NavMain />
-            </SidebarMenu>
+            <nav>
+              <SidebarMenu>
+                <NavMain />
+              </SidebarMenu>
+            </nav>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
