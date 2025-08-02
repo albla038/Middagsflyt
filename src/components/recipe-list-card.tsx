@@ -24,16 +24,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
+import { RecipeDisplayContent } from "@/components/recipe-list";
 
 type RecipeListCardProps = {
-  recipe: {
-    name: string;
-    slug: string;
-    recipeYield: number | null;
-    imageUrl: string | null;
-    proteinType: ProteinType | null;
-    totalTimeSeconds: number | null;
-  };
+  recipe: RecipeDisplayContent;
   isImported?: boolean;
   createdByUser?: boolean;
   scheduledDate?: Date;
