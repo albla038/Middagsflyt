@@ -6,8 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProteinType } from "@/lib/generated/prisma";
 import { cn } from "@/lib/utils";
-import { Grid2X2, ListFilter, LoaderCircle, Rows3 } from "lucide-react";
-import { Suspense } from "react";
+import { Grid2X2, ListFilter, Rows3 } from "lucide-react";
 
 export type RecipeDisplayContent = {
   id: string;
@@ -24,7 +23,7 @@ type RecipeListProps = {
   searchQuery?: string;
 };
 
-export default async function RecipeList({
+export default function RecipeList({
   recipes,
   searchQuery = "",
 }: RecipeListProps) {
@@ -60,38 +59,28 @@ export default async function RecipeList({
         </div>
       </div>
 
-      <Suspense
-        fallback={
-          <div className="flex items-center gap-2">
-            <p>Läser in recept</p>
-            <LoaderCircle className="size-4 animate-spin" />
-          </div>
-        }
-      >
-        {recipes.length === 0 ? (
-          searchQuery ? (
-            <p>
-              Inga recept hittades för{" "}
-              <strong>&quot;{searchQuery}&quot;</strong>.
-            </p>
-          ) : (
-            <p>Inga recept hittades.</p>
-          )
+      {recipes.length === 0 ? (
+        searchQuery ? (
+          <p>
+            Inga recept hittades för <strong>&quot;{searchQuery}&quot;</strong>.
+          </p>
         ) : (
-          <ul
-            className={cn(
-              "grid gap-4",
-              "min-[40rem]:grid-cols-2 min-[64rem]:grid-cols-3",
-            )}
-          >
-            {recipes.map((recipe) => (
-              <li key={recipe.id} className="list-none">
-                <RecipeListCard recipe={recipe} />
-              </li>
-            ))}
-          </ul>
-        )}
-      </Suspense>
+          <p>Inga recept hittades.</p>
+        )
+      ) : (
+        <ul
+          className={cn(
+            "grid gap-4",
+            "min-[40rem]:grid-cols-2 min-[64rem]:grid-cols-3",
+          )}
+        >
+          {recipes.map((recipe) => (
+            <li key={recipe.id} className="list-none">
+              <RecipeListCard recipe={recipe} />
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

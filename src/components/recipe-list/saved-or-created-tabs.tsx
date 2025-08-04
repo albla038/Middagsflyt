@@ -3,13 +3,12 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { MyRecipesDisplay } from "@/lib/types";
 
 type SavedOrCreatedTabsProps = {
   savedCount: number;
   createdCount: number;
 };
-
-type DisplayType = "saved" | "created";
 
 export default function SavedOrCreatedTabs({
   savedCount,
@@ -19,7 +18,7 @@ export default function SavedOrCreatedTabs({
   const pathname = usePathname();
   const router = useRouter();
 
-  function handleChange(value: DisplayType) {
+  function handleChange(value: MyRecipesDisplay) {
     const searchParams = new URLSearchParams(params);
     if (value === "created") {
       searchParams.set("display", "created");
@@ -32,7 +31,7 @@ export default function SavedOrCreatedTabs({
   return (
     <Tabs
       value={params.get("display") === "created" ? "created" : "saved"}
-      onValueChange={(value) => handleChange(value as DisplayType)}
+      onValueChange={(value) => handleChange(value as MyRecipesDisplay)}
     >
       <TabsList>
         <TabsTrigger value="saved">
