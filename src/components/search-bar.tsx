@@ -12,9 +12,8 @@ export default function SearchBar({ ...rest }: SearhBarProps) {
   const pathname = usePathname();
   const router = useRouter();
 
-  const searchParams = useMemo(() => new URLSearchParams(params), [params]);
-
   const handleInput = useDebouncedCallback((key: string, input: string) => {
+    const searchParams = new URLSearchParams(params);
     if (input) {
       searchParams.set(key, input);
     } else {
@@ -28,7 +27,7 @@ export default function SearchBar({ ...rest }: SearhBarProps) {
     <Input
       {...rest}
       type="text"
-      defaultValue={searchParams.get("query")?.toString()}
+      defaultValue={params.get("query")?.toString()}
       onChange={(event) => handleInput("query", event.target.value)}
     ></Input>
   );
