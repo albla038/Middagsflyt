@@ -7,13 +7,14 @@ import {
   SelectContent,
   SelectItem,
   SelectValue,
+  SelectLabel,
+  SelectGroup,
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProteinType } from "@/lib/generated/prisma";
 import { cn } from "@/lib/utils";
 import {
   ArrowUp,
-  ChevronsUpDown,
   Grid2X2,
   ListFilter,
   LoaderCircle,
@@ -51,20 +52,23 @@ export default async function RecipeList({
             <ArrowUp />
           </Button>
 
-          <Select>
+          <Button variant="outline" disabled>
+            <ListFilter />
+            <span>Filtrera</span>
+          </Button>
+
+          <Select defaultValue="createdDate">
             <SelectTrigger className="w-36">
               <SelectValue placeholder="Sortering" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="createdDate">Tillagt datum</SelectItem>
-              <SelectItem value="name">Namn</SelectItem>
+              <SelectGroup>
+                <SelectLabel>Sortering</SelectLabel>
+                <SelectItem value="createdDate">Tillagt datum</SelectItem>
+                <SelectItem value="name">Namn</SelectItem>
+              </SelectGroup>
             </SelectContent>
           </Select>
-
-          <Button variant="outline">
-            <ListFilter />
-            <span>Filtrera</span>
-          </Button>
 
           <Tabs defaultValue="grid">
             <TabsList>
