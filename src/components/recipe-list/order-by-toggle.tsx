@@ -11,9 +11,12 @@ export default function OrderByToggle() {
   const pathname = usePathname();
 
   const searchParams = new URLSearchParams(params);
-  const order = searchParams.get("order") || "desc";
-  const newOrder = order === "desc" ? "asc" : "desc";
-  searchParams.set("order", newOrder);
+  const order = searchParams.get("order");
+  if (order === "asc") {
+    searchParams.delete("order");
+  } else {
+    searchParams.set("order", "asc");
+  }
 
   return (
     <Button variant="ghost" size="icon" asChild>

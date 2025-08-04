@@ -17,12 +17,20 @@ export type PermissionResult =
       reason: string;
     };
 
-export type ActionResponse<Data> =
+export type ActionState<Err> =
+  | { status: "IDLE" }
   | {
-      ok: true;
-      data: Data;
+      status: "SUCCESS";
+      message: string;
     }
   | {
-      ok: false;
+      status: "ERROR";
       message: string;
+      errors?: Err;
     };
+
+export const ORDER_OPTIONS = ["asc", "desc"] as const;
+export const SORT_BY_OPTIONS = ["createdAt", "name"] as const;
+
+export type Order = (typeof ORDER_OPTIONS)[number];
+export type SortBy = (typeof SORT_BY_OPTIONS)[number];

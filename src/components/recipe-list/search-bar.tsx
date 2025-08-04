@@ -2,7 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ComponentPropsWithoutRef, useMemo } from "react";
+import { ComponentPropsWithoutRef } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
 type SearhBarProps = ComponentPropsWithoutRef<"input">;
@@ -29,6 +29,6 @@ export default function SearchBar({ ...rest }: SearhBarProps) {
       type="text"
       defaultValue={params.get("query")?.toString()}
       onChange={(event) => handleInput("query", event.target.value)}
-    ></Input>
+    />
   );
 }

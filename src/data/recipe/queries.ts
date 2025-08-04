@@ -3,6 +3,7 @@ import "server-only";
 import { ProteinType, Recipe } from "@/lib/generated/prisma";
 import prisma from "@/lib/db";
 import { requireUser } from "@/data/user/verify-user";
+import { Order, SortBy } from "@/lib/types";
 
 // HELPER FUNCTIONS
 function searchFilters(searchQuery: string) {
@@ -175,12 +176,6 @@ export async function fetchAllRecipes(): Promise<Recipe[]> {
     );
   }
 }
-
-export const ORDER_OPTIONS = ["asc", "desc"] as const;
-export const SORT_BY_OPTIONS = ["createdAt", "name"] as const;
-
-export type Order = (typeof ORDER_OPTIONS)[number];
-export type SortBy = (typeof SORT_BY_OPTIONS)[number];
 
 export async function fetchAllSavedRecipes(
   searchQuery: string,

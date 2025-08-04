@@ -9,23 +9,32 @@ import {
   SelectLabel,
   SelectGroup,
 } from "@/components/ui/select";
-import { SortBy } from "@/data/recipe/queries";
+import { SORT_BY_OPTIONS, SortBy } from "@/lib/types";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { z } from "zod/v4";
+
+const sortSchema = z.enum(SORT_BY_OPTIONS).catch("createdAt");
 
 export default function SortSelect() {
   const params = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
 
+  const currentSort = sortSchema.parse(params.get("sort"));
+
   function handleChange(value: SortBy) {
     const searchParams = new URLSearchParams(params);
-    searchParams.set("sort", value);
+    if (value === "createdAt") {
+      searchParams.delete("sort");
+    } else {
+      searchParams.set("sort", value);
+    }
     router.replace(`${pathname}?${searchParams.toString()}`);
   }
 
   return (
     <Select
-      defaultValue="createdAt"
+      value={currentSort}
       onValueChange={(value) => handleChange(value as SortBy)}
     >
       <SelectTrigger className="w-36">
