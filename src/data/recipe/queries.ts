@@ -176,7 +176,17 @@ export async function fetchAllRecipes(): Promise<Recipe[]> {
   }
 }
 
-export async function fetchAllSavedRecipes(searchQuery: string) {
+export const ORDER_OPTIONS = ["asc", "desc"] as const;
+export const SORT_BY_OPTIONS = ["createdAt", "name"] as const;
+
+export type Order = (typeof ORDER_OPTIONS)[number];
+export type SortBy = (typeof SORT_BY_OPTIONS)[number];
+
+export async function fetchAllSavedRecipes(
+  searchQuery: string,
+  order: Order = "desc",
+  sortBy: SortBy = "createdAt",
+) {
   const user = await requireUser();
 
   try {
@@ -188,7 +198,7 @@ export async function fetchAllSavedRecipes(searchQuery: string) {
         OR: searchFilters(searchQuery),
       },
       orderBy: {
-        createdAt: "desc",
+        [sortBy]: order,
       },
       select: {
         id: true,
@@ -208,7 +218,11 @@ export async function fetchAllSavedRecipes(searchQuery: string) {
   }
 }
 
-export async function fetchAllCreatedRecipes(searchQuery: string) {
+export async function fetchAllCreatedRecipes(
+  searchQuery: string,
+  order: "asc" | "desc" = "desc",
+  sortBy: "createdAt" | "name" = "createdAt",
+) {
   const user = await requireUser();
 
   try {
@@ -218,7 +232,7 @@ export async function fetchAllCreatedRecipes(searchQuery: string) {
         OR: searchFilters(searchQuery),
       },
       orderBy: {
-        createdAt: "desc",
+        [sortBy]: order,
       },
       select: {
         id: true,
