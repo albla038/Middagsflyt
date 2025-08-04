@@ -19,13 +19,15 @@ export type RecipeDisplayContent = {
   totalTimeSeconds: number | null;
 };
 
-type RecipeListProps = RecipeDisplayContent[];
+type RecipeListProps = {
+  recipes: RecipeDisplayContent[];
+  searchQuery?: string;
+};
 
 export default async function RecipeList({
   recipes,
-}: {
-  recipes: RecipeListProps;
-}) {
+  searchQuery = "",
+}: RecipeListProps) {
   return (
     <div className="grid gap-4">
       <div className="flex items-center justify-between gap-2">
@@ -67,7 +69,14 @@ export default async function RecipeList({
         }
       >
         {recipes.length === 0 ? (
-          <p>Inga recept hittades.</p>
+          searchQuery ? (
+            <p>
+              Inga recept hittades för{" "}
+              <strong>&quot;{searchQuery}&quot;</strong>.
+            </p>
+          ) : (
+            <p>Inga recept hittades.</p>
+          )
         ) : (
           <ul
             className={cn(

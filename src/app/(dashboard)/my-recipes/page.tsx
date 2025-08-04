@@ -75,7 +75,7 @@ export default async function Page({
           </div>
         </div>
 
-        <RecipeList recipes={savedRecipes} />
+        <RecipeList recipes={savedRecipes} searchQuery={query} />
       </main>
     </div>
   );
