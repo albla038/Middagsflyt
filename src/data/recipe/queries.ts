@@ -1,6 +1,6 @@
 import "server-only";
 
-import { Recipe } from "@/lib/generated/prisma";
+import { ProteinType, Recipe } from "@/lib/generated/prisma";
 import prisma from "@/lib/db";
 import { requireUser } from "@/data/user/verify-user";
 
@@ -125,8 +125,13 @@ export async function fetchAllRecipes(): Promise<Recipe[]> {
   }
 }
 
-export async function fetchAllSavedRecipes() {
+export async function fetchAllSavedRecipes(searchQuery: string) {
   const user = await requireUser();
+
+  const proteinTypeQueries: ProteinType[] = searchQuery
+    .split(" ")
+    .map((word) => word.toUpperCase())
+    .filter((word): word is ProteinType => word in ProteinType);
 
   try {
     return await prisma.recipe.findMany({
@@ -134,6 +139,70 @@ export async function fetchAllSavedRecipes() {
         savedBy: {
           every: { userId: user.id },
         },
+        OR: [
+          {
+            name: {
+              contains: searchQuery,
+              // mode: "insensitive", // TODO Add for Postgres
+            },
+          },
+          {
+            description: {
+              contains: searchQuery,
+              // mode: "insensitive", // TODO Add for Postgres
+            },
+          },
+          {
+            recipeIngredients: {
+              some: {
+                OR: [
+                  {
+                    text: { contains: searchQuery },
+                  },
+                  {
+                    ingredient: {
+                      name: { contains: searchQuery },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          {
+            proteinType: {
+              in: proteinTypeQueries,
+            },
+          },
+        ],
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        imageUrl: true,
+        proteinType: true,
+        totalTimeSeconds: true,
+        recipeYield: true,
+      },
+    });
+  } catch (error) {
+    throw new Error(
+      "Något gick fel när Mina recept hämtades, vänligen försök igen!",
+      { cause: error instanceof Error ? Error : new Error(String(error)) },
+    );
+  }
+}
+
+export async function fetchAllCreatedRecipes() {
+  const user = await requireUser();
+
+  try {
+    return await prisma.recipe.findMany({
+      where: {
+        createdById: user.id,
       },
       orderBy: {
         createdAt: "desc",

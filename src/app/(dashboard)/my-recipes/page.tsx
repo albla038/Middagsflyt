@@ -7,8 +7,6 @@ import H1 from "@/components/ui/typography/h1";
 import RecipeList, { RecipeDisplayContent } from "@/components/recipe-list";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -16,8 +14,17 @@ const breadcrumbs: BreadcrumbItem[] = [
   },
 ];
 
-export default async function Page() {
-  const savedRecipes: RecipeDisplayContent[] = await fetchAllSavedRecipes();
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const query = (await searchParams).query;
+  const searchQuery = Array.isArray(query) ? query[0] : query || "";
+  console.log("Search query:", searchQuery);
+
+  const savedRecipes: RecipeDisplayContent[] =
+    await fetchAllSavedRecipes(searchQuery);
   const createdRecipes: RecipeDisplayContent[] = await fetchAllCreatedRecipes();
 
   return (
