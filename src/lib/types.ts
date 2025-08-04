@@ -31,6 +31,8 @@ export type ActionState<Err> =
 
 export const ORDER_OPTIONS = ["asc", "desc"] as const;
 export const SORT_BY_OPTIONS = ["createdAt", "name"] as const;
+export const MY_RECIPES_DISPLAY_OPTIONS = ["saved", "created"] as const;
 
 export type Order = (typeof ORDER_OPTIONS)[number];
 export type SortBy = (typeof SORT_BY_OPTIONS)[number];
+export type MyRecipesDisplay = (typeof MY_RECIPES_DISPLAY_OPTIONS)[number];
