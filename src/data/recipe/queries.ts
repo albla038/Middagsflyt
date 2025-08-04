@@ -4,6 +4,57 @@ import { ProteinType, Recipe } from "@/lib/generated/prisma";
 import prisma from "@/lib/db";
 import { requireUser } from "@/data/user/verify-user";
 
+// HELPER FUNCTIONS
+function searchFilters(searchQuery: string) {
+  const proteinTypeQueries: ProteinType[] = searchQuery
+    .split(" ")
+    .map((word) => word.toUpperCase())
+    .filter((word): word is ProteinType => word in ProteinType);
+
+  return [
+    // Search by recipe name / title
+    {
+      name: {
+        contains: searchQuery,
+        // mode: "insensitive", // TODO Add for Postgres
+      },
+    },
+
+    // Description search sometimes leads to akward results
+    // {
+    //   description: {
+    //     contains: searchQuery,
+    //     // mode: "insensitive", // TODO Add for Postgres
+    //   },
+    // },
+
+    // Search by recipe ingredient text or ingredient name
+    {
+      recipeIngredients: {
+        some: {
+          OR: [
+            {
+              text: { contains: searchQuery },
+            },
+            {
+              ingredient: {
+                name: { contains: searchQuery },
+              },
+            },
+          ],
+        },
+      },
+    },
+
+    // Search by protein type
+    {
+      proteinType: {
+        in: proteinTypeQueries,
+      },
+    },
+  ];
+}
+
 // TODO Authenticate user in private queries
 
 export async function fetchRecipeBySlug(slug: string) {
@@ -128,52 +179,13 @@ export async function fetchAllRecipes(): Promise<Recipe[]> {
 export async function fetchAllSavedRecipes(searchQuery: string) {
   const user = await requireUser();
 
-  const proteinTypeQueries: ProteinType[] = searchQuery
-    .split(" ")
-    .map((word) => word.toUpperCase())
-    .filter((word): word is ProteinType => word in ProteinType);
-
   try {
     return await prisma.recipe.findMany({
       where: {
         savedBy: {
-          every: { userId: user.id },
+          some: { userId: user.id },
         },
-        OR: [
-          {
-            name: {
-              contains: searchQuery,
-              // mode: "insensitive", // TODO Add for Postgres
-            },
-          },
-          {
-            description: {
-              contains: searchQuery,
-              // mode: "insensitive", // TODO Add for Postgres
-            },
-          },
-          {
-            recipeIngredients: {
-              some: {
-                OR: [
-                  {
-                    text: { contains: searchQuery },
-                  },
-                  {
-                    ingredient: {
-                      name: { contains: searchQuery },
-                    },
-                  },
-                ],
-              },
-            },
-          },
-          {
-            proteinType: {
-              in: proteinTypeQueries,
-            },
-          },
-        ],
+        OR: searchFilters(searchQuery),
       },
       orderBy: {
         createdAt: "desc",
@@ -196,13 +208,14 @@ export async function fetchAllSavedRecipes(searchQuery: string) {
   }
 }
 
-export async function fetchAllCreatedRecipes() {
+export async function fetchAllCreatedRecipes(searchQuery: string) {
   const user = await requireUser();
 
   try {
     return await prisma.recipe.findMany({
       where: {
         createdById: user.id,
+        OR: searchFilters(searchQuery),
       },
       orderBy: {
         createdAt: "desc",

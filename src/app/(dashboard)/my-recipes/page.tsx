@@ -25,7 +25,8 @@ export default async function Page({
 
   const savedRecipes: RecipeDisplayContent[] =
     await fetchAllSavedRecipes(searchQuery);
-  const createdRecipes: RecipeDisplayContent[] = await fetchAllCreatedRecipes();
+  const createdRecipes: RecipeDisplayContent[] =
+    await fetchAllCreatedRecipes(searchQuery);
 
   return (
     <div className="relative flex w-full flex-col items-center">
