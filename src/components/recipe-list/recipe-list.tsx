@@ -1,25 +1,12 @@
-import RecipeListCard from "@/components/recipe-list-card";
-import SearchBar from "@/components/search-bar";
+import OrderByToggle from "@/components/recipe-list/order-by-toggle";
+import RecipeListCard from "@/components/recipe-list/recipe-list-card";
+import SearchBar from "@/components/recipe-list/search-bar";
+import SortSelect from "@/components/recipe-list/sort-select";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-  SelectLabel,
-  SelectGroup,
-} from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProteinType } from "@/lib/generated/prisma";
 import { cn } from "@/lib/utils";
-import {
-  ArrowUp,
-  Grid2X2,
-  ListFilter,
-  LoaderCircle,
-  Rows3,
-} from "lucide-react";
+import { Grid2X2, ListFilter, LoaderCircle, Rows3 } from "lucide-react";
 import { Suspense } from "react";
 
 export type RecipeDisplayContent = {
@@ -48,27 +35,14 @@ export default async function RecipeList({
           className="w-sm"
         />
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon">
-            <ArrowUp />
-          </Button>
+          <OrderByToggle />
 
           <Button variant="outline" disabled>
             <ListFilter />
             <span>Filtrera</span>
           </Button>
 
-          <Select defaultValue="createdDate">
-            <SelectTrigger className="w-36">
-              <SelectValue placeholder="Sortering" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Sortering</SelectLabel>
-                <SelectItem value="createdDate">Tillagt datum</SelectItem>
-                <SelectItem value="name">Namn</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <SortSelect />
 
           <Tabs defaultValue="grid">
             <TabsList>

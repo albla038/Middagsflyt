@@ -24,7 +24,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
-import { RecipeDisplayContent } from "@/components/recipe-list";
+import { RecipeDisplayContent } from "@/components/recipe-list/recipe-list";
 
 type RecipeListCardProps = {
   recipe: RecipeDisplayContent;
