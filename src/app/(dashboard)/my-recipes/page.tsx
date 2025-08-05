@@ -8,7 +8,7 @@ import RecipeList, {
   RecipeDisplayContent,
 } from "@/components/recipe-list/recipe-list";
 import { Button } from "@/components/ui/button";
-import { LoaderCircle, Plus } from "lucide-react";
+import { ChevronRight, Database, LoaderCircle, Plus } from "lucide-react";
 import { z } from "zod/v4";
 import SavedOrCreatedTabs from "@/components/recipe-list/saved-or-created-tabs";
 import { Suspense } from "react";
@@ -17,6 +17,8 @@ import {
   ORDER_OPTIONS,
   SORT_BY_OPTIONS,
 } from "@/lib/types";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -60,7 +62,7 @@ export default async function Page({
     <div className="relative flex w-full flex-col items-center">
       <Header breadcrumbs={breadcrumbs} />
 
-      <main className="grid max-w-[64rem] gap-12 px-2 py-16">
+      <main className="grid w-full max-w-[64rem] gap-12 px-2 py-16">
         <div className="flex justify-between">
           <H1>Mina recept</H1>
           <div className="flex items-start gap-2">
@@ -90,6 +92,15 @@ export default async function Page({
             <RecipeList recipes={savedRecipes} searchQuery={query} />
           )}
         </Suspense>
+        <Button variant="ghost" className="group mx-auto" asChild>
+          <Link href={"/library"}>
+            <Database />
+            <span>Utforska fler recept i biblioteket</span>
+            <ChevronRight
+              className={cn("mr-0.5", "group-hover:mr-0 group-hover:ml-0.5")}
+            />
+          </Link>
+        </Button>
       </main>
     </div>
   );
