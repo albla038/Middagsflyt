@@ -180,31 +180,49 @@ export async function fetchAllRecipes(): Promise<Recipe[]> {
 export async function fetchAllSavedRecipes(
   searchQuery: string,
   order: Order = "desc",
-  sortBy: SortBy = "createdAt",
+  sort: SortBy = "createdAt",
 ) {
   const user = await requireUser();
 
-  try {
-    return await prisma.recipe.findMany({
-      where: {
-        savedBy: {
-          some: { userId: user.id },
+  function sortBy(sort: SortBy, order: Order) {
+    if (sort === "createdAt") {
+      return {
+        savedAt: order,
+      };
+    } else {
+      return {
+        recipe: {
+          name: order,
         },
-        OR: searchFilters(searchQuery),
+      };
+    }
+  }
+
+  try {
+    const data = await prisma.savedRecipe.findMany({
+      where: {
+        userId: user.id,
+        recipe: {
+          OR: searchFilters(searchQuery),
+        },
       },
-      orderBy: {
-        [sortBy]: order,
-      },
+      orderBy: sortBy(sort, order),
       select: {
-        id: true,
-        slug: true,
-        name: true,
-        imageUrl: true,
-        proteinType: true,
-        totalTimeSeconds: true,
-        recipeYield: true,
+        recipe: {
+          select: {
+            id: true,
+            slug: true,
+            name: true,
+            imageUrl: true,
+            proteinType: true,
+            totalTimeSeconds: true,
+            recipeYield: true,
+          },
+        },
       },
     });
+
+    return data.map((item) => item.recipe);
   } catch (error) {
     throw new Error(
       "Något gick fel när Mina sparade recept hämtades, vänligen försök igen!",
