@@ -19,6 +19,7 @@ import {
 } from "@/lib/types";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -59,49 +60,51 @@ export default async function Page({
   );
 
   return (
-    <div className="relative flex w-full flex-col items-center">
-      <Header breadcrumbs={breadcrumbs} />
+    <ScrollArea className="h-full">
+      <div className="relative flex w-full flex-col items-center">
+        <Header breadcrumbs={breadcrumbs} />
 
-      <main className="grid w-full max-w-[64rem] gap-12 px-2 py-16">
-        <div className="flex justify-between">
-          <H1>Mina recept</H1>
-          <div className="flex items-start gap-2">
-            <SavedOrCreatedTabs
-              savedCount={savedRecipes.length}
-              createdCount={createdRecipes.length}
-            />
+        <main className="grid w-full max-w-[64rem] gap-12 px-2 py-16">
+          <div className="flex justify-between">
+            <H1>Mina recept</H1>
+            <div className="flex items-start gap-2">
+              <SavedOrCreatedTabs
+                savedCount={savedRecipes.length}
+                createdCount={createdRecipes.length}
+              />
 
-            <Button disabled>
-              <Plus />
-              <span>Lägg till recept</span>
-            </Button>
-          </div>
-        </div>
-
-        <Suspense
-          fallback={
-            <div className="flex items-center gap-2">
-              <p>Läser in recept</p>
-              <LoaderCircle className="size-4 animate-spin" />
+              <Button disabled>
+                <Plus />
+                <span>Lägg till recept</span>
+              </Button>
             </div>
-          }
-        >
-          {display === "created" ? (
-            <RecipeList recipes={createdRecipes} searchQuery={query} />
-          ) : (
-            <RecipeList recipes={savedRecipes} searchQuery={query} />
-          )}
-        </Suspense>
-        <Button variant="ghost" className="group mx-auto" asChild>
-          <Link href={"/library"}>
-            <Database />
-            <span>Utforska fler recept i biblioteket</span>
-            <ChevronRight
-              className={cn("mr-0.5", "group-hover:mr-0 group-hover:ml-0.5")}
-            />
-          </Link>
-        </Button>
-      </main>
-    </div>
+          </div>
+
+          <Suspense
+            fallback={
+              <div className="flex items-center gap-2">
+                <p>Läser in recept</p>
+                <LoaderCircle className="size-4 animate-spin" />
+              </div>
+            }
+          >
+            {display === "created" ? (
+              <RecipeList recipes={createdRecipes} searchQuery={query} />
+            ) : (
+              <RecipeList recipes={savedRecipes} searchQuery={query} />
+            )}
+          </Suspense>
+          <Button variant="ghost" className="group mx-auto" asChild>
+            <Link href={"/library"}>
+              <Database />
+              <span>Utforska fler recept i biblioteket</span>
+              <ChevronRight
+                className={cn("mr-0.5", "group-hover:mr-0 group-hover:ml-0.5")}
+              />
+            </Link>
+          </Button>
+        </main>
+      </div>
+    </ScrollArea>
   );
 }

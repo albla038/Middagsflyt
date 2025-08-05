@@ -5,7 +5,7 @@ import { ReactNode } from "react";
 export default function Layout({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider>
-      <div className="flex h-screen w-full">
+      <div className="flex h-svh w-full">
         <AppSidebar />
         <div className="w-full">{children}</div>
       </div>
