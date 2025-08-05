@@ -2,6 +2,8 @@ import Header, { BreadcrumbItem } from "@/app/(dashboard)/_components/header";
 import {
   fetchAllCreatedRecipes,
   fetchAllSavedRecipes,
+  getCreatedRecipesCount,
+  getSavedRecipesCount,
 } from "@/data/recipe/queries";
 import H1 from "@/components/ui/typography/h1";
 import RecipeList, {
@@ -48,16 +50,13 @@ export default async function Page({
     await searchParams,
   );
 
-  const savedRecipes: RecipeDisplayContent[] = await fetchAllSavedRecipes(
-    query,
-    order,
-    sort,
-  );
-  const createdRecipes: RecipeDisplayContent[] = await fetchAllCreatedRecipes(
-    query,
-    order,
-    sort,
-  );
+  const recipes: RecipeDisplayContent[] =
+    display === "created"
+      ? await fetchAllCreatedRecipes(query, order, sort)
+      : await fetchAllSavedRecipes(query, order, sort);
+
+  const savedRecipesCount = await getSavedRecipesCount(query);
+  const createdRecipesCount = await getCreatedRecipesCount(query);
 
   return (
     <ScrollArea className="h-full">
@@ -69,8 +68,8 @@ export default async function Page({
             <H1>Mina recept</H1>
             <div className="flex items-start gap-2">
               <SavedOrCreatedTabs
-                savedCount={savedRecipes.length}
-                createdCount={createdRecipes.length}
+                savedCount={savedRecipesCount}
+                createdCount={createdRecipesCount}
               />
 
               <Button disabled>
@@ -88,18 +87,17 @@ export default async function Page({
               </div>
             }
           >
-            {display === "created" ? (
-              <RecipeList recipes={createdRecipes} searchQuery={query} />
-            ) : (
-              <RecipeList recipes={savedRecipes} searchQuery={query} />
-            )}
+            <RecipeList recipes={recipes} searchQuery={query} />
           </Suspense>
           <Button variant="ghost" className="group mx-auto" asChild>
             <Link href={"/library"}>
               <Database />
               <span>Utforska fler recept i biblioteket</span>
               <ChevronRight
-                className={cn("mr-0.5", "group-hover:mr-0 group-hover:ml-0.5")}
+                className={cn(
+                  "mr-0.5 transition-all",
+                  "group-hover:mr-0 group-hover:ml-0.5",
+                )}
               />
             </Link>
           </Button>
