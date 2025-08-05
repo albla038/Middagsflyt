@@ -187,7 +187,8 @@ export default async function Recipe({ slug }: { slug: string }) {
             <Tooltip delayDuration={200}>
               <TooltipTrigger asChild>
                 <BookmarkToggle
-                  variant="icon-lg"
+                  variant="ghost"
+                  size="icon-lg"
                   className="grow"
                   isBookmarked={isBookmarked}
                   recipeId={recipe.id}

@@ -24,25 +24,33 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
-import { RecipeDisplayContent } from "@/components/recipe-list/recipe-list";
+import { MyRecipesDisplay, RecipeDisplayContent } from "@/lib/types";
+import BookmarkToggle from "@/components/recipe/bookmark-toggle";
 
 type RecipeListCardProps = {
   recipe: RecipeDisplayContent;
-  isImported?: boolean;
-  createdByUser?: boolean;
-  scheduledDate?: Date;
+  displayType?: MyRecipesDisplay;
 };
 
 export default function RecipeListCard({
   recipe,
-  isImported,
-  createdByUser,
-  scheduledDate,
+  displayType,
 }: RecipeListCardProps) {
   const [isLoading, setIsLoading] = useState(true);
 
-  const { name, slug, recipeYield, imageUrl, proteinType, totalTimeSeconds } =
-    recipe;
+  const {
+    id,
+    name,
+    slug,
+    recipeYield,
+    imageUrl,
+    proteinType,
+    totalTimeSeconds,
+    isCreatedByUser,
+    isImported,
+    isSaved,
+    scheduledDate,
+  } = recipe;
 
   return (
     <article className="h-full">
@@ -88,64 +96,32 @@ export default function RecipeListCard({
                 </Badge>
               </div>
             )}
-
-            <div
-              className={cn(
-                "absolute top-2 right-2 hidden flex-col items-center gap-1",
-                "group-hover:flex",
-                "transition-all duration-300 ease-in-out",
-              )}
-            >
-              <Tooltip delayDuration={200}>
-                <TooltipTrigger asChild>
-                  <Button
-                    size="icon"
-                    // TODO add onclick
-                  >
-                    <CalendarPlus />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="left">
-                  <p>Planera recept</p>
-                </TooltipContent>
-              </Tooltip>
-
-              <Tooltip delayDuration={200}>
-                <TooltipTrigger asChild>
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    // TODO add onclick
-                  >
-                    <ListPlus />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="left">
-                  <p>Lägg i inköpslista</p>
-                </TooltipContent>
-              </Tooltip>
-            </div>
+            <ActionButtons
+              isSaved={isSaved}
+              id={id}
+              slug={slug}
+              displayType={displayType}
+            />
           </div>
+
           <CardContent className="grid gap-2 pt-3 pb-6">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               {proteinType && (
-                <>
-                  <Badge variant="secondary">
-                    {proteinType.charAt(0) + proteinType.slice(1).toLowerCase()}
-                    {/* {proteinType} */}
-                  </Badge>
-                  {isImported && createdByUser ? (
-                    <Badge variant="outline">Importerat av dig</Badge>
-                  ) : (
-                    createdByUser && (
-                      <Badge variant="outline">Skapat av dig</Badge>
-                    )
-                  )}
-                </>
+                <Badge variant="secondary">
+                  {proteinType.charAt(0) + proteinType.slice(1).toLowerCase()}
+                  {/* {proteinType} */}
+                </Badge>
+              )}
+              {isImported && isCreatedByUser ? (
+                <Badge variant="outline">Importerad av dig</Badge>
+              ) : (
+                isCreatedByUser && (
+                  <Badge variant="outline">Skapad av dig</Badge>
+                )
               )}
             </div>
             <div className="grid gap-1">
-              <H3>{name}</H3>
+              <H3 className="truncate">{name}</H3>
               <div className="flex flex-wrap items-center gap-2">
                 {totalTimeSeconds && (
                   <StatValueSmall icon={ClockFading} desc="min">
@@ -184,6 +160,89 @@ function StatValueSmall({
       <Icon className="size-[14px]" />
       <span>{children}</span>
       <span className="text-muted-foreground">{desc}</span>
+    </div>
+  );
+}
+
+function ActionButtons({
+  displayType,
+  isSaved,
+  id,
+  slug,
+}: {
+  displayType?: MyRecipesDisplay;
+  isSaved: boolean;
+  id: string;
+  slug: string;
+}) {
+  return (
+    <div className="group absolute top-2 right-2 flex flex-col items-center gap-1">
+      {displayType === "created" && (
+        <Tooltip delayDuration={200}>
+          <TooltipTrigger asChild>
+            <BookmarkToggle
+              isBookmarked={isSaved}
+              recipeId={id}
+              slug={slug}
+              variant="default"
+              size="icon"
+              className={cn(
+                { "opacity-0": isSaved },
+                "group-hover:opacity-100",
+                "group-hover:border-none group-hover:bg-primary group-hover:text-primary-foreground group-hover:shadow-xs hover:bg-primary/90",
+              )}
+            />
+          </TooltipTrigger>
+          <TooltipContent side="left">
+            {isSaved ? <p>Ta bort från Mina recept</p> : <p>Spara recept</p>}
+          </TooltipContent>
+        </Tooltip>
+      )}
+
+      <div
+        className={cn(
+          "flex flex-col items-center gap-1 opacity-0 transition-opacity duration-200",
+          "group-hover:opacity-100",
+        )}
+      >
+        <Tooltip delayDuration={200}>
+          <TooltipTrigger asChild>
+            <Button
+              size="icon"
+              variant={displayType === "saved" ? "default" : "outline"}
+              // TODO add onclick
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+              }}
+            >
+              <CalendarPlus />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="left">
+            <p>Planera recept</p>
+          </TooltipContent>
+        </Tooltip>
+
+        <Tooltip delayDuration={200}>
+          <TooltipTrigger asChild>
+            <Button
+              size="icon"
+              variant="outline"
+              // TODO add onclick
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+              }}
+            >
+              <ListPlus />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="left">
+            <p>Lägg i inköpslista</p>
+          </TooltipContent>
+        </Tooltip>
+      </div>
     </div>
   );
 }

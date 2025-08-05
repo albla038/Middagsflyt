@@ -39,7 +39,7 @@ export default function SavedOrCreatedTabs({
           <Badge variant="outline">{savedCount}</Badge>
         </TabsTrigger>
         <TabsTrigger value="created">
-          <span>Importerade/skapade</span>
+          <span>Importerade/skapade av mig</span>
           <Badge variant="outline">{createdCount}</Badge>
         </TabsTrigger>
       </TabsList>

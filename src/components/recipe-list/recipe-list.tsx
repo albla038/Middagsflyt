@@ -5,27 +5,20 @@ import SortSelect from "@/components/recipe-list/sort-select";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProteinType } from "@/lib/generated/prisma";
+import { MyRecipesDisplay, RecipeDisplayContent } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Grid2X2, ListFilter, Rows3 } from "lucide-react";
-
-export type RecipeDisplayContent = {
-  id: string;
-  name: string;
-  slug: string;
-  recipeYield: number | null;
-  imageUrl: string | null;
-  proteinType: ProteinType | null;
-  totalTimeSeconds: number | null;
-};
 
 type RecipeListProps = {
   recipes: RecipeDisplayContent[];
   searchQuery?: string;
+  displayType?: MyRecipesDisplay;
 };
 
 export default function RecipeList({
   recipes,
   searchQuery = "",
+  displayType,
 }: RecipeListProps) {
   return (
     <div className="grid gap-4">
@@ -76,7 +69,7 @@ export default function RecipeList({
         >
           {recipes.map((recipe) => (
             <li key={recipe.id} className="list-none">
-              <RecipeListCard recipe={recipe} />
+              <RecipeListCard recipe={recipe} displayType={displayType} />
             </li>
           ))}
         </ul>

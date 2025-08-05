@@ -9,15 +9,22 @@ import { useTransition } from "react";
 import { toast } from "sonner";
 
 type ActionButtonProps = React.ComponentPropsWithRef<"button"> & {
-  variant?: "primary" | "icon-lg";
-  className?: string;
+  variant?:
+    | "link"
+    | "default"
+    | "destructive"
+    | "outline"
+    | "secondary"
+    | "ghost";
+  size?: "default" | "sm" | "lg" | "icon" | "icon-lg";
   isBookmarked: boolean;
   recipeId: string;
   slug: string;
 };
 
 export default function BookmarkToggle({
-  variant = "primary",
+  variant = "default",
+  size = "default",
   className,
   isBookmarked,
   recipeId,
@@ -50,31 +57,39 @@ export default function BookmarkToggle({
   }
 
   const saveContent =
-    variant === "primary" ? (
+    size === "default" ? (
       <>
         <BookmarkPlus /> <span>Spara i Mina recept</span>
       </>
-    ) : (
+    ) : size === "icon-lg" ? (
       <BookmarkPlus className="size-6" />
+    ) : (
+      <BookmarkPlus />
     );
 
   const unsaveContent =
-    variant === "primary" ? (
+    size === "default" ? (
       <>
         <BookmarkMinus /> <span>Ta bort från Mina recept</span>
       </>
-    ) : (
+    ) : size === "icon-lg" ? (
       <BookmarkMinus className="size-6" />
+    ) : (
+      <BookmarkMinus />
     );
 
   return (
     <Button
       {...rest}
-      variant={variant === "primary" ? "default" : "ghost"}
-      size={variant === "primary" ? "default" : "icon-lg"}
+      variant={variant}
+      size={size}
       className={cn(className, "")}
       disabled={isPending}
-      onClick={handleClick}
+      onClick={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        handleClick();
+      }}
     >
       {isPending ? (
         <Loader2 className="size-4 animate-spin" />

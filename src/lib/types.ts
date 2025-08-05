@@ -1,3 +1,5 @@
+import { ProteinType } from "@/lib/generated/prisma";
+
 export type Result<Data, Err> =
   | {
       ok: true;
@@ -28,6 +30,20 @@ export type ActionState<Err> =
       message: string;
       errors?: Err;
     };
+
+export type RecipeDisplayContent = {
+  id: string;
+  name: string;
+  slug: string;
+  recipeYield: number | null;
+  imageUrl: string | null;
+  proteinType: ProteinType | null;
+  totalTimeSeconds: number | null;
+  isSaved: boolean;
+  isImported?: boolean;
+  isCreatedByUser?: boolean;
+  scheduledDate?: Date;
+};
 
 export const ORDER_OPTIONS = ["asc", "desc"] as const;
 export const SORT_BY_OPTIONS = ["createdAt", "name"] as const;

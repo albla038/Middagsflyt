@@ -29,6 +29,7 @@ export default function SearchBar({ ...rest }: SearhBarProps) {
       type="text"
       defaultValue={params.get("query")?.toString()}
       onChange={(event) => handleInput("query", event.target.value)}
+      className="max-w-md"
     />
   );
 }

@@ -6,9 +6,7 @@ import {
   getSavedRecipesCount,
 } from "@/data/recipe/queries";
 import H1 from "@/components/ui/typography/h1";
-import RecipeList, {
-  RecipeDisplayContent,
-} from "@/components/recipe-list/recipe-list";
+import RecipeList from "@/components/recipe-list/recipe-list";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, Database, LoaderCircle, Plus } from "lucide-react";
 import { z } from "zod/v4";
@@ -50,7 +48,7 @@ export default async function Page({
     await searchParams,
   );
 
-  const recipes: RecipeDisplayContent[] =
+  const recipes =
     display === "created"
       ? await fetchAllCreatedRecipes(query, order, sort)
       : await fetchAllSavedRecipes(query, order, sort);
@@ -87,8 +85,13 @@ export default async function Page({
               </div>
             }
           >
-            <RecipeList recipes={recipes} searchQuery={query} />
+            <RecipeList
+              recipes={recipes}
+              searchQuery={query}
+              displayType={display}
+            />
           </Suspense>
+
           <Button variant="ghost" className="group mx-auto" asChild>
             <Link href={"/library"}>
               <Database />

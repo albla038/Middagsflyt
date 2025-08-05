@@ -3,7 +3,7 @@ import "server-only";
 import { ProteinType, Recipe } from "@/lib/generated/prisma";
 import prisma from "@/lib/db";
 import { requireUser } from "@/data/user/verify-user";
-import { Order, SortBy } from "@/lib/types";
+import { Order, RecipeDisplayContent, SortBy } from "@/lib/types";
 
 // HELPER FUNCTIONS
 function searchFilters(searchQuery: string) {
@@ -181,7 +181,7 @@ export async function fetchAllSavedRecipes(
   searchQuery: string,
   order: Order = "desc",
   sort: SortBy = "createdAt",
-) {
+): Promise<RecipeDisplayContent[]> {
   const user = await requireUser();
 
   function sortBy(sort: SortBy, order: Order) {
@@ -217,12 +217,22 @@ export async function fetchAllSavedRecipes(
             proteinType: true,
             totalTimeSeconds: true,
             recipeYield: true,
+            isImported: true,
+            createdById: true,
           },
         },
       },
     });
 
-    return data.map((item) => item.recipe);
+    return data.map((item) => {
+      const { recipe } = item;
+      const { createdById, ...rest } = recipe;
+      return {
+        ...rest,
+        isSaved: true,
+        isCreatedByUser: createdById === user.id,
+      };
+    });
   } catch (error) {
     throw new Error(
       "Något gick fel när Mina sparade recept hämtades, vänligen försök igen!",
@@ -235,11 +245,11 @@ export async function fetchAllCreatedRecipes(
   searchQuery: string,
   order: "asc" | "desc" = "desc",
   sortBy: "createdAt" | "name" = "createdAt",
-) {
+): Promise<RecipeDisplayContent[]> {
   const user = await requireUser();
 
   try {
-    return await prisma.recipe.findMany({
+    const data = await prisma.recipe.findMany({
       where: {
         createdById: user.id,
         OR: searchFilters(searchQuery),
@@ -255,7 +265,22 @@ export async function fetchAllCreatedRecipes(
         proteinType: true,
         totalTimeSeconds: true,
         recipeYield: true,
+        _count: {
+          select: {
+            savedBy: {
+              where: { userId: user.id },
+            },
+          },
+        },
       },
+    });
+
+    return data.map((recipe) => {
+      const { _count, ...rest } = recipe;
+      return {
+        ...rest,
+        isSaved: _count.savedBy > 0,
+      };
     });
   } catch (error) {
     throw new Error(
