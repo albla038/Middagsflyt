@@ -12,7 +12,7 @@ export default function H1({
     <h1
       className={cn(
         className,
-        "text-center text-3xl font-semibold tracking-tight text-balance",
+        "inline-flex items-center gap-2 text-center text-3xl font-semibold tracking-tight text-balance",
       )}
     >
       {children}

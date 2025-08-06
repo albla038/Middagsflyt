@@ -142,32 +142,48 @@ export async function fetchRecipeNameBySlug(slug: string) {
   }
 }
 
-export async function fetchAllRecipes(): Promise<Recipe[]> {
+export async function fetchAllRecipesForUser(
+  searchQuery: string,
+  order: "asc" | "desc" = "desc",
+  sortBy: "createdAt" | "name" = "createdAt",
+): Promise<RecipeDisplayContent[]> {
+  const user = await requireUser();
+
   try {
-    return await prisma.recipe.findMany({
-      include: {
-        recipeIngredients: {
-          include: {
-            ingredient: true,
-          },
-          orderBy: {
-            displayOrder: "asc",
-          },
-        },
-        recipeInstructions: {
-          include: {
-            recipeIngredients: {
-              select: {
-                displayOrder: true,
-                text: true,
-              },
+    const data = await prisma.recipe.findMany({
+      where: {
+        OR: searchFilters(searchQuery),
+      },
+      orderBy: {
+        [sortBy]: order,
+      },
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        imageUrl: true,
+        proteinType: true,
+        totalTimeSeconds: true,
+        recipeYield: true,
+        isImported: true,
+        createdById: true,
+        _count: {
+          select: {
+            savedBy: {
+              where: { userId: user.id },
             },
-          },
-          orderBy: {
-            step: "asc",
           },
         },
       },
+    });
+
+    return data.map((recipe) => {
+      const { _count, createdById, ...rest } = recipe;
+      return {
+        ...rest,
+        isSaved: _count.savedBy > 0,
+        isCreatedByUser: createdById === user.id,
+      };
     });
   } catch (error) {
     throw new Error(
@@ -265,6 +281,8 @@ export async function fetchAllCreatedRecipes(
         proteinType: true,
         totalTimeSeconds: true,
         recipeYield: true,
+        isImported: true,
+        createdById: true,
         _count: {
           select: {
             savedBy: {
@@ -276,10 +294,11 @@ export async function fetchAllCreatedRecipes(
     });
 
     return data.map((recipe) => {
-      const { _count, ...rest } = recipe;
+      const { _count, createdById, ...rest } = recipe;
       return {
         ...rest,
         isSaved: _count.savedBy > 0,
+        isCreatedByUser: createdById === user.id,
       };
     });
   } catch (error) {
