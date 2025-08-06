@@ -3,14 +3,18 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FormState, importRecipeFromUrl } from "@/app/actions";
+import {
+  FormState,
+  importRecipeFromUrl,
+} from "@/app/(dashboard)/my-recipes/actions";
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 import { MiddagsflytLoader } from "@/components/ui/logo/middagsflyt-loader";
+import { CloudUpload } from "lucide-react";
 
 const initialState: FormState = { status: "IDLE" };
 
-export default function UrlForm() {
+export default function ImportUrlForm() {
   const [state, formAction, pending] = useActionState(
     importRecipeFromUrl,
     initialState,
@@ -27,9 +31,9 @@ export default function UrlForm() {
   }, [state]);
 
   return (
-    <form action={formAction} className="grid w-full gap-3">
-      <Label htmlFor="url">Importera recept från webbadress</Label>
-      <div className="flex items-start gap-4">
+    <form action={formAction} className="grid w-full gap-4">
+      <div className="grid gap-1">
+        <Label htmlFor="url">Importera recept från webbadress</Label>
         <div className="grid w-full gap-1">
           <Input
             id="url"
@@ -46,18 +50,21 @@ export default function UrlForm() {
               </p>
             ))}
         </div>
-        <Button disabled={pending}>
-          {pending ? (
-            <>
-              <span>Importerar...</span>
-              {/* <LoaderCircle className="animate-spin" /> */}
-              <MiddagsflytLoader className="size-4" />
-            </>
-          ) : (
-            "Importera"
-          )}
-        </Button>
       </div>
+
+      <Button disabled={pending}>
+        {pending ? (
+          <>
+            <MiddagsflytLoader className="size-4" />
+            <span>Importerar...</span>
+          </>
+        ) : (
+          <>
+            <CloudUpload />
+            <span>Importera</span>
+          </>
+        )}
+      </Button>
     </form>
   );
 }

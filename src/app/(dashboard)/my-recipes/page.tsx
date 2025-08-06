@@ -8,7 +8,7 @@ import {
 import H1 from "@/components/ui/typography/h1";
 import RecipeList from "@/components/recipe-list/recipe-list";
 import { Button } from "@/components/ui/button";
-import { ChefHat, ChevronRight, Database, LoaderCircle, Plus } from "lucide-react";
+import { ChefHat, ChevronRight, Database, LoaderCircle } from "lucide-react";
 import { z } from "zod/v4";
 import SavedOrCreatedTabs from "@/components/recipe-list/saved-or-created-tabs";
 import { Suspense } from "react";
@@ -20,6 +20,7 @@ import {
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import AddRecipeDialogButton from "@/app/(dashboard)/my-recipes/_components/add-recipe-dialog-button";
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -72,11 +73,7 @@ export default async function Page({
                 savedCount={savedRecipesCount}
                 createdCount={createdRecipesCount}
               />
-
-              <Button disabled>
-                <Plus />
-                <span>Lägg till recept</span>
-              </Button>
+              <AddRecipeDialogButton />
             </div>
           </div>
 

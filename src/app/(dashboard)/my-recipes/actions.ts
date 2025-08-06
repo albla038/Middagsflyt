@@ -7,23 +7,12 @@ import { revalidatePath } from "next/cache";
 import { checkIfRecipeExistsByUrl } from "@/data/recipe/queries";
 import { requireUser } from "@/data/user/verify-user";
 import { safeQuery } from "@/lib/safe-query";
+import { ActionState } from "@/lib/types";
 
-export type FormState =
-  | {
-      status: "IDLE";
-    }
-  | {
-      status: "SUCCESS";
-      message: string;
-    }
-  | {
-      status: "ERROR";
-      message: string;
-      errors?: {
-        url?: string[];
-        name?: string[];
-      };
-    };
+export type FormState = ActionState<{
+  url?: string[];
+  name?: string[];
+}>;
 
 const urlFormSchema = z.object({
   url: z.url({
