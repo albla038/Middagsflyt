@@ -8,7 +8,7 @@ import {
 import H1 from "@/components/ui/typography/h1";
 import RecipeList from "@/components/recipe-list/recipe-list";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, Database, LoaderCircle, Plus } from "lucide-react";
+import { ChefHat, ChevronRight, Database, LoaderCircle, Plus } from "lucide-react";
 import { z } from "zod/v4";
 import SavedOrCreatedTabs from "@/components/recipe-list/saved-or-created-tabs";
 import { Suspense } from "react";
@@ -63,7 +63,10 @@ export default async function Page({
 
         <main className="grid w-full max-w-[64rem] gap-12 px-2 py-16">
           <div className="flex justify-between">
-            <H1>Mina recept</H1>
+            <H1>
+              <ChefHat />
+              Mina recept
+            </H1>
             <div className="flex items-start gap-2">
               <SavedOrCreatedTabs
                 savedCount={savedRecipesCount}
