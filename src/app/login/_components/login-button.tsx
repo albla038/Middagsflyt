@@ -15,7 +15,7 @@ export default function LogInButton() {
     startLogInTransition(async () => {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/",
+        callbackURL: "/my-recipes",
         fetchOptions: {
           onSuccess: () => {
             toast.loading("Inloggningen lyckades. Omdirigering pågår...");

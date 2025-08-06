@@ -1,5 +1,4 @@
 import { MiddagsflytIcon } from "@/components/ui/logo/middagsflyt-icon";
-import { CookingPot } from "lucide-react";
 import { ReactNode } from "react";
 
 export default function Layout({ children }: { children: ReactNode }) {
