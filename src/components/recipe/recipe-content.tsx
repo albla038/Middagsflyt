@@ -256,15 +256,13 @@ export default function RecipeContent({
                       <span className="font-medium">{unit.toLowerCase()}</span>
                     )}
                     <p
-                      className={cn("inline-flex", {
+                      className={cn("inline", {
                         "text-muted-foreground line-through": isChecked,
                       })}
                     >
-                      <span>{text}</span>
+                      {text}{" "}
                       {note && (
-                        <span className="text-xs text-muted-foreground no-underline">
-                          ({note})
-                        </span>
+                        <span className="text-muted-foreground">{note}</span>
                       )}
                     </p>
                   </li>
