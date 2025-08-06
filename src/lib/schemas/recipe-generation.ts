@@ -8,7 +8,7 @@ const recipeIngredient = z.object({
   }),
   text: z.string().min(1).meta({
     description:
-      "The text representation of the ingredient, used in the recipe instructions. This should be a human-readable form of the ingredient. It must not include any quantity or unit of measurement, as those should be specified in the 'quantity' and 'unit' fields.",
+      "The display text for the ingredient, extracted from the original source. This field should contain the name of the ingredient as it should appear in an ingredient list. It must NOT include quantities or units, as these belong in the 'quantity' and 'unit' fields respectively.",
   }),
   name: z.string().min(1).meta({
     description:
@@ -16,7 +16,7 @@ const recipeIngredient = z.object({
   }),
   note: z.string().optional().meta({
     description:
-      "An optional note about the ingredient, such as preparation instructions or special considerations.",
+      "Any additional information about the ingredient from the source text. This includes preparation details, package size if the unit is 'FÖRP' (e.g. '(à 400 g)'), or other remarks .",
   }),
   quantity: z.number().optional().meta({
     description:
@@ -24,7 +24,7 @@ const recipeIngredient = z.object({
   }),
   unit: z.enum(Unit).optional().meta({
     description:
-      "The unit of measurement for the ingredient. This must be one of the predefined units. It must appear here, and not in the 'recipeInstructions' text.",
+      "The unit of measurement for the ingredient. This must be one of the predefined units. It must appear here, and not in the 'recipeIngredient' text.",
   }),
 });
 
