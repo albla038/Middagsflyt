@@ -1,6 +1,5 @@
 "use client";
 
-import { ProteinType } from "@/lib/generated/prisma";
 import { cn } from "@/lib/utils";
 import {
   CalendarClock,
@@ -44,6 +43,7 @@ export default function RecipeListCard({
     slug,
     recipeYield,
     imageUrl,
+    recipeType,
     proteinType,
     totalTimeSeconds,
     isCreatedByUser,
@@ -109,9 +109,11 @@ export default function RecipeListCard({
               {proteinType && (
                 <Badge variant="secondary">
                   {proteinType.charAt(0) + proteinType.slice(1).toLowerCase()}
-                  {/* {proteinType} */}
                 </Badge>
               )}
+              <Badge variant="outline">
+                {recipeType.charAt(0) + recipeType.slice(1).toLowerCase()}
+              </Badge>
               {isImported && isCreatedByUser ? (
                 <Badge variant="outline">Importerad av dig</Badge>
               ) : (

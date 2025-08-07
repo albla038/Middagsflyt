@@ -1,6 +1,6 @@
 import "server-only";
 
-import { ProteinType, Recipe } from "@/lib/generated/prisma";
+import { ProteinType } from "@/lib/generated/prisma";
 import prisma from "@/lib/db";
 import { requireUser } from "@/data/user/verify-user";
 import { Order, RecipeDisplayContent, SortBy } from "@/lib/types";
@@ -162,6 +162,7 @@ export async function fetchAllRecipesForUser(
         slug: true,
         name: true,
         imageUrl: true,
+        recipeType: true,
         proteinType: true,
         totalTimeSeconds: true,
         recipeYield: true,
@@ -230,6 +231,7 @@ export async function fetchAllSavedRecipes(
             slug: true,
             name: true,
             imageUrl: true,
+            recipeType: true,
             proteinType: true,
             totalTimeSeconds: true,
             recipeYield: true,
@@ -278,6 +280,7 @@ export async function fetchAllCreatedRecipes(
         slug: true,
         name: true,
         imageUrl: true,
+        recipeType: true,
         proteinType: true,
         totalTimeSeconds: true,
         recipeYield: true,

@@ -1,4 +1,4 @@
-import { ProteinType } from "@/lib/generated/prisma";
+import { ProteinType, RecipeType } from "@/lib/generated/prisma";
 
 export type Result<Data, Err> =
   | {
@@ -37,6 +37,7 @@ export type RecipeDisplayContent = {
   slug: string;
   recipeYield: number | null;
   imageUrl: string | null;
+  recipeType: RecipeType;
   proteinType: ProteinType | null;
   totalTimeSeconds: number | null;
   isSaved: boolean;
