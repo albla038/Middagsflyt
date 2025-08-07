@@ -1,18 +1,20 @@
-import NavMain from "@/app/(dashboard)/_components/sidebar/nav-main";
+import NavSchedule from "@/app/(dashboard)/_components/sidebar/nav-schedule";
+import NavRecipes from "@/app/(dashboard)/_components/sidebar/nav-recipes";
+import NavShoppingLists from "@/app/(dashboard)/_components/sidebar/nav-shopping-lists";
 import NavUser from "@/app/(dashboard)/_components/sidebar/nav-user";
 
 import { MiddagsflytIcon } from "@/components/ui/logo/middagsflyt-icon";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+
 import Link from "next/link";
 
 export default function AppSidebar() {
@@ -33,17 +35,13 @@ export default function AppSidebar() {
         </SidebarMenu>
       </SidebarHeader>
 
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <nav>
-              <SidebarMenu>
-                <NavMain />
-              </SidebarMenu>
-            </nav>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
+      <ScrollArea className="flex min-h-0 flex-1 flex-col">
+        <SidebarContent>
+          <NavSchedule />
+          <NavRecipes />
+          <NavShoppingLists />
+        </SidebarContent>
+      </ScrollArea>
 
       <SidebarFooter>
         <NavUser />
