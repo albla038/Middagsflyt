@@ -1,5 +1,7 @@
 "use client";
 
+import ScheduleCalendar from "@/app/(dashboard)/_components/sidebar/schedule-calendar";
+import { Button } from "@/components/ui/button";
 import {
   Collapsible,
   CollapsibleContent,
@@ -7,17 +9,20 @@ import {
 } from "@/components/ui/collapsible";
 import {
   SidebarGroup,
+  SidebarGroupAction,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { Calendar, CalendarFold, ChevronRight, Plus } from "lucide-react";
-import Link from "next/link";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { CalendarFold, ChevronRight, Plus } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
@@ -28,56 +33,67 @@ export default function NavSchedule() {
   const [open, setOpen] = useState(pathname.includes(pagePath));
 
   return (
-    <SidebarGroup>
-      <SidebarGroupContent>
-        <SidebarMenu>
-          <Collapsible
-            className="group/collapsible"
-            open={open}
-            onOpenChange={setOpen}
+    <Collapsible
+      className="group/collapsible"
+      open={open}
+      onOpenChange={setOpen}
+    >
+      <SidebarGroup>
+        <SidebarGroupLabel className="relative">
+          <CollapsibleTrigger className="w-full text-left">
+            Kalender
+          </CollapsibleTrigger>
+          <div
+            className={cn(
+              "absolute right-6 hidden text-foreground",
+              "group-data-[state=open]/collapsible:flex",
+              "group-hover/collapsible:flex",
+            )}
           >
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname.includes(pagePath)}
-                onClick={() => setOpen(true)}
-              >
-                <Link href={pagePath}>
+            <Tooltip delayDuration={200}>
+              <TooltipTrigger asChild>
+                {/* // TODO Add action */}
+                <Button variant="ghost" size="icon" className="size-5">
+                  <Plus />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>Ny kalender</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </SidebarGroupLabel>
+        <CollapsibleTrigger asChild>
+          <SidebarGroupAction>
+            <ChevronRight className="transition-transform group-data-[state=open]/collapsible:rotate-90" />
+          </SidebarGroupAction>
+        </CollapsibleTrigger>
+
+        <CollapsibleContent>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                // isActive={pathname.includes(Item.id)}
+                >
                   <CalendarFold />
-                  <span>Kalender</span>
-                </Link>
-              </SidebarMenuButton>
+                  <span>Min kalender</span>
+                </SidebarMenuButton>
 
-              <CollapsibleTrigger asChild>
-                <SidebarMenuAction>
-                  <ChevronRight className="transition-transform group-data-[state=open]/collapsible:rotate-90" />
-                </SidebarMenuAction>
-              </CollapsibleTrigger>
-
-              <CollapsibleContent className="grid gap-2">
-                <SidebarMenuSub>
-                  {/*  // TODO Replace with real data */}
-                  <SidebarMenuSubItem>
-                    <SidebarMenuSubButton>
-                      <Calendar />
-                      <span>Min kalender</span>
-                    </SidebarMenuSubButton>
-                  </SidebarMenuSubItem>
-
-                  {/* // TODO Add action */}
-                  <SidebarMenuSubItem>
-                    <SidebarMenuSubButton>
-                      <Plus />
-                      <span>Ny kalender</span>
-                    </SidebarMenuSubButton>
-                  </SidebarMenuSubItem>
-                </SidebarMenuSub>
-                <div className="h-[500px] w-full bg-accent"></div>
-              </CollapsibleContent>
-            </SidebarMenuItem>
-          </Collapsible>
-        </SidebarMenu>
-      </SidebarGroupContent>
-    </SidebarGroup>
+                <SidebarMenuButton
+                // isActive={pathname.includes(Item.id)}
+                >
+                  <CalendarFold />
+                  <span>Hem</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+            <div className="mt-4">
+              <ScheduleCalendar />
+            </div>
+          </SidebarGroupContent>
+        </CollapsibleContent>
+      </SidebarGroup>
+    </Collapsible>
   );
 }

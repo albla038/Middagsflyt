@@ -34,25 +34,19 @@ export default function NavShoppingLists() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton disabled>
-              <>
-                <List /> <span>Min inköpslista</span>
-              </>
+              <List /> <span>Min inköpslista</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
 
           <SidebarMenuItem>
             <SidebarMenuButton disabled>
-              <>
-                <List /> <span>Att handla 7 aug.</span>
-              </>
+              <List /> <span>Att handla 7 aug.</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
 
           <SidebarMenuItem>
             <SidebarMenuButton disabled>
-              <>
-                <ListOrdered /> <span>Mina favoritvaror</span>
-              </>
+              <ListOrdered /> <span>Mina favoritvaror</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
