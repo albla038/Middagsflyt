@@ -141,6 +141,7 @@ model RecipeIngredient {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@unique([recipeId, displayOrder])
   @@map("recipe_ingredients")
 }
 
@@ -158,6 +159,7 @@ model RecipeInstruction {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@unique([recipeId, step])
   @@map("recipe_instructions")
 }
 
@@ -195,6 +197,9 @@ model Recipe {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([createdById])
+  @@index([recipeType])
+  @@index([proteinType])
   @@map("recipes")
 }
 
