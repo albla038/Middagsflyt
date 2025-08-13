@@ -1,4 +1,4 @@
-import ImportUrlForm from "@/app/(dashboard)/my-recipes/_components/import-url-form";
+import ImportUrlForm from "@/app/(dashboard)/saved-recipes/_components/import-url-form";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

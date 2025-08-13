@@ -18,8 +18,8 @@ export default async function Page({
 
   const breadcrumbs: BreadcrumbItem[] = [
     {
-      label: "Mina recept",
-      href: "/my-recipes",
+      label: "Sparade recept",
+      href: "/saved-recipes",
     },
     {
       label: name,

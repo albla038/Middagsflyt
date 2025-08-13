@@ -18,7 +18,7 @@ export default async function LoginPage() {
   });
 
   if (session) {
-    redirect("/my-recipes");
+    redirect("/saved-recipes");
   }
 
   return (

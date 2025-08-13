@@ -60,7 +60,7 @@ export default function RecipeListCard({
           "transition-all duration-300 hover:border-border hover:bg-subtle", // TODO Image res glitches when scaling
         )}
       >
-        <Link href={`/my-recipes/${slug}`}>
+        <Link href={`/saved-recipes/${slug}`}>
           <div className="relative aspect-[4/3] overflow-hidden rounded-b-xl bg-accent">
             {imageUrl ? (
               <>
@@ -196,7 +196,7 @@ function ActionButtons({
             />
           </TooltipTrigger>
           <TooltipContent side="left">
-            {isSaved ? <p>Ta bort från Mina recept</p> : <p>Spara recept</p>}
+            {isSaved ? <p>Ta bort från Sparade recept</p> : <p>Spara recept</p>}
           </TooltipContent>
         </Tooltip>
       )}

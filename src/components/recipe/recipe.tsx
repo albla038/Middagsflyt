@@ -197,9 +197,9 @@ export default async function Recipe({ slug }: { slug: string }) {
               </TooltipTrigger>
               <TooltipContent>
                 {isBookmarked ? (
-                  <p>Ta bort från Mina recept</p>
+                  <p>Ta bort från Sparade recept</p>
                 ) : (
-                  <p>Spara i Mina recept</p>
+                  <p>Spara recept</p>
                 )}
               </TooltipContent>
             </Tooltip>

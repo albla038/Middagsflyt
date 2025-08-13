@@ -8,15 +8,15 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { ChefHat, Database } from "lucide-react";
+import { Bookmark, Database } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const menuItems = [
   {
-    title: "Mina recept",
-    href: "/my-recipes",
-    icon: ChefHat,
+    title: "Sparade recept",
+    href: "/saved-recipes",
+    icon: Bookmark,
   },
   {
     title: "Receptbibliotek",

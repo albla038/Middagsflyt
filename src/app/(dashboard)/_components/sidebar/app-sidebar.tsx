@@ -24,7 +24,7 @@ export default function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Link href="/my-recipes">
+              <Link href="/saved-recipes">
                 <div className="flex items-center gap-3">
                   <MiddagsflytIcon className="size-8 rounded-sm bg-sidebar-primary p-1 text-sidebar-primary-foreground" />
                   <span className="text-xl font-medium">Middagsflyt</span>

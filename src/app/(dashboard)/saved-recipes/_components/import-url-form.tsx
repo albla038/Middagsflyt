@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import {
   FormState,
   importRecipeFromUrl,
-} from "@/app/(dashboard)/my-recipes/actions";
+} from "@/app/(dashboard)/saved-recipes/actions";
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 import { MiddagsflytLoader } from "@/components/ui/logo/middagsflyt-loader";

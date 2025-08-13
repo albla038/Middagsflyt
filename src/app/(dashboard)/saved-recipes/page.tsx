@@ -8,7 +8,7 @@ import {
 import H1 from "@/components/ui/typography/h1";
 import RecipeList from "@/components/recipe-list/recipe-list";
 import { Button } from "@/components/ui/button";
-import { ChefHat, ChevronRight, Database, LoaderCircle } from "lucide-react";
+import { Bookmark, ChevronRight, Database, LoaderCircle } from "lucide-react";
 import { z } from "zod/v4";
 import SavedOrCreatedTabs from "@/components/recipe-list/saved-or-created-tabs";
 import { Suspense } from "react";
@@ -20,11 +20,11 @@ import {
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import AddRecipeDialogButton from "@/app/(dashboard)/my-recipes/_components/add-recipe-dialog-button";
+import AddRecipeDialogButton from "@/app/(dashboard)/saved-recipes/_components/add-recipe-dialog-button";
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
-    label: "Mina recept",
+    label: "Sparade recept",
   },
 ];
 
@@ -65,8 +65,8 @@ export default async function Page({
         <main className="grid w-full max-w-[64rem] gap-12 px-2 py-16">
           <div className="flex justify-between">
             <H1>
-              <ChefHat />
-              Mina recept
+              <Bookmark />
+              Sparade recept
             </H1>
             <div className="flex items-start gap-2">
               <SavedOrCreatedTabs

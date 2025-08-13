@@ -45,12 +45,12 @@ export default function BookmarkToggle({
       if (result.ok) {
         toast.success(
           result.data.isSaved
-            ? "Recept sparat i Mina recept"
-            : "Recept borttaget från Mina recept",
+            ? "Recept sparat"
+            : "Recept borttaget från Sparade recept",
         );
       } else {
         toast.error(
-          `Kunde inte ${isBookmarked ? "ta bort" : "spara"} receptet i Mina recept. Vänligen försök igen.`,
+          `Kunde inte ${isBookmarked ? "ta bort receptet från" : "spara receptet i"} Sparade recept. Vänligen försök igen.`,
         );
       }
     });
@@ -59,7 +59,7 @@ export default function BookmarkToggle({
   const saveContent =
     size === "default" ? (
       <>
-        <BookmarkPlus /> <span>Spara i Mina recept</span>
+        <BookmarkPlus /> <span>Spara recept</span>
       </>
     ) : size === "icon-lg" ? (
       <BookmarkPlus className="size-6" />
@@ -70,7 +70,7 @@ export default function BookmarkToggle({
   const unsaveContent =
     size === "default" ? (
       <>
-        <BookmarkMinus /> <span>Ta bort från Mina recept</span>
+        <BookmarkMinus /> <span>Ta bort från Sparade recept</span>
       </>
     ) : size === "icon-lg" ? (
       <BookmarkMinus className="size-6" />
