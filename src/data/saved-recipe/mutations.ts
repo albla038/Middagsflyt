@@ -1,19 +1,24 @@
-import { requireUser } from "@/data/user/verify-user";
+import "server-only";
+
+import { requireHouseholdId } from "@/data/household/queries";
 import prisma from "@/lib/db";
 import { Result } from "@/lib/types";
 
 export async function saveRecipe(
   recipeId: string,
 ): Promise<Result<void, Error>> {
-  const user = await requireUser();
-
   try {
+    const householdId = await requireHouseholdId();
+
     // Idempotent create
     await prisma.savedRecipe.upsert({
       where: {
-        userId_recipeId: { recipeId, userId: user.id },
+        householdId_recipeId: { householdId, recipeId },
       },
-      create: { recipeId, userId: user.id },
+      create: {
+        householdId,
+        recipeId,
+      },
       update: {},
     });
 
@@ -34,12 +39,12 @@ export async function saveRecipe(
 export async function unsaveRecipe(
   recipeId: string,
 ): Promise<Result<void, Error>> {
-  const user = await requireUser();
-
   try {
+    const householdId = await requireHouseholdId();
+
     // Idempotent delete
     await prisma.savedRecipe.deleteMany({
-      where: { recipeId, userId: user.id },
+      where: { householdId, recipeId },
     });
 
     return {

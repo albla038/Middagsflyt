@@ -1,3 +1,5 @@
+import "server-only";
+
 import { requireUser } from "@/data/user/verify-user";
 import prisma from "@/lib/db";
 
@@ -5,9 +7,16 @@ export async function checkIfRecipeIsSaved(recipeId: string): Promise<boolean> {
   const user = await requireUser();
 
   try {
-    const saved = await prisma.savedRecipe.findUnique({
+    const saved = await prisma.savedRecipe.findFirst({
       where: {
-        userId_recipeId: { recipeId, userId: user.id },
+        recipeId,
+        household: {
+          members: {
+            some: {
+              userId: user.id,
+            },
+          },
+        },
       },
     });
 

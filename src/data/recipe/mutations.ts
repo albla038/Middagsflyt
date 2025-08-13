@@ -9,8 +9,7 @@ import { fetchMissingIngredients } from "@/data/ingredient/queries";
 import { generateAndCreateIngredients } from "@/data/ingredient/mutations";
 import { requireUser } from "@/data/user/verify-user";
 import { safeQuery } from "@/lib/safe-query";
-
-// TODO Authenticate user in all functions
+import { requireHouseholdId } from "@/data/household/queries";
 
 export async function createRecipeFromGeneratedData(
   data: GeneratedRecipe,
@@ -94,6 +93,9 @@ export async function createRecipeFromGeneratedData(
       }
     });
 
+    // Get the household ID for saving the recipe
+    const householdId = await requireHouseholdId();
+
     // Create the recipe in the database
     const result = await prisma.$transaction(async (tx) => {
       // 1. Create the recipe and its recipeIngredients (and connect them to ingredients)
@@ -112,7 +114,11 @@ export async function createRecipeFromGeneratedData(
           },
 
           savedBy: {
-            create: { user: { connect: { id: user.id } } },
+            create: {
+              household: {
+                connect: { id: householdId },
+              },
+            },
           },
 
           totalTimeSeconds: data.totalTimeSeconds,

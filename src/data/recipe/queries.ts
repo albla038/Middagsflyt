@@ -171,7 +171,13 @@ export async function fetchAllRecipesForUser(
         _count: {
           select: {
             savedBy: {
-              where: { userId: user.id },
+              where: {
+                household: {
+                  members: {
+                    some: { userId: user.id },
+                  },
+                },
+              },
             },
           },
         },
@@ -218,7 +224,11 @@ export async function fetchAllSavedRecipes(
   try {
     const data = await prisma.savedRecipe.findMany({
       where: {
-        userId: user.id,
+        household: {
+          members: {
+            some: { userId: user.id },
+          },
+        },
         recipe: {
           OR: searchFilters(searchQuery),
         },
@@ -286,10 +296,17 @@ export async function fetchAllCreatedRecipes(
         recipeYield: true,
         isImported: true,
         createdById: true,
+        // Get count only to determine if the recipe is saved by the user
         _count: {
           select: {
             savedBy: {
-              where: { userId: user.id },
+              where: {
+                household: {
+                  members: {
+                    some: { userId: user.id },
+                  },
+                },
+              },
             },
           },
         },
@@ -321,7 +338,13 @@ export async function getSavedRecipesCount(
     return await prisma.recipe.count({
       where: {
         savedBy: {
-          some: { userId: user.id },
+          some: {
+            household: {
+              members: {
+                some: { userId: user.id },
+              },
+            },
+          },
         },
         OR: searchFilters(searchQuery),
       },

@@ -2,8 +2,6 @@ import "server-only";
 
 import prisma from "@/lib/db";
 
-// TODO Authenticate user in private queries
-
 export async function fetchMissingIngredients(
   ingredientList: string[],
 ): Promise<string[]> {
