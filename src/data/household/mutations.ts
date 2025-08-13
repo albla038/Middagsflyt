@@ -23,6 +23,11 @@ export async function createDefaultHousehold(user: User): Promise<void> {
       },
     });
   } catch (error) {
+    // If household creation fails, delete the user to trigger database hook on re-register.
+    await prisma.user.delete({
+      where: { id: user.id },
+    });
+
     throw new Error("Failed to create default household", {
       cause: error instanceof Error ? error : new Error(String(error)),
     });

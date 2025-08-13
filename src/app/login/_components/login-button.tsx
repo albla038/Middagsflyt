@@ -24,6 +24,7 @@ export default function LogInButton() {
             toast.error("Inloggning misslyckades: Internt serverfel");
           },
         },
+        errorCallbackURL: "/signup-error",
       });
     });
   }
