@@ -192,8 +192,8 @@ model Recipe {
 
   oven Int?
 
-  createdBy   User   @relation(fields: [createdById], references: [id])
-  createdById String
+  createdBy   User?   @relation(fields: [createdById], references: [id])
+  createdById String?
 
   originalAuthor String?
   sourceUrl      String? @unique
@@ -234,8 +234,8 @@ model Household {
   schedules    Schedule[]
   savedRecipes SavedRecipe[]
 
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("households")
 }

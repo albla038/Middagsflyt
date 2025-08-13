@@ -129,16 +129,18 @@ export default async function Recipe({ slug }: { slug: string }) {
                       <ArrowUpRight className="size-3" />
                     </Link>
                   </span>
-                  <span>
-                    <span>Importerad av: </span>
-                    <ImporterHoverCard
-                      name={recipe.createdBy.name}
-                      email={recipe.createdBy.email}
-                      imageUrl={recipe.createdBy.image}
-                    />
-                  </span>
+                  {recipe.createdBy && (
+                    <span>
+                      <span>Importerad av: </span>
+                      <ImporterHoverCard
+                        name={recipe.createdBy.name}
+                        email={recipe.createdBy.email}
+                        imageUrl={recipe.createdBy.image}
+                      />
+                    </span>
+                  )}
                 </>
-              ) : (
+              ) : recipe.createdBy ? (
                 <span>
                   <span>Importerad av: </span>
                   <ImporterHoverCard
@@ -147,6 +149,8 @@ export default async function Recipe({ slug }: { slug: string }) {
                     imageUrl={recipe.createdBy.image}
                   />
                 </span>
+              ) : (
+                <span>Okänd receptförfattare</span>
               )}
             </div>
           </div>
