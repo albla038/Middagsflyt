@@ -199,7 +199,8 @@ model Recipe {
   sourceUrl      String? @unique
   isImported     Boolean @default(false)
 
-  savedBy SavedRecipe[]
+  savedBy        SavedRecipe[]
+  householdSaves HouseholdSavedRecipe[]
 
   schedules ScheduledRecipe[]
 
@@ -226,11 +227,29 @@ model SavedRecipe {
   @@map("saved_recipes")
 }
 
+model HouseholdSavedRecipe {
+  household   Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  householdId String
+
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId String
+
+  savedBy   User   @relation(fields: [savedById], references: [id])
+  savedById String
+
+  savedAt DateTime @default(now())
+
+  @@id([householdId, recipeId])
+  @@map("household_saved_recipes")
+}
+
 model Household {
   id   String @id @default(cuid(2))
   name String
 
   members HouseholdMember[]
+
+  savedRecipes HouseholdSavedRecipe[]
 
   schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
   scheduleId String   @unique
@@ -328,6 +347,7 @@ model User {
 
   createdRecipes  Recipe[]
   savedRecipes    SavedRecipe[]
+  householdSaves  HouseholdSavedRecipe[]
   assignedRecipes ScheduledRecipe[]
 
   household HouseholdMember?
