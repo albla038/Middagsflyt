@@ -199,8 +199,7 @@ model Recipe {
   sourceUrl      String? @unique
   isImported     Boolean @default(false)
 
-  savedBy        SavedRecipe[]
-  householdSaves HouseholdSavedRecipe[]
+  savedBy SavedRecipe[]
 
   schedules ScheduledRecipe[]
 
@@ -214,48 +213,29 @@ model Recipe {
 }
 
 model SavedRecipe {
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
-
-  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  recipeId String
-
-  savedAt DateTime @default(now())
-
-  @@id([userId, recipeId])
-  @@index([userId])
-  @@map("saved_recipes")
-}
-
-model HouseholdSavedRecipe {
   household   Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
   householdId String
 
   recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   recipeId String
 
-  savedBy   User   @relation(fields: [savedById], references: [id])
-  savedById String
-
   savedAt DateTime @default(now())
 
   @@id([householdId, recipeId])
-  @@map("household_saved_recipes")
+  @@index([householdId])
+  @@map("saved_recipes")
 }
 
 model Household {
   id   String @id @default(cuid(2))
   name String
 
-  members HouseholdMember[]
+  members      HouseholdMember[]
+  schedules    Schedule[]
+  savedRecipes SavedRecipe[]
 
-  savedRecipes HouseholdSavedRecipe[]
-
-  schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
-  scheduleId String   @unique
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@map("households")
 }
@@ -263,13 +243,16 @@ model Household {
 model HouseholdMember {
   household   Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
   householdId String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      String    @unique
 
-  role HouseholdRole @default(MEMBER)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+
+  role HouseholdRole @default(ADMIN)
 
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
+  @@id([householdId, userId])
   @@index([householdId])
   @@map("household_members")
 }
@@ -279,10 +262,8 @@ model Schedule {
   name        String
   description String?
 
-  household Household?
-
-  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String?
+  household   Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  householdId String
 
   scheduledRecipes ScheduledRecipe[]
   scheduledNotes   ScheduledNote[]
@@ -290,7 +271,7 @@ model Schedule {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([userId])
+  @@index([householdId])
   @@map("schedules")
 }
 
@@ -300,13 +281,13 @@ model ScheduledRecipe {
   servings Int?
   note     String?
 
-  schedule   Schedule @relation(fields: [scheduleId], references: [id])
+  schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
   scheduleId String
 
   recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   recipeId String
 
-  assignee   User?   @relation(fields: [assigneeId], references: [id], onDelete: Cascade)
+  assignee   User?   @relation(fields: [assigneeId], references: [id])
   assigneeId String?
 
   createdAt DateTime @default(now())
@@ -323,7 +304,7 @@ model ScheduledNote {
   title String   @default("Anteckning")
   text  String
 
-  schedule   Schedule @relation(fields: [scheduleId], references: [id])
+  schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
   scheduleId String
 
   createdAt DateTime @default(now())
@@ -346,15 +327,10 @@ model User {
   accounts      Account[]
 
   createdRecipes  Recipe[]
-  savedRecipes    SavedRecipe[]
-  householdSaves  HouseholdSavedRecipe[]
   assignedRecipes ScheduledRecipe[]
 
-  household HouseholdMember?
-
-  schedules Schedule[]
-
-  profile UserProfile?
+  membership HouseholdMember?
+  profile    UserProfile?
 
   @@unique([email])
   @@map("users")
