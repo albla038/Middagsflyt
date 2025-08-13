@@ -147,6 +147,7 @@ model RecipeIngredient {
   updatedAt DateTime @updatedAt
 
   @@unique([recipeId, displayOrder])
+  @@index([recipeId])
   @@map("recipe_ingredients")
 }
 
@@ -165,6 +166,7 @@ model RecipeInstruction {
   updatedAt DateTime @updatedAt
 
   @@unique([recipeId, step])
+  @@index([recipeId])
   @@map("recipe_instructions")
 }
 
@@ -220,6 +222,7 @@ model SavedRecipe {
   savedAt DateTime @default(now())
 
   @@id([userId, recipeId])
+  @@index([userId])
   @@map("saved_recipes")
 }
 
@@ -248,6 +251,7 @@ model HouseholdMember {
 
   createdAt DateTime @default(now())
 
+  @@index([householdId])
   @@map("household_members")
 }
 
@@ -256,8 +260,7 @@ model Schedule {
   name        String
   description String?
 
-  household   Household?
-  householdId String?
+  household Household?
 
   user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String?
@@ -268,7 +271,7 @@ model Schedule {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([householdId])
+  @@index([userId])
   @@map("schedules")
 }
 
@@ -343,6 +346,8 @@ model UserProfile {
 
   // Any additional user fields
   // dietaryRestrictions or dietaryPreferences?
+
+  // Number of viewed recipes to notify user about new recipes
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
