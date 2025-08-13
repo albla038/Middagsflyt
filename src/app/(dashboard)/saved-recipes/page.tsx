@@ -10,7 +10,7 @@ import RecipeList from "@/components/recipe-list/recipe-list";
 import { Button } from "@/components/ui/button";
 import { Bookmark, ChevronRight, Database, LoaderCircle } from "lucide-react";
 import { z } from "zod/v4";
-import SavedOrCreatedTabs from "@/components/recipe-list/saved-or-created-tabs";
+import SavedOrCreatedTabs from "@/app/(dashboard)/saved-recipes/_components/saved-or-created-tabs";
 import { Suspense } from "react";
 import {
   MY_RECIPES_DISPLAY_OPTIONS,
