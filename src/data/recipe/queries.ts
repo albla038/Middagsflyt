@@ -263,7 +263,7 @@ export async function fetchAllSavedRecipes(
     });
   } catch (error) {
     throw new Error(
-      "Något gick fel när Mina sparade recept hämtades, vänligen försök igen!",
+      "Något gick fel när sparade recept hämtades, vänligen försök igen!",
       { cause: error instanceof Error ? Error : new Error(String(error)) },
     );
   }
@@ -323,7 +323,7 @@ export async function fetchAllCreatedRecipes(
     });
   } catch (error) {
     throw new Error(
-      "Något gick fel när Mina importerade/skapade recept hämtades, vänligen försök igen!",
+      "Något gick fel när importerade/skapade recept hämtades, vänligen försök igen!",
       { cause: error instanceof Error ? Error : new Error(String(error)) },
     );
   }
@@ -351,7 +351,7 @@ export async function getSavedRecipesCount(
     });
   } catch (error) {
     throw new Error(
-      "Något gick fel när Mina sparade recept räknades, vänligt försök igen!",
+      "Något gick fel när sparade recept räknades, vänligt försök igen!",
       { cause: error instanceof Error ? error : new Error(String(error)) },
     );
   }
@@ -371,7 +371,7 @@ export async function getCreatedRecipesCount(
     });
   } catch (error) {
     throw new Error(
-      "Något gick fel när Mina importerade/skapade recept räknades, vänligt försök igen!",
+      "Något gick fel när importerade/skapade recept räknades, vänligt försök igen!",
       { cause: error instanceof Error ? error : new Error(String(error)) },
     );
   }

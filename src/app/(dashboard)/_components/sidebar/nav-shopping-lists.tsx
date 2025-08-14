@@ -32,11 +32,6 @@ export default function NavShoppingLists() {
 
       <SidebarGroupContent>
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton disabled>
-              <List /> <span>Min inköpslista</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
 
           <SidebarMenuItem>
             <SidebarMenuButton disabled>
@@ -46,7 +41,7 @@ export default function NavShoppingLists() {
 
           <SidebarMenuItem>
             <SidebarMenuButton disabled>
-              <ListOrdered /> <span>Mina favoritvaror</span>
+              <ListOrdered /> <span>Favoritvaror</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
