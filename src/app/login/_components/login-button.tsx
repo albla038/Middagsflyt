@@ -20,8 +20,10 @@ export default function LogInButton() {
           onSuccess: () => {
             toast.loading("Inloggningen lyckades. Omdirigering pågår...");
           },
-          onError: () => {
-            toast.error("Inloggning misslyckades: Internt serverfel");
+          onError: (ctx) => {
+            toast.error(
+              `Inloggning misslyckades, vänliga prova igen! Felkod: ${ctx.error.status} ${ctx.error.message}`,
+            );
           },
         },
         errorCallbackURL: "/signup-error",
