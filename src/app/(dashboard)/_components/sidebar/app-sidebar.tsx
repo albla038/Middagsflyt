@@ -9,6 +9,9 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -37,8 +40,18 @@ export default function AppSidebar() {
 
       <ScrollArea className="flex min-h-0 flex-1 flex-col">
         <SidebarContent>
+          {/* Schedule menu */}
           <NavSchedule />
-          <NavRecipes />
+
+          {/* Recipes menu */}
+          <SidebarGroup>
+            <SidebarGroupLabel>Recept</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <NavRecipes />
+            </SidebarGroupContent>
+          </SidebarGroup>
+
+          {/* Shopping lists menu */}
           <NavShoppingLists />
         </SidebarContent>
       </ScrollArea>
