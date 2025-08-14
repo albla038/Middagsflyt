@@ -19,17 +19,18 @@ export type PermissionResult =
       reason: string;
     };
 
-export type ActionState<Err> =
-  | { status: "IDLE" }
+export type ActionState<Data, Err> =
   | {
-      status: "SUCCESS";
+      success: true;
       message: string;
+      data?: Data
     }
   | {
-      status: "ERROR";
+      success: false;
       message: string;
       errors?: Err;
-    };
+    }
+  | null;
 
 export type RecipeDisplayContent = {
   id: string;

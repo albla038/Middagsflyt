@@ -9,10 +9,13 @@ import { requireUser } from "@/data/user/verify-user";
 import { safeQuery } from "@/lib/safe-query";
 import { ActionState } from "@/lib/types";
 
-export type FormState = ActionState<{
-  url?: string[];
-  name?: string[];
-}>;
+type FormState = ActionState<
+  string,
+  {
+    url?: string[];
+    name?: string[];
+  }
+>;
 
 const urlFormSchema = z.object({
   url: z.url({
@@ -35,10 +38,8 @@ export async function importRecipeFromUrl(
   if (!validated.success) {
     const errors = z.flattenError(validated.error).fieldErrors;
 
-    console.log(errors);
-
     return {
-      status: "ERROR",
+      success: false,
       message: "Ogiltig inmatning. Vänligen försök igen",
       errors,
     };
@@ -50,14 +51,15 @@ export async function importRecipeFromUrl(
   const recipeExistsRes = await safeQuery(() => checkIfRecipeExistsByUrl(url));
   if (!recipeExistsRes.ok) {
     return {
-      status: "ERROR",
+      success: false,
       message: "Internt serverfel, vänligen försök igen",
     };
   }
   if (recipeExistsRes.data) {
     return {
-      status: "SUCCESS",
+      success: true,
       message: "Receptet finns redan i receptbiblioteket!",
+      data: recipeExistsRes.data
     };
   }
 
@@ -67,7 +69,7 @@ export async function importRecipeFromUrl(
   if (!scrapingRes.ok) {
     console.error(scrapingRes.error);
     return {
-      status: "ERROR",
+      success: false,
       message:
         "Något gick fel när länken skulle läsas in, vänligen försök igen",
     };
@@ -79,7 +81,7 @@ export async function importRecipeFromUrl(
   if (!dbRes.ok) {
     console.error(dbRes.error);
     return {
-      status: "ERROR",
+      success: false,
       message:
         "Något gick fel när receptet skulle sparas, vänligen försök igen",
     };
@@ -87,5 +89,5 @@ export async function importRecipeFromUrl(
 
   revalidatePath("/");
 
-  return { status: "SUCCESS", message: "Nytt recept importerades!" };
+  return { success: true, message: "Nytt recept importerades!" };
 }

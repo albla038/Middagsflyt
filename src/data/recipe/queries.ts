@@ -379,16 +379,24 @@ export async function getCreatedRecipesCount(
 
 export async function checkIfRecipeExistsByUrl(
   sourceUrl: string,
-): Promise<boolean> {
+): Promise<string | false> {
   try {
-    const exists = await prisma.recipe.findFirst({
+    const recipe = await prisma.recipe.findFirst({
       where: {
         sourceUrl: {
           equals: sourceUrl,
         },
       },
+      select: {
+        slug: true,
+      },
     });
-    return !!exists;
+
+    if (recipe) {
+      return recipe.slug;
+    } else {
+      return false;
+    }
   } catch (error) {
     throw new Error("Något gick fel, vänligen försök igen!", {
       cause: error instanceof Error ? error : new Error(String(error)),
