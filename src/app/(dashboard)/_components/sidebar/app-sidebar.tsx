@@ -19,8 +19,11 @@ import {
 } from "@/components/ui/sidebar";
 
 import Link from "next/link";
+import { fetchAllSchedules } from "@/data/schedule/queries";
 
 export default function AppSidebar() {
+  const scheduleData = fetchAllSchedules();
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -41,7 +44,7 @@ export default function AppSidebar() {
       <ScrollArea className="flex min-h-0 flex-1 flex-col">
         <SidebarContent>
           {/* Schedule menu */}
-          <NavSchedule />
+          <NavSchedule scheduleData={scheduleData} />
 
           {/* Recipes menu */}
           <SidebarGroup>

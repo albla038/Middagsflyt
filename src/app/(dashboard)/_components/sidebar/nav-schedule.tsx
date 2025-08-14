@@ -1,6 +1,7 @@
 "use client";
 
 import ScheduleCalendar from "@/app/(dashboard)/_components/sidebar/schedule-calendar";
+import SaveScheduleDialog from "@/app/(dashboard)/_components/sidebar/save-name-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Collapsible,
@@ -21,16 +22,24 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Schedule } from "@/lib/generated/prisma";
 import { cn } from "@/lib/utils";
 import { CalendarFold, ChevronRight, Plus } from "lucide-react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { use, useState } from "react";
 
 const pagePath = "/schedule";
 
-export default function NavSchedule() {
+type NavScheduleProps = {
+  scheduleData: Promise<Schedule[]>;
+};
+
+export default function NavSchedule({ scheduleData }: NavScheduleProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(pathname.includes(pagePath));
+
+  const schedules = use(scheduleData);
 
   return (
     <Collapsible
@@ -45,22 +54,12 @@ export default function NavSchedule() {
           </CollapsibleTrigger>
           <div
             className={cn(
-              "absolute right-6 hidden text-foreground",
-              "group-data-[state=open]/collapsible:flex",
-              "group-hover/collapsible:flex",
+              "absolute right-6 text-foreground opacity-0",
+              "group-data-[state=open]/collapsible:opacity-100",
+              "group-hover/collapsible:opacity-100",
             )}
           >
-            <Tooltip delayDuration={200}>
-              <TooltipTrigger asChild>
-                {/* // TODO Add action */}
-                <Button variant="ghost" size="icon" className="size-5">
-                  <Plus />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <p>Ny kalender</p>
-              </TooltipContent>
-            </Tooltip>
+            <SaveScheduleDialog mode="create" />
           </div>
         </SidebarGroupLabel>
         <CollapsibleTrigger asChild>
@@ -69,25 +68,26 @@ export default function NavSchedule() {
           </SidebarGroupAction>
         </CollapsibleTrigger>
 
+        {/* Main Content */}
         <CollapsibleContent>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                // isActive={pathname.includes(Item.id)}
-                >
-                  <CalendarFold />
-                  <span>Min kalender</span>
-                </SidebarMenuButton>
-
-                <SidebarMenuButton
-                // isActive={pathname.includes(Item.id)}
-                >
-                  <CalendarFold />
-                  <span>Hem</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              {schedules.map((schedule) => (
+                <SidebarMenuItem key={schedule.id}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.includes(schedule.id)}
+                  >
+                    <Link href={`/schedule/${schedule.id}`}>
+                      <CalendarFold />
+                      <span>{schedule.name}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
             </SidebarMenu>
+
+            {/* Schedule calendar */}
             <div className="mt-4">
               <ScheduleCalendar />
             </div>
