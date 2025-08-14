@@ -4,19 +4,20 @@ import SearchBar from "@/components/recipe-list/search-bar";
 import SortSelect from "@/components/recipe-list/sort-select";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ProteinType } from "@/lib/generated/prisma";
 import { MyRecipesDisplay, RecipeDisplayContent } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Grid2X2, ListFilter, Rows3 } from "lucide-react";
 
 type RecipeListProps = {
   recipes: RecipeDisplayContent[];
+  basePath: "/saved-recipes" | "/library";
   searchQuery?: string;
   displayType?: MyRecipesDisplay;
 };
 
 export default function RecipeList({
   recipes,
+  basePath,
   searchQuery = "",
   displayType,
 }: RecipeListProps) {
@@ -69,7 +70,11 @@ export default function RecipeList({
         >
           {recipes.map((recipe) => (
             <li key={recipe.id} className="list-none">
-              <RecipeListCard recipe={recipe} displayType={displayType} />
+              <RecipeListCard
+                recipe={recipe}
+                basePath={basePath}
+                displayType={displayType}
+              />
             </li>
           ))}
         </ul>

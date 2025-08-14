@@ -87,6 +87,7 @@ export default async function Page({
           >
             <RecipeList
               recipes={recipes}
+              basePath="/saved-recipes"
               searchQuery={query}
               displayType={display}
             />

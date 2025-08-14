@@ -48,7 +48,9 @@ export default async function Page({
                 <Database />
                 Receptbibliotek
               </H1>
-              <Badge variant="outline" className="mt-1">{recipeCount}</Badge>
+              <Badge variant="outline" className="mt-1">
+                {recipeCount}
+              </Badge>
             </div>
           </div>
 
@@ -62,6 +64,7 @@ export default async function Page({
           >
             <RecipeList
               recipes={recipes}
+              basePath="/library"
               searchQuery={query}
               displayType={"created"}
             />

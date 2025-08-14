@@ -28,11 +28,13 @@ import BookmarkToggle from "@/components/recipe/bookmark-toggle";
 
 type RecipeListCardProps = {
   recipe: RecipeDisplayContent;
+  basePath: "/saved-recipes" | "/library";
   displayType?: MyRecipesDisplay;
 };
 
 export default function RecipeListCard({
   recipe,
+  basePath,
   displayType,
 }: RecipeListCardProps) {
   const [isLoading, setIsLoading] = useState(true);
@@ -60,7 +62,7 @@ export default function RecipeListCard({
           "transition-all duration-300 hover:border-border hover:bg-subtle", // TODO Image res glitches when scaling
         )}
       >
-        <Link href={`/saved-recipes/${slug}`}>
+        <Link href={`${basePath}/${slug}`}>
           <div className="relative aspect-[4/3] overflow-hidden rounded-b-xl bg-accent">
             {imageUrl ? (
               <>
