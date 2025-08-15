@@ -65,10 +65,15 @@ export async function deleteSchedule(
   }
 }
 
-export async function renameSchedule(
-  scheduleId: string,
-  newName: string,
-): Promise<Result<string, Error>> {
+export async function renameSchedule({
+  scheduleId,
+  newName,
+  description,
+}: {
+  scheduleId: string;
+  newName: string;
+  description?: string;
+}): Promise<Result<string, Error>> {
   const user = await requireUser();
 
   try {
@@ -83,6 +88,7 @@ export async function renameSchedule(
       },
       data: {
         name: newName,
+        description,
       },
       select: {
         name: true,

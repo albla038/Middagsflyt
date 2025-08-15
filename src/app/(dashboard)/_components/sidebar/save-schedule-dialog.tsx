@@ -10,71 +10,71 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { LoaderCircle, Plus } from "lucide-react";
-import { useActionState, useEffect, useState } from "react";
+import { Schedule } from "@/lib/generated/prisma";
+import { LoaderCircle } from "lucide-react";
+import { Dispatch, SetStateAction, useActionState, useEffect } from "react";
 import { toast } from "sonner";
 
+export type DialogState =
+  | { mode: "CLOSED" }
+  | { mode: "CREATE" }
+  | {
+      mode: "EDIT";
+      schedule: Schedule;
+    };
+
 type SaveScheduleDialogProps = {
-  scheduleId?: string;
-  mode: "create" | "edit";
+  dialogState: DialogState;
+  setDialogState: Dispatch<SetStateAction<DialogState>>;
 };
 
 export default function SaveScheduleDialog({
-  scheduleId,
-  mode,
+  dialogState,
+  setDialogState,
 }: SaveScheduleDialogProps) {
-  const [open, setOpen] = useState(false);
+  const scheduleId =
+    dialogState.mode === "EDIT" ? dialogState.schedule.id : undefined;
 
   // Pass scheduleId to the action
   const saveScheduleWithId = saveSchedule.bind(null, scheduleId);
   const [state, action, pending] = useActionState(saveScheduleWithId, null);
 
+  // Derive state for edit mode
+  const isEditMode = dialogState.mode === "EDIT";
+  
   // Display toasts based on action state
   useEffect(() => {
     if (state) {
       if (state.success) {
-        setOpen(false);
+        setDialogState({ mode: "CLOSED" });
         toast.success(state.message);
       } else {
         toast.error(state.message);
       }
     }
-  }, [state]);
+  }, [state, setDialogState]);
+
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <Tooltip delayDuration={200}>
-        <TooltipTrigger asChild>
-          <DialogTrigger asChild>
-            <Button variant="ghost" size="icon" className="size-5">
-              <Plus />
-            </Button>
-          </DialogTrigger>
-        </TooltipTrigger>
-        <TooltipContent side="bottom">
-          <p>Ny kalender</p>
-        </TooltipContent>
-      </Tooltip>
-
+    <Dialog
+      open={dialogState.mode !== "CLOSED"}
+      onOpenChange={(open) => {
+        if (!open) setDialogState({ mode: "CLOSED" });
+      }}
+    >
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {mode === "create" ? "Skapa ny kalender" : "Redigera kalender"}
+            {isEditMode ? "Redigera kalender" : "Skapa ny kalender"}
           </DialogTitle>
           <DialogDescription>
-            {mode === "create"
-              ? "Kalendern delas automatisk med alla medlemmar i ditt hushåll"
-              : "Byt namn och/eller beskrivning"}
+            {isEditMode
+              ? "Byt namn och/eller beskrivning"
+              : "Kalendern delas automatisk med alla medlemmar i ditt hushåll"}
           </DialogDescription>
         </DialogHeader>
 
@@ -87,6 +87,7 @@ export default function SaveScheduleDialog({
                 id="name"
                 name="name"
                 placeholder="Ange namn"
+                defaultValue={isEditMode ? dialogState.schedule.name : ""}
                 aria-invalid={!state?.success && !!state?.errors?.description}
               />
 
@@ -94,7 +95,7 @@ export default function SaveScheduleDialog({
               {!state?.success &&
                 state?.errors?.name &&
                 state.errors.name.map((errorMessage, idx) => (
-                  <p key={idx} className="tet-xs text-destructive">
+                  <p key={idx} className="text-xs text-destructive">
                     {errorMessage}
                   </p>
                 ))}
@@ -108,6 +109,9 @@ export default function SaveScheduleDialog({
                 id="description"
                 name="description"
                 placeholder="Ange beskrivning (valfritt)"
+                defaultValue={
+                  isEditMode ? dialogState.schedule.description || "" : ""
+                }
                 aria-invalid={!state?.success && !!state?.errors?.description}
                 className="min-h-9"
               />
