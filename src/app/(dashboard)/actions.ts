@@ -1,12 +1,16 @@
 "use server";
 
-import { createSchedule, renameSchedule } from "@/data/schedule/mutations";
+import {
+  createSchedule,
+  deleteSchedule,
+  renameSchedule,
+} from "@/data/schedule/mutations";
 import { requireUser } from "@/data/user/verify-user";
-import { ActionState } from "@/lib/types";
+import { ActionState, Result } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 import { z } from "zod/v4";
 
-type FormState = ActionState<
+type SaveFormState = ActionState<
   undefined,
   {
     name?: string[];
@@ -30,9 +34,9 @@ const saveScheduleSchema = z.object({
 
 export async function saveSchedule(
   scheduleId: string | undefined,
-  prevState: FormState,
+  prevState: SaveFormState,
   formData: FormData,
-): Promise<FormState> {
+): Promise<SaveFormState> {
   await requireUser();
 
   // Validate the form data
@@ -72,5 +76,46 @@ export async function saveSchedule(
   return {
     success: true,
     message: scheduleId ? "Kalender sparad" : "Ny kalender skapad",
+  };
+}
+
+const deleteScheduleSchema = z.cuid2();
+
+export async function deleteScheduleAction(
+  scheduleId: string,
+): Promise<Result<void, Error>> {
+  await requireUser();
+
+  // Validate the scheduleId
+  const validated = deleteScheduleSchema.safeParse(scheduleId);
+
+  // Return error if validation fails
+  if (!validated.success) {
+    return {
+      ok: false,
+      error: new Error("Invalid schedule ID provided", {
+        cause: validated.error,
+      }),
+    };
+  }
+
+  // Delete the schedule
+  const deleteResult = await deleteSchedule(validated.data);
+
+  // Return error if deletion fails
+  if (!deleteResult.ok) {
+    return {
+      ok: false,
+      error: new Error(`Failed to delete schedule with ID: ${validated.data}`, {
+        cause: deleteResult.error,
+      }),
+    };
+  }
+
+  revalidatePath("/schedule");
+
+  return {
+    ok: true,
+    data: undefined,
   };
 }

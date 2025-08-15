@@ -2,7 +2,7 @@
 
 import ScheduleCalendar from "@/app/(dashboard)/_components/sidebar/schedule-calendar";
 import SaveScheduleDialog, {
-  DialogState,
+  SaveDialogState,
 } from "@/app/(dashboard)/_components/sidebar/save-schedule-dialog";
 import {
   Collapsible,
@@ -44,6 +44,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
+import DeleteScheduleAlert, {
+  DeleteAlertState,
+} from "@/app/(dashboard)/_components/sidebar/delete-schedule-alert";
 
 const pagePath = "/schedule";
 
@@ -59,8 +62,11 @@ export default function NavSchedule({ scheduleData }: NavScheduleProps) {
     pathname.includes(pagePath),
   );
 
-  // State to manage the dialog
-  const [dialogState, setDialogState] = useState<DialogState>({
+  // State to manage the dialogs
+  const [saveDialogState, setSaveDialogState] = useState<SaveDialogState>({
+    mode: "CLOSED",
+  });
+  const [deleteAlertState, setDeleteAlertState] = useState<DeleteAlertState>({
     mode: "CLOSED",
   });
 
@@ -91,7 +97,7 @@ export default function NavSchedule({ scheduleData }: NavScheduleProps) {
                     variant="ghost"
                     size="icon"
                     className="size-5"
-                    onClick={() => setDialogState({ mode: "CREATE" })}
+                    onClick={() => setSaveDialogState({ mode: "CREATE" })}
                   >
                     <Plus />
                   </Button>
@@ -135,7 +141,11 @@ export default function NavSchedule({ scheduleData }: NavScheduleProps) {
                         {/* Edit name action */}
                         <DropdownMenuItem
                           onSelect={() =>
-                            setDialogState({ mode: "EDIT", schedule })
+                            setTimeout(
+                              () =>
+                                setSaveDialogState({ mode: "EDIT", schedule }),
+                              0,
+                            )
                           }
                         >
                           <Edit />
@@ -143,7 +153,15 @@ export default function NavSchedule({ scheduleData }: NavScheduleProps) {
                         </DropdownMenuItem>
 
                         {/* Delete schedule action */}
-                        <DropdownMenuItem>
+                        <DropdownMenuItem
+                          onSelect={() =>
+                            setTimeout(
+                              () =>
+                                setDeleteAlertState({ mode: "OPEN", schedule }),
+                              0,
+                            )
+                          }
+                        >
                           <Trash2Icon className="text-destructive" />
                           <span>Ta bort kalender</span>
                         </DropdownMenuItem>
@@ -163,8 +181,13 @@ export default function NavSchedule({ scheduleData }: NavScheduleProps) {
       </Collapsible>
 
       <SaveScheduleDialog
-        dialogState={dialogState}
-        setDialogState={setDialogState}
+        dialogState={saveDialogState}
+        setDialogState={setSaveDialogState}
+      />
+
+      <DeleteScheduleAlert
+        alertState={deleteAlertState}
+        setAlertState={setDeleteAlertState}
       />
     </>
   );

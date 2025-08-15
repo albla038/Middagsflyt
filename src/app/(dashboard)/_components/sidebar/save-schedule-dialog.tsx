@@ -19,17 +19,14 @@ import { LoaderCircle } from "lucide-react";
 import { Dispatch, SetStateAction, useActionState, useEffect } from "react";
 import { toast } from "sonner";
 
-export type DialogState =
+export type SaveDialogState =
   | { mode: "CLOSED" }
   | { mode: "CREATE" }
-  | {
-      mode: "EDIT";
-      schedule: Schedule;
-    };
+  | { mode: "EDIT"; schedule: Schedule };
 
 type SaveScheduleDialogProps = {
-  dialogState: DialogState;
-  setDialogState: Dispatch<SetStateAction<DialogState>>;
+  dialogState: SaveDialogState;
+  setDialogState: Dispatch<SetStateAction<SaveDialogState>>;
 };
 
 export default function SaveScheduleDialog({
@@ -45,7 +42,9 @@ export default function SaveScheduleDialog({
 
   // Derive state for edit mode
   const isEditMode = dialogState.mode === "EDIT";
-  
+
+  const isOpen = dialogState.mode !== "CLOSED";
+
   // Display toasts based on action state
   useEffect(() => {
     if (state) {
@@ -58,10 +57,9 @@ export default function SaveScheduleDialog({
     }
   }, [state, setDialogState]);
 
-
   return (
     <Dialog
-      open={dialogState.mode !== "CLOSED"}
+      open={isOpen}
       onOpenChange={(open) => {
         if (!open) setDialogState({ mode: "CLOSED" });
       }}
