@@ -1,3 +1,5 @@
+import { fetchScheduledRecipesByDateRange } from "@/data/scheduled-recipe/queries";
+import { groupRecipesByDay } from "@/lib/utils";
 import {
   endOfWeek,
   format,
@@ -40,27 +42,44 @@ export default async function Page({
 
   const { id, year, week } = validatedParams.data;
 
-  const start = parse(`${year}-${week}-${1}`, "RRRR-II-i", new Date(), {
+  // Get the start and end dates of the week
+  const startDate = parse(`${year}-${week}-${1}`, "RRRR-II-i", new Date(), {
     locale: sv,
   });
-  const end = endOfWeek(start, { weekStartsOn: 1, locale: sv });
+  const endDate = endOfWeek(startDate, { weekStartsOn: 1, locale: sv });
 
-  console.log(
-    "Start of week:",
-    format(start, "yyyy-MM-dd'T'HH:mm:ss.SSS", { locale: sv }),
+  const recipes = await fetchScheduledRecipesByDateRange(
+    id,
+    startDate,
+    endDate,
   );
-  console.log("Start of week (ISO for DB):", start.toISOString());
-  console.log(
-    "End of week:",
-    format(end, "yyyy-MM-dd'T'HH:mm:ss.SSS", { locale: sv }),
-  );
-  console.log("End of week (ISO for DB):", end.toISOString());
+
+  // Transform the recipes into a grid format grouped by day
+  const recipesWeekdayGrid = groupRecipesByDay(startDate, recipes);
 
   return (
-    <div>
-      <p>Id: {validatedParams.data.id}</p>
-      <p>Year: {validatedParams.data.year}</p>
-      <p>Week: {validatedParams.data.week}</p>
+    <div className="flex h-svh w-full flex-col items-center">
+      <main className="w-full max-w-5xl">
+        <p>Id: {validatedParams.data.id}</p>
+        <p>Year: {validatedParams.data.year}</p>
+        <p>Week: {validatedParams.data.week}</p>
+        <br />
+        <div className="grid grid-cols-7">
+          {[...recipesWeekdayGrid].map(([weekdayKey, groupedRecipes]) => (
+            <div key={weekdayKey}>
+              <p>
+                {format(groupedRecipes.date, "E", {
+                  locale: sv,
+                }).toUpperCase()}
+              </p>
+              <p>{format(groupedRecipes.date, "dd")}</p>
+              <pre className="overflow-x-scroll">
+                {JSON.stringify(groupedRecipes.scheduledRecipes, null, 2)}
+              </pre>
+            </div>
+          ))}
+        </div>
+      </main>
     </div>
   );
 }

@@ -1,5 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { ScheduledRecipe } from "@/lib/generated/prisma";
+import { addDays, format } from "date-fns";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -73,4 +75,35 @@ export function formatQuantityDecimal(quantity: number): string {
   }
 
   return value.toString();
+}
+
+export function groupRecipesByDay(startDate: Date, recipes: ScheduledRecipe[]) {
+  const groupedRecipes = new Map<
+    string,
+    { date: Date; scheduledRecipes: ScheduledRecipe[] }
+  >();
+
+  // Generate dates for the week
+  const weekDates = Array.from({ length: 7 }, (_, i) => addDays(startDate, i));
+
+  // Initialize the map with empty arrays for each date
+  weekDates.forEach((weekDate) => {
+    const dateKey = format(weekDate, "yyyy-MM-dd");
+    groupedRecipes.set(dateKey, {
+      date: weekDate,
+      scheduledRecipes: [],
+    });
+  });
+
+  // Group the recipes
+  recipes.forEach((recipe) => {
+    // Match the recipe date to the corresponding week date and add it to the map
+    const dateKey = format(recipe.date, "yyyy-MM-dd");
+    const dayData = groupedRecipes.get(dateKey);
+    if (dayData) {
+      dayData.scheduledRecipes.push(recipe);
+    }
+  });
+
+  return groupedRecipes;
 }
