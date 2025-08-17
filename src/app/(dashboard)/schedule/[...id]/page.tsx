@@ -1,15 +1,33 @@
+import Header, { BreadcrumbItem } from "@/app/(dashboard)/_components/header";
+import WeekdayGrid from "@/app/(dashboard)/schedule/[...id]/_components/weekday-grid";
+import { Button } from "@/components/ui/button";
+import H1 from "@/components/ui/typography/h1";
+import { fetchScheduleById } from "@/data/schedule/queries";
+import { fetchScheduledNotesByDateRange } from "@/data/scheduled-note/queries";
 import { fetchScheduledRecipesByDateRange } from "@/data/scheduled-recipe/queries";
-import { groupRecipesByDay } from "@/lib/utils";
 import {
+  addDays,
   endOfWeek,
   format,
   getISOWeek,
   getISOWeekYear,
-  parse,
+  setISOWeek,
   startOfDay,
+  startOfWeek,
+  subDays,
 } from "date-fns";
 import { sv } from "date-fns/locale";
+import {
+  ArrowLeft,
+  ArrowRight,
+  CopyCheck,
+  ListPlus,
+  Utensils,
+  WandSparkles,
+} from "lucide-react";
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Week, Weekday } from "react-day-picker";
 import { z } from "zod/v4";
 
 export default async function Page({
@@ -17,19 +35,19 @@ export default async function Page({
 }: {
   params: Promise<{ id: string[] }>;
 }) {
-  const [rawId, rawYear, rawWeek] = (await params).id;
-
+  // Get the current date as fallback if no week is provided in the URL
   const today = new Date();
   const startOfToday = startOfDay(today); // This sets the time to 00:00:00
-  const currentYear = getISOWeekYear(startOfToday);
-  const currentWeek = getISOWeek(startOfToday);
+  const currentYearOfToday = getISOWeekYear(startOfToday);
+  const currentWeekOfToday = getISOWeek(startOfToday);
 
   const paramsSchema = z.object({
     id: z.string(),
-    year: z.coerce.number().catch(currentYear),
-    week: z.coerce.number().catch(currentWeek),
+    year: z.coerce.number().catch(currentYearOfToday),
+    week: z.coerce.number().catch(currentWeekOfToday),
   });
 
+  const [rawId, rawYear, rawWeek] = (await params).id;
   const validatedParams = paramsSchema.safeParse({
     id: rawId,
     year: rawYear,
@@ -42,43 +60,125 @@ export default async function Page({
 
   const { id, year, week } = validatedParams.data;
 
+  // Fetch the schedule by ID to ensure it exists and get its details
+  const schedule = await fetchScheduleById(id);
+  if (!schedule) {
+    notFound();
+  }
+
+  // Prepare breadcrumbs
+  const breadcrumbs: BreadcrumbItem[] = [
+    {
+      label: schedule.name,
+      href: `/schedule/${id}`,
+    },
+    {
+      label: `Vecka ${week}`,
+    },
+  ];
+
   // Get the start and end dates of the week
-  const startDate = parse(`${year}-${week}-${1}`, "RRRR-II-i", new Date(), {
+  const startDateOfWeek = startOfWeek(setISOWeek(new Date(year, 0, 1), week), {
+    weekStartsOn: 1, // Monday as the first day of the week
     locale: sv,
   });
-  const endDate = endOfWeek(startDate, { weekStartsOn: 1, locale: sv });
+  const endDateOfWeek = endOfWeek(startDateOfWeek, {
+    weekStartsOn: 1,
+    locale: sv,
+  });
 
+  // Calculate the next week and year number
+  const startDateOfNextWeek = addDays(startDateOfWeek, 7);
+  const nextWeek = getISOWeek(startDateOfNextWeek);
+  const nextWeekYear = getISOWeekYear(startDateOfNextWeek);
+
+  // Calculate the previous week and year number
+  const startDateOfPrevWeek = subDays(startDateOfWeek, 7);
+  const prevWeek = getISOWeek(startDateOfPrevWeek);
+  const prevWeekYear = getISOWeekYear(startDateOfPrevWeek);
+
+  // Fetch recipes and notes for the specified week
   const recipes = await fetchScheduledRecipesByDateRange(
     id,
-    startDate,
-    endDate,
+    startDateOfWeek,
+    endDateOfWeek,
+  );
+  const notes = await fetchScheduledNotesByDateRange(
+    id,
+    startDateOfWeek,
+    endDateOfWeek,
   );
 
-  // Transform the recipes into a grid format grouped by day
-  const recipesWeekdayGrid = groupRecipesByDay(startDate, recipes);
+  const numberOfServings = recipes.reduce((total, recipe) => {
+    return total + (recipe.servings || 0);
+  }, 0);
 
   return (
-    <div className="flex h-svh w-full flex-col items-center">
-      <main className="w-full max-w-5xl">
-        <p>Id: {validatedParams.data.id}</p>
-        <p>Year: {validatedParams.data.year}</p>
-        <p>Week: {validatedParams.data.week}</p>
-        <br />
-        <div className="grid grid-cols-7">
-          {[...recipesWeekdayGrid].map(([weekdayKey, groupedRecipes]) => (
-            <div key={weekdayKey}>
-              <p>
-                {format(groupedRecipes.date, "E", {
-                  locale: sv,
-                }).toUpperCase()}
-              </p>
-              <p>{format(groupedRecipes.date, "dd")}</p>
-              <pre className="overflow-x-scroll">
-                {JSON.stringify(groupedRecipes.scheduledRecipes, null, 2)}
-              </pre>
+    <div className="relative flex h-svh w-full flex-col items-center">
+      <Header breadcrumbs={breadcrumbs} />
+
+      {/* // TODO Remove max width */}
+      <main className="grid w-full max-w-[64rem] gap-12 px-2 py-16">
+        <div className="flex justify-between">
+          <div className="grid gap-2">
+            <div className="flex items-center gap-3">
+              {/* WeekNavigator buttons */}
+              <div className="flex items-center gap-2">
+                <Button
+                  asChild
+                  variant="secondary"
+                  size="icon"
+                  className="size-7"
+                >
+                  <Link href={`/schedule/${id}/${prevWeekYear}/${prevWeek}`}>
+                    <ArrowLeft />
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="secondary"
+                  size="icon"
+                  className="size-7"
+                >
+                  <Link href={`/schedule/${id}/${nextWeekYear}/${nextWeek}`}>
+                    <ArrowRight />
+                  </Link>
+                </Button>
+              </div>
+
+              <H1>
+                Vecka {week} ({format(startDateOfWeek, "d")} -{" "}
+                {format(endDateOfWeek, "d MMM", { locale: sv })})
+              </H1>
             </div>
-          ))}
+            <p className="flex items-center gap-1">
+              <Utensils className="size-4" />
+              <span className="text-lg">
+                {numberOfServings}{" "}
+                <span className="text-muted-foreground">portioner totalt</span>
+              </span>
+            </p>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex items-start gap-2">
+            <Button variant="ghost" size="icon">
+              <WandSparkles />
+            </Button>
+            <Button variant="secondary">
+              <CopyCheck /> Välj alla
+            </Button>
+            <Button>
+              <ListPlus /> Lägg i inköpslista
+            </Button>
+          </div>
         </div>
+
+        <WeekdayGrid
+          startDateOfWeek={startDateOfWeek}
+          recipes={recipes}
+          notes={notes}
+        />
       </main>
     </div>
   );
