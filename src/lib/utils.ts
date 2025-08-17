@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { ScheduledRecipe } from "@/lib/generated/prisma";
+import { ScheduledNote, ScheduledRecipe } from "@/lib/generated/prisma";
 import { addDays, format } from "date-fns";
 
 export function cn(...inputs: ClassValue[]) {
@@ -77,10 +77,18 @@ export function formatQuantityDecimal(quantity: number): string {
   return value.toString();
 }
 
-export function groupRecipesByDay(startDate: Date, recipes: ScheduledRecipe[]) {
+export function groupRecipesByWeekday(
+  startDate: Date,
+  recipes: ScheduledRecipe[],
+  notes: ScheduledNote[],
+) {
   const groupedRecipes = new Map<
     string,
-    { date: Date; scheduledRecipes: ScheduledRecipe[] }
+    {
+      date: Date;
+      recipes: ScheduledRecipe[];
+      notes: ScheduledNote[];
+    }
   >();
 
   // Generate dates for the week
@@ -91,7 +99,8 @@ export function groupRecipesByDay(startDate: Date, recipes: ScheduledRecipe[]) {
     const dateKey = format(weekDate, "yyyy-MM-dd");
     groupedRecipes.set(dateKey, {
       date: weekDate,
-      scheduledRecipes: [],
+      recipes: [],
+      notes: [],
     });
   });
 
@@ -101,7 +110,17 @@ export function groupRecipesByDay(startDate: Date, recipes: ScheduledRecipe[]) {
     const dateKey = format(recipe.date, "yyyy-MM-dd");
     const dayData = groupedRecipes.get(dateKey);
     if (dayData) {
-      dayData.scheduledRecipes.push(recipe);
+      dayData.recipes.push(recipe);
+    }
+  });
+
+  // Group the scheduled notes
+  notes.forEach((note) => {
+    // Match the note date to the corresponding week date and add it to the map
+    const dateKey = format(note.date, "yyyy-MM-dd");
+    const dayData = groupedRecipes.get(dateKey);
+    if (dayData) {
+      dayData.notes.push(note);
     }
   });
 
