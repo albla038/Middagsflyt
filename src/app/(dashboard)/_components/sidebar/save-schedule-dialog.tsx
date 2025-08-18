@@ -86,6 +86,7 @@ export default function SaveScheduleDialog({
                 name="name"
                 placeholder="Ange namn"
                 defaultValue={isEditMode ? dialogState.schedule.name : ""}
+                required
                 aria-invalid={!state?.success && !!state?.errors?.description}
               />
 
@@ -132,7 +133,7 @@ export default function SaveScheduleDialog({
             <Button type="submit" disabled={pending}>
               {pending ? (
                 <>
-                  <LoaderCircle />
+                  <LoaderCircle className="animate-spin" />
                   <span>Sparar...</span>
                 </>
               ) : (
