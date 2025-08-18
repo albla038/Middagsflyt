@@ -30,7 +30,7 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { use, useState } from "react";
 import {
   DropdownMenu,
@@ -47,6 +47,7 @@ import { Button } from "@/components/ui/button";
 import DeleteScheduleAlert, {
   DeleteAlertState,
 } from "@/app/(dashboard)/_components/sidebar/delete-schedule-alert";
+import { getISOWeek, getISOWeekYear, parse } from "date-fns";
 
 const pagePath = "/schedule";
 
@@ -56,6 +57,7 @@ type NavScheduleProps = {
 
 export default function NavSchedule({ scheduleData }: NavScheduleProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   // State to manage the collapsible open state
   const [collapsibleOpen, setCollapsibleOpen] = useState(
@@ -71,6 +73,16 @@ export default function NavSchedule({ scheduleData }: NavScheduleProps) {
   });
 
   const schedules = use(scheduleData);
+
+  let year: number | undefined;
+  let week: number | undefined;
+  const selectedDate = searchParams.get("date");
+  if (selectedDate) {
+    console.log("Selected date:", selectedDate);
+    const date = parse(selectedDate, "yyyy-MM-dd", new Date());
+    year = getISOWeekYear(date);
+    week = getISOWeek(date);
+  }
 
   return (
     <>
@@ -124,7 +136,13 @@ export default function NavSchedule({ scheduleData }: NavScheduleProps) {
                       asChild
                       isActive={pathname.includes(schedule.id)}
                     >
-                      <Link href={`/schedule/${schedule.id}`}>
+                      <Link
+                        href={
+                          year && week
+                            ? `/schedule/${schedule.id}/${year}/${week}?${searchParams.toString()}`
+                            : `/schedule/${schedule.id}?${searchParams.toString()}`
+                        }
+                      >
                         <CalendarFold />
                         <span>{schedule.name}</span>
                       </Link>

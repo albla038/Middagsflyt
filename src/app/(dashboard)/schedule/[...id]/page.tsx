@@ -15,10 +15,7 @@ import {
   getISOWeekYear,
   isSameMonth,
   parse,
-  setISOWeek,
   startOfDay,
-  startOfWeek,
-  subDays,
 } from "date-fns";
 import { sv } from "date-fns/locale";
 import {
@@ -65,12 +62,10 @@ export default async function Page({
   }
 
   // Get search param selectedDate
-  const selectedDateRaw = (await searchParams).selectedDate;
+  const selectedDateRaw = (await searchParams).date;
   const selectedDate = Array.isArray(selectedDateRaw)
     ? selectedDateRaw.at(0)
     : selectedDateRaw;
-
-  console.log("Selected date:", selectedDate);
 
   const { id, year, week } = validatedParams.data;
 
@@ -138,7 +133,9 @@ export default async function Page({
                   size="icon"
                   className="size-7"
                 >
-                  <Link href={`/schedule/${id}/${prevWeekYear}/${prevWeek}`}>
+                  <Link
+                    href={`/schedule/${id}/${prevWeekYear}/${prevWeek}${selectedDate ? `?date=${selectedDate}` : ""}`}
+                  >
                     <ArrowLeft />
                   </Link>
                 </Button>
@@ -148,7 +145,9 @@ export default async function Page({
                   size="icon"
                   className="size-7"
                 >
-                  <Link href={`/schedule/${id}/${nextWeekYear}/${nextWeek}`}>
+                  <Link
+                    href={`/schedule/${id}/${nextWeekYear}/${nextWeek}${selectedDate ? `?date=${selectedDate}` : ""}`}
+                  >
                     <ArrowRight />
                   </Link>
                 </Button>
