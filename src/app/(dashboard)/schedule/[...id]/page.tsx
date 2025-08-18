@@ -6,8 +6,10 @@ import { fetchScheduleById } from "@/data/schedule/queries";
 import { fetchScheduledNotesByDateRange } from "@/data/scheduled-note/queries";
 import { fetchScheduledRecipesByDateRange } from "@/data/scheduled-recipe/queries";
 import {
-  addDays,
-  endOfWeek,
+  calculateNextAndPrevWeekNumbers,
+  calculateStartAndEndDateOfWeek,
+} from "@/lib/utils";
+import {
   format,
   getISOWeek,
   getISOWeekYear,
@@ -90,24 +92,13 @@ export default async function Page({
   ];
 
   // Get the start and end dates of the week
-  const startDateOfWeek = startOfWeek(setISOWeek(new Date(year, 0, 1), week), {
-    weekStartsOn: 1, // Monday as the first day of the week
-    locale: sv,
-  });
-  const endDateOfWeek = endOfWeek(startDateOfWeek, {
-    weekStartsOn: 1,
-    locale: sv,
-  });
+  const { startDateOfWeek, endDateOfWeek } = calculateStartAndEndDateOfWeek(
+    year,
+    week,
+  );
 
-  // Calculate the next week and year number
-  const startDateOfNextWeek = addDays(startDateOfWeek, 7);
-  const nextWeek = getISOWeek(startDateOfNextWeek);
-  const nextWeekYear = getISOWeekYear(startDateOfNextWeek);
-
-  // Calculate the previous week and year number
-  const startDateOfPrevWeek = subDays(startDateOfWeek, 7);
-  const prevWeek = getISOWeek(startDateOfPrevWeek);
-  const prevWeekYear = getISOWeekYear(startDateOfPrevWeek);
+  const { nextWeek, nextWeekYear, prevWeek, prevWeekYear } =
+    calculateNextAndPrevWeekNumbers(startDateOfWeek);
 
   // Format the date range for display
   const formattedDateRange = isSameMonth(startDateOfWeek, endDateOfWeek)

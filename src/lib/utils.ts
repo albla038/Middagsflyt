@@ -1,7 +1,17 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { ScheduledNote, ScheduledRecipe } from "@/lib/generated/prisma";
-import { addDays, format } from "date-fns";
+import {
+  addDays,
+  endOfWeek,
+  format,
+  getISOWeek,
+  getISOWeekYear,
+  setISOWeek,
+  startOfWeek,
+  subDays,
+} from "date-fns";
+import { sv } from "date-fns/locale";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -75,6 +85,34 @@ export function formatQuantityDecimal(quantity: number): string {
   }
 
   return value.toString();
+}
+
+export function calculateStartAndEndDateOfWeek(year: number, week: number) {
+  // Get the start and end dates of the week
+  const startDateOfWeek = startOfWeek(setISOWeek(new Date(year, 0, 1), week), {
+    weekStartsOn: 1, // Monday as the first day of the week
+    locale: sv,
+  });
+  const endDateOfWeek = endOfWeek(startDateOfWeek, {
+    weekStartsOn: 1,
+    locale: sv,
+  });
+
+  return { startDateOfWeek, endDateOfWeek };
+}
+
+export function calculateNextAndPrevWeekNumbers(startDateOfWeek: Date) {
+  // Calculate the next week and year number
+  const startDateOfNextWeek = addDays(startDateOfWeek, 7);
+  const nextWeek = getISOWeek(startDateOfNextWeek);
+  const nextWeekYear = getISOWeekYear(startDateOfNextWeek);
+
+  // Calculate the previous week and year number
+  const startDateOfPrevWeek = subDays(startDateOfWeek, 7);
+  const prevWeek = getISOWeek(startDateOfPrevWeek);
+  const prevWeekYear = getISOWeekYear(startDateOfPrevWeek);
+
+  return { nextWeek, nextWeekYear, prevWeek, prevWeekYear };
 }
 
 export function groupRecipesByWeekday(
