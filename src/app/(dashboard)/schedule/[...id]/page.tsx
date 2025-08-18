@@ -11,6 +11,8 @@ import {
   format,
   getISOWeek,
   getISOWeekYear,
+  isSameMonth,
+  parse,
   setISOWeek,
   startOfDay,
   startOfWeek,
@@ -27,13 +29,14 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Week, Weekday } from "react-day-picker";
 import { z } from "zod/v4";
 
 export default async function Page({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string[] }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   // Get the current date as fallback if no week is provided in the URL
   const today = new Date();
@@ -47,6 +50,7 @@ export default async function Page({
     week: z.coerce.number().catch(currentWeekOfToday),
   });
 
+  // Parse the params to get the schedule ID, year, and week
   const [rawId, rawYear, rawWeek] = (await params).id;
   const validatedParams = paramsSchema.safeParse({
     id: rawId,
@@ -57,6 +61,14 @@ export default async function Page({
   if (!validatedParams.success) {
     notFound();
   }
+
+  // Get search param selectedDate
+  const selectedDateRaw = (await searchParams).selectedDate;
+  const selectedDate = Array.isArray(selectedDateRaw)
+    ? selectedDateRaw.at(0)
+    : selectedDateRaw;
+
+  console.log("Selected date:", selectedDate);
 
   const { id, year, week } = validatedParams.data;
 
@@ -96,6 +108,11 @@ export default async function Page({
   const startDateOfPrevWeek = subDays(startDateOfWeek, 7);
   const prevWeek = getISOWeek(startDateOfPrevWeek);
   const prevWeekYear = getISOWeekYear(startDateOfPrevWeek);
+
+  // Format the date range for display
+  const formattedDateRange = isSameMonth(startDateOfWeek, endDateOfWeek)
+    ? `${format(startDateOfWeek, "d")} - ${format(endDateOfWeek, "d MMM", { locale: sv })}`
+    : `${format(startDateOfWeek, "d MMM", { locale: sv })} - ${format(endDateOfWeek, "d MMM", { locale: sv })}`;
 
   // Fetch recipes and notes for the specified week
   const recipes = await fetchScheduledRecipesByDateRange(
@@ -147,8 +164,10 @@ export default async function Page({
               </div>
 
               <H1>
-                Vecka {week} ({format(startDateOfWeek, "d")} -{" "}
-                {format(endDateOfWeek, "d MMM", { locale: sv })})
+                Vecka {week}{" "}
+                <span className="text-muted-foreground">
+                  ({formattedDateRange})
+                </span>
               </H1>
             </div>
             <p className="flex items-center gap-1">
@@ -176,6 +195,9 @@ export default async function Page({
 
         <WeekdayGrid
           startDateOfWeek={startDateOfWeek}
+          selectedDate={
+            selectedDate ? parse(selectedDate, "yyyy-MM-dd", new Date()) : today
+          }
           recipes={recipes}
           notes={notes}
         />
