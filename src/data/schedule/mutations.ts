@@ -7,7 +7,7 @@ import { requireUser } from "@/data/user/verify-user";
 
 export async function createSchedule(
   name: string,
-  description?: string,
+  description: string | null,
 ): Promise<Result<void, Error>> {
   try {
     const householdId = await requireHouseholdId();
@@ -72,7 +72,7 @@ export async function renameSchedule({
 }: {
   scheduleId: string;
   newName: string;
-  description?: string;
+  description: string | null;
 }): Promise<Result<string, Error>> {
   const user = await requireUser();
 

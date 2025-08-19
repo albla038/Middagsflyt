@@ -37,8 +37,10 @@ export default function SaveScheduleDialog({
     dialogState.mode === "EDIT" ? dialogState.schedule.id : undefined;
 
   // Pass scheduleId to the action
-  const saveScheduleWithId = saveSchedule.bind(null, scheduleId);
-  const [state, action, pending] = useActionState(saveScheduleWithId, null);
+  const [state, action, pending] = useActionState(
+    saveSchedule.bind(null, scheduleId),
+    null,
+  );
 
   // Derive state for edit mode
   const isEditMode = dialogState.mode === "EDIT";
@@ -92,8 +94,7 @@ export default function SaveScheduleDialog({
 
               {/* Conditional error display */}
               {!state?.success &&
-                state?.errors?.name &&
-                state.errors.name.map((errorMessage, idx) => (
+                state?.errors?.name?.map((errorMessage, idx) => (
                   <p key={idx} className="text-xs text-destructive">
                     {errorMessage}
                   </p>
@@ -117,8 +118,7 @@ export default function SaveScheduleDialog({
 
               {/* Conditional error display */}
               {!state?.success &&
-                state?.errors?.description &&
-                state.errors.description.map((errorMessage, idx) => (
+                state?.errors?.description?.map((errorMessage, idx) => (
                   <p key={idx} className="text-xs text-destructive">
                     {errorMessage}
                   </p>
