@@ -90,9 +90,13 @@ export default function SaveNoteDialog({
     >
       <DialogContent className="w-fit md:min-w-fit">
         <DialogHeader>
-          <DialogTitle>Redigera anteckning</DialogTitle>
+          <DialogTitle>
+            {isEditMode ? "Redigera anteckning" : "Skapa ny anteckning"}
+          </DialogTitle>
           <DialogDescription>
-            Här kan du redigera anteckningens datum, titel eller text.
+            {isEditMode
+              ? "Här kan du redigera anteckningens datum, titel eller text."
+              : "Ange anteckningens datum, titel och text."}
           </DialogDescription>
         </DialogHeader>
 
@@ -134,7 +138,7 @@ export default function SaveNoteDialog({
                 <Textarea
                   id="text"
                   name="text"
-                  placeholder="Ange fritext..."
+                  placeholder="Ange fritext (valfritt)"
                   defaultValue={isEditMode ? dialogState.note.text || "" : ""}
                   aria-invalid={!state?.success && !!state?.errors?.text}
                   className="h-full"

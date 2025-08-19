@@ -1,5 +1,6 @@
 "use client";
 
+import AddButton from "@/app/(dashboard)/schedule/[...id]/_components/add-button";
 import DeleteNoteAlert, {
   DeleteNoteAlertState,
 } from "@/app/(dashboard)/schedule/[...id]/_components/delete-note-alert";
@@ -54,7 +55,7 @@ export default function WeekdayGrid({
             key={weekdayKey}
             data-today={isToday(weekday.date)}
             data-selected={isSameDay(weekday.date, selectedDate)}
-            className="group flex flex-col gap-4"
+            className="group flex flex-col items-center gap-4"
           >
             {/* Day header */}
             <h2 className="flex h-14 flex-col items-center justify-between text-center">
@@ -73,28 +74,48 @@ export default function WeekdayGrid({
                   "group-data-[selected=true]:!bg-primary group-data-[selected=true]:text-primary-foreground",
                 )}
               >
-                {format(weekday.date, "dd")}
+                {format(weekday.date, "d")}
               </span>
             </h2>
 
             {/* Recipes for the day */}
-            <ul></ul>
+            {/* <ul className="flex w-full flex-col gap-2"></ul> */}
 
-            <ul className="flex flex-col gap-2">
-              {weekday.notes.map((note) => (
-                <li key={note.id}>
-                  <NoteCard
-                    note={note}
-                    onEdit={(editedNote) =>
-                      setSaveNoteDialogState({ mode: "EDIT", note: editedNote })
-                    }
-                    onDelete={(noteId) =>
-                      setDeleteNoteAlertState({ mode: "OPEN", noteId })
-                    }
-                  />
-                </li>
-              ))}
-            </ul>
+            {/*  */}
+            {weekday.notes.length > 0 && (
+              <ul className="flex w-full flex-col gap-2">
+                {weekday.notes.map((note) => (
+                  <li key={note.id}>
+                    <NoteCard
+                      note={note}
+                      onEdit={(editedNote) =>
+                        setSaveNoteDialogState({
+                          mode: "EDIT",
+                          note: editedNote,
+                        })
+                      }
+                      onDelete={(noteId) =>
+                        setDeleteNoteAlertState({ mode: "OPEN", noteId })
+                      }
+                    />
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <AddButton
+              onAddRecipe={() => {
+                return; // TODO open dialog to add recipe
+              }}
+              onAddNote={() =>
+                setSaveNoteDialogState({
+                  mode: "CREATE",
+                  note: {
+                    date: weekday.date,
+                  },
+                })
+              }
+            />
           </li>
         ))}
       </ul>
