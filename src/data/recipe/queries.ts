@@ -377,7 +377,7 @@ export async function getCreatedRecipesCount(
   }
 }
 
-export async function checkIfRecipeExistsByUrl(
+export async function findRecipeSlugByUrl(
   sourceUrl: string,
 ): Promise<string | false> {
   try {

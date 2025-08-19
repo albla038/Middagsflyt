@@ -4,7 +4,7 @@ import { z } from "zod/v4";
 import { scrapeRecipeData } from "@/lib/scraping";
 import { createRecipeFromGeneratedData } from "@/data/recipe/mutations";
 import { revalidatePath } from "next/cache";
-import { checkIfRecipeExistsByUrl } from "@/data/recipe/queries";
+import { findRecipeSlugByUrl } from "@/data/recipe/queries";
 import { requireUser } from "@/data/user/verify-user";
 import { safeQuery } from "@/lib/safe-query";
 import { ActionState } from "@/lib/types";
@@ -48,7 +48,7 @@ export async function importRecipeFromUrl(
   const url = validated.data.url;
 
   // Check if the URL is already imported
-  const recipeExistsRes = await safeQuery(() => checkIfRecipeExistsByUrl(url));
+  const recipeExistsRes = await safeQuery(() => findRecipeSlugByUrl(url));
   if (!recipeExistsRes.ok) {
     return {
       success: false,
@@ -59,7 +59,7 @@ export async function importRecipeFromUrl(
     return {
       success: true,
       message: "Receptet finns redan i receptbiblioteket!",
-      data: recipeExistsRes.data
+      data: recipeExistsRes.data,
     };
   }
 
