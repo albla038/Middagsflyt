@@ -11,14 +11,16 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod/v4";
 
 type SaveFormState = ActionState<
-  undefined,
+  void,
   {
+    scheduleId?: string[];
     name?: string[];
     description?: string[];
   }
 >;
 
 const saveScheduleSchema = z.object({
+  scheduleId: z.cuid2("Ogiltigt kalender-ID").optional(),
   name: z
     .string("Ange ett giltigt namn")
     .min(1, "Namnet måste ha minst en bokstav"),
@@ -33,14 +35,17 @@ const saveScheduleSchema = z.object({
 });
 
 export async function saveSchedule(
-  scheduleId: string | undefined,
+  id: string | undefined,
   prevState: SaveFormState,
   formData: FormData,
 ): Promise<SaveFormState> {
   await requireUser();
 
   // Validate the form data
-  const validated = saveScheduleSchema.safeParse(Object.fromEntries(formData));
+  const validated = saveScheduleSchema.safeParse({
+    scheduleId: id,
+    ...Object.fromEntries(formData),
+  });
 
   // Return form errors if validation fails
   if (!validated.success) {
@@ -53,7 +58,7 @@ export async function saveSchedule(
     };
   }
 
-  const { name, description } = validated.data;
+  const { scheduleId, name, description } = validated.data;
 
   const mutationResult = scheduleId
     ? await renameSchedule({
