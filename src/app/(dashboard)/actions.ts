@@ -6,7 +6,7 @@ import {
   renameSchedule,
 } from "@/data/schedule/mutations";
 import { requireUser } from "@/data/user/verify-user";
-import { ActionState, Result } from "@/lib/types";
+import { ActionState, } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 import { z } from "zod/v4";
 

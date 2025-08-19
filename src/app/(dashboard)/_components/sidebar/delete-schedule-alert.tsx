@@ -10,13 +10,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-import { Schedule } from "@/lib/generated/prisma";
 import { Dispatch, SetStateAction } from "react";
 import { toast } from "sonner";
 
 export type DeleteAlertState =
   | { mode: "CLOSED" }
-  | { mode: "OPEN"; schedule: Schedule };
+  | { mode: "OPEN"; scheduleId: string };
 
 type DeleteScheduleAlertProps = {
   alertState: DeleteAlertState;
@@ -30,8 +29,8 @@ export default function DeleteScheduleAlert({
   const isOpen = alertState.mode === "OPEN";
 
   async function handleDelete() {
-    if (alertState.mode === "OPEN") {
-      const state = await deleteScheduleAction(alertState.schedule.id);
+    if (isOpen) {
+      const state = await deleteScheduleAction(alertState.scheduleId);
 
       if (state) {
         if (state.success) {

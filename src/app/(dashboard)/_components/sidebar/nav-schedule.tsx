@@ -174,7 +174,10 @@ export default function NavSchedule({ scheduleData }: NavScheduleProps) {
                           onSelect={() =>
                             setTimeout(
                               () =>
-                                setDeleteAlertState({ mode: "OPEN", schedule }),
+                                setDeleteAlertState({
+                                  mode: "OPEN",
+                                  scheduleId: schedule.id,
+                                }),
                               0,
                             )
                           }
