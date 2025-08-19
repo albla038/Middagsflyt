@@ -26,11 +26,10 @@ const saveScheduleSchema = z.object({
     .min(1, "Namnet måste ha minst en bokstav"),
   description: z.preprocess(
     (value) => (value === "" ? undefined : value),
-    z.optional(
-      z
-        .string("Ange en giltig beskrivning")
-        .min(1, "Beskrivningen måste ha minst en bokstav"),
-    ),
+    z
+      .string("Ange en giltig beskrivning")
+      .min(1, "Beskrivningen måste ha minst en bokstav")
+      .optional(),
   ),
 });
 
