@@ -31,15 +31,15 @@ export default function DeleteScheduleAlert({
 
   async function handleDelete() {
     if (alertState.mode === "OPEN") {
-      const result = await deleteScheduleAction(alertState.schedule.id);
+      const state = await deleteScheduleAction(alertState.schedule.id);
 
-      if (result.ok) {
-        setAlertState({ mode: "CLOSED" });
-        toast.success("Kalendern togs bort");
-      } else {
-        toast.error(
-          "Något gick fel när kalendern skulle tas bort, vänligen försök igen!",
-        );
+      if (state) {
+        if (state.success) {
+          setAlertState({ mode: "CLOSED" });
+          toast.success(state.message);
+        } else {
+          toast.error(state.message);
+        }
       }
     }
   }

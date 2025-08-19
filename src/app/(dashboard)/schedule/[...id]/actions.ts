@@ -57,7 +57,7 @@ export async function saveScheduledNote(
     if (errors.date) {
       return {
         success: false,
-        message: "Ogiltigt datum. Vänligen kontakta utvecklare",
+        message: "Ogiltigt datum. Vänligen kontakta supporten",
         errors,
       };
     }
@@ -66,7 +66,7 @@ export async function saveScheduledNote(
       return {
         success: false,
         message:
-          "Ogiltigt kalender- eller antecknings-ID. Vänligen kontakta utvecklare",
+          "Ogiltigt kalender- eller antecknings-ID. Vänligen kontakta supporten",
         errors,
       };
     }

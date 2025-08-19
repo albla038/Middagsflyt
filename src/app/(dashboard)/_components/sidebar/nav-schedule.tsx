@@ -78,7 +78,6 @@ export default function NavSchedule({ scheduleData }: NavScheduleProps) {
   let week: number | undefined;
   const selectedDate = searchParams.get("date");
   if (selectedDate) {
-    console.log("Selected date:", selectedDate);
     const date = parse(selectedDate, "yyyy-MM-dd", new Date());
     year = getISOWeekYear(date);
     week = getISOWeek(date);

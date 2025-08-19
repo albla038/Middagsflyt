@@ -47,6 +47,14 @@ export async function saveSchedule(
   if (!validated.success) {
     const errors = z.flattenError(validated.error).fieldErrors;
 
+    if (errors.scheduleId) {
+      return {
+        success: false,
+        message: "Ogiltigt kalender-ID. Vänligen kontakta supporten",
+        errors,
+      };
+    }
+
     return {
       success: false,
       message: "Ogiltig inmatning. Vänligen försök igen",
@@ -68,7 +76,7 @@ export async function saveSchedule(
   if (!mutationResult.ok) {
     return {
       success: false,
-      message: `Något gick fel när kalendern ${scheduleId ? "sparades" : "skapades"}, vänligen försök igen!`,
+      message: `Något gick fel när kalendern ${scheduleId ? "sparades" : "skapades"}. Vänligen försök igen!`,
     };
   }
 
@@ -76,15 +84,17 @@ export async function saveSchedule(
 
   return {
     success: true,
-    message: scheduleId ? "Kalender sparad" : "Ny kalender skapad",
+    message: scheduleId ? "Kalendern sparades" : "Ny kalender skapades",
   };
 }
+
+type DeleteActionState = ActionState<void, void>;
 
 const deleteScheduleSchema = z.cuid2();
 
 export async function deleteScheduleAction(
   scheduleId: string,
-): Promise<Result<void, Error>> {
+): Promise<DeleteActionState> {
   await requireUser();
 
   // Validate the scheduleId
@@ -93,10 +103,8 @@ export async function deleteScheduleAction(
   // Return error if validation fails
   if (!validated.success) {
     return {
-      ok: false,
-      error: new Error("Invalid schedule ID provided", {
-        cause: validated.error,
-      }),
+      success: false,
+      message: "Ogiltigt kalender-ID. Vänligen kontakta supporten",
     };
   }
 
@@ -106,17 +114,16 @@ export async function deleteScheduleAction(
   // Return error if deletion fails
   if (!deleteResult.ok) {
     return {
-      ok: false,
-      error: new Error(`Failed to delete schedule with ID: ${validated.data}`, {
-        cause: deleteResult.error,
-      }),
+      success: false,
+      message:
+        "Något gick fel när kalendern skulle tas bort. Vänligen försök igen!",
     };
   }
 
   revalidatePath("/schedule");
 
   return {
-    ok: true,
-    data: undefined,
+    success: true,
+    message: "Kalendern togs bort",
   };
 }
