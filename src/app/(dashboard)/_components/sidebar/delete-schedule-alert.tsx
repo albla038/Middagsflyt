@@ -57,8 +57,8 @@ export default function DeleteScheduleAlert({
             <span>Är du säker?</span>
           </AlertDialogTitle>
           <AlertDialogDescription>
-            Denna åtgärd kan inte ångras. Kalendern kommer att tas bort
-            permanent.
+            Denna åtgärd kan inte ångras. Kalendern och dess schemalagda recept
+            och anteckningar kommer att tas bort permanent.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
