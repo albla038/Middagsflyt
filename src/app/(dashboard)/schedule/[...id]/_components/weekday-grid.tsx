@@ -1,9 +1,17 @@
+"use client";
+
+import NoteCard from "@/app/(dashboard)/schedule/[...id]/_components/note-card";
+import SaveNoteDialog, {
+  SaveNoteDialogState,
+} from "@/app/(dashboard)/schedule/[...id]/_components/save-note-dialog";
 import { Recipe, ScheduledNote, ScheduledRecipe } from "@/lib/generated/prisma";
 import { cn, groupRecipesByWeekday } from "@/lib/utils";
 import { format, isSameDay, isToday } from "date-fns";
 import { sv } from "date-fns/locale";
+import { useState } from "react";
 
 type WeekdayGridProps = {
+  scheduleId: string;
   startDateOfWeek: Date;
   selectedDate: Date;
   recipes: (ScheduledRecipe & {
@@ -13,6 +21,7 @@ type WeekdayGridProps = {
 };
 
 export default function WeekdayGrid({
+  scheduleId,
   startDateOfWeek,
   selectedDate,
   notes,
@@ -25,6 +34,10 @@ export default function WeekdayGrid({
     notes,
   );
 
+  const [saveDialogState, setSaveDialogState] = useState<SaveNoteDialogState>({
+    mode: "CLOSED",
+  });
+
   return (
     <section>
       <ul className="grid grid-cols-7 gap-1">
@@ -36,6 +49,7 @@ export default function WeekdayGrid({
             data-selected={isSameDay(weekday.date, selectedDate)}
             className="group flex flex-col gap-4"
           >
+            {/* Day header */}
             <h2 className="flex h-14 flex-col items-center justify-between text-center">
               <span
                 className={"text-xs group-data-[selected=true]:text-primary"}
@@ -47,7 +61,7 @@ export default function WeekdayGrid({
 
               <span
                 className={cn(
-                  "flex size-8 items-center justify-center rounded-md text-lg font-medium",
+                  "flex size-9 items-center justify-center rounded-md text-lg font-medium",
                   "group-data-[today=true]:bg-accent",
                   "group-data-[selected=true]:!bg-primary group-data-[selected=true]:text-primary-foreground",
                 )}
@@ -55,9 +69,31 @@ export default function WeekdayGrid({
                 {format(weekday.date, "dd")}
               </span>
             </h2>
+
+            {/* Recipes for the day */}
+            <ul></ul>
+
+            <ul className="flex flex-col gap-2">
+              {weekday.notes.map((note) => (
+                <li key={note.id}>
+                  <NoteCard
+                    note={note}
+                    onEdit={(editedNote) =>
+                      setSaveDialogState({ mode: "EDIT", note: editedNote })
+                    }
+                  />
+                </li>
+              ))}
+            </ul>
           </li>
         ))}
       </ul>
+
+      <SaveNoteDialog
+        scheduleId={scheduleId}
+        dialogState={saveDialogState}
+        setDialogState={setSaveDialogState}
+      />
     </section>
   );
 }

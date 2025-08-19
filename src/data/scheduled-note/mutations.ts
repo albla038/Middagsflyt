@@ -13,7 +13,7 @@ export async function createScheduledNote({
   scheduleId: string;
   date: Date;
   title: string;
-  text: string;
+  text: string | null;
 }): Promise<Result<void, Error>> {
   const user = await requireUser();
 
@@ -61,7 +61,7 @@ export async function updateScheduledNote({
   noteId: string;
   date?: Date;
   title?: string;
-  text?: string;
+  text: string | null;
 }): Promise<Result<void, Error>> {
   const user = await requireUser();
 

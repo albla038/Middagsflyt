@@ -1,5 +1,6 @@
 "use client";
 
+import { saveScheduledNote } from "@/app/(dashboard)/schedule/[...id]/actions";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -17,30 +18,69 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScheduledNote } from "@/lib/generated/prisma";
 import { sv } from "date-fns/locale";
 import { LoaderCircle } from "lucide-react";
-import { Dispatch, SetStateAction, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useActionState,
+  useEffect,
+  useState,
+} from "react";
+import { toast } from "sonner";
 
 export type SaveNoteDialogState =
   | { mode: "CLOSED" }
-  | { mode: "CREATE" }
+  | {
+      mode: "CREATE";
+      note: {
+        date: Date;
+      };
+    }
   | { mode: "EDIT"; note: ScheduledNote };
 
 type SaveNoteDialogProps = {
+  scheduleId: string;
   dialogState: SaveNoteDialogState;
   setDialogState: Dispatch<SetStateAction<SaveNoteDialogState>>;
 };
 
 export default function SaveNoteDialog({
+  scheduleId,
   dialogState,
   setDialogState,
 }: SaveNoteDialogProps) {
   const isOpen = dialogState.mode !== "CLOSED";
   const isEditMode = dialogState.mode === "EDIT";
 
-  const [date, setDate] = useState<Date | undefined>(
-    isEditMode ? dialogState.note.date : new Date(),
+  // Calendar date picker state
+  const [date, setDate] = useState<Date>(new Date());
+
+  const noteId = isEditMode ? dialogState.note.id : undefined;
+
+  const [state, action, isPending] = useActionState(
+    // Pass scheduleId, noteId and date to the action
+    saveScheduledNote.bind(null, scheduleId, date, noteId),
+    null,
   );
 
-  const pending = false;
+  // Display toasts based on action state
+  useEffect(() => {
+    if (state) {
+      if (state.success) {
+        toast.success(state.message);
+        setDialogState({ mode: "CLOSED" });
+      } else {
+        toast.error(state.message);
+      }
+    }
+  }, [state, setDialogState]);
+
+  // Sync calendar date with dialog state
+  useEffect(() => {
+    if (isOpen) {
+      setDate(dialogState.note.date);
+    }
+  }, [isOpen, dialogState]);
+
   return (
     <Dialog
       open={isOpen}
@@ -56,12 +96,14 @@ export default function SaveNoteDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <form action="" className="grid gap-4">
+        <form action={action} className="grid gap-4">
           <div className="flex flex-col justify-between gap-4 md:flex-row">
             <Calendar
               mode="single"
               selected={date}
-              onSelect={setDate}
+              onSelect={(value) => {
+                if (value) setDate(value);
+              }}
               locale={sv}
               className="h-fit w-full rounded-md border border-border p-3 shadow-xs md:w-fit"
               showWeekNumber
@@ -76,14 +118,16 @@ export default function SaveNoteDialog({
                   defaultValue={isEditMode ? dialogState.note.title : ""}
                   placeholder="Ange titel"
                   required
-                  // aria-invalid
+                  aria-invalid={!state?.success && !!state?.errors?.title}
                 />
-                {/* // TODO If error */}
-                {/* {
-                  <p className="text-xs text-destructive">
-                  Felmeddelande
-                  </p>
-                  } */}
+
+                {/* Conditional error display */}
+                {!state?.success &&
+                  state?.errors?.title?.map((errorMessage, idx) => (
+                    <p key={idx} className="text-xs text-destructive">
+                      {errorMessage}
+                    </p>
+                  ))}
               </div>
 
               <div className="flex h-full flex-col gap-1">
@@ -92,15 +136,17 @@ export default function SaveNoteDialog({
                   name="text"
                   placeholder="Ange fritext..."
                   defaultValue={isEditMode ? dialogState.note.text || "" : ""}
-                  // aria-invalid={}
+                  aria-invalid={!state?.success && !!state?.errors?.text}
                   className="h-full"
                 />
-                {/* // TODO If error */}
-                {/* {
-                  <p className="text-xs text-destructive">
-                  Felmeddelande
-                  </p>
-                  } */}
+
+                {/* Conditional error display */}
+                {!state?.success &&
+                  state?.errors?.text?.map((errorMessage, idx) => (
+                    <p key={idx} className="text-xs text-destructive">
+                      {errorMessage}
+                    </p>
+                  ))}
               </div>
             </div>
           </div>
@@ -109,8 +155,8 @@ export default function SaveNoteDialog({
             <DialogClose asChild>
               <Button variant="outline">Avbryt</Button>
             </DialogClose>
-            <Button type="submit" disabled={pending}>
-              {pending ? (
+            <Button type="submit" disabled={isPending}>
+              {isPending ? (
                 <>
                   <LoaderCircle className="animate-spin" />
                   <span>Sparar...</span>

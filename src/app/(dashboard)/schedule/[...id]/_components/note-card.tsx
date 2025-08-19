@@ -1,8 +1,5 @@
 "use client";
 
-import SaveNoteDialog, {
-  SaveNoteDialogState,
-} from "@/app/(dashboard)/schedule/[...id]/_components/save-note-dialog";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -17,10 +14,10 @@ import { Edit, MoreHorizontal, Trash2 } from "lucide-react";
 
 type NoteCardProps = {
   note: ScheduledNote;
+  onEdit: (note: ScheduledNote) => void;
 };
 
-export default function NoteCard({ note }: NoteCardProps) {
-
+export default function NoteCard({ note, onEdit }: NoteCardProps) {
   return (
     <article className="flex flex-col gap-2 rounded-md border border-border p-3">
       <div className="flex flex-col gap-1">
@@ -37,6 +34,7 @@ export default function NoteCard({ note }: NoteCardProps) {
             <DropdownMenuContent align="start" side="right" sideOffset={8}>
               <DropdownMenuGroup>
                 <DropdownMenuItem
+                  onSelect={() => setTimeout(() => onEdit(note), 0)}
                 >
                   <Edit />
                   Redigera
@@ -61,11 +59,6 @@ export default function NoteCard({ note }: NoteCardProps) {
         </div>
         <p className="text-xs wrap-normal text-muted-foreground">{note.text}</p>
       </div>
-
-      <SaveNoteDialog
-        dialogState={saveDialogState}
-        setDialogState={setSaveDialogState}
-      />
     </article>
   );
 }

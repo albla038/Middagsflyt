@@ -184,6 +184,7 @@ export default async function Page({
         </div>
 
         <WeekdayGrid
+          scheduleId={id}
           startDateOfWeek={startDateOfWeek}
           selectedDate={
             selectedDate ? parse(selectedDate, "yyyy-MM-dd", new Date()) : today
