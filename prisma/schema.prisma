@@ -301,11 +301,14 @@ model ScheduledRecipe {
 model ScheduledNote {
   id    String   @id @default(cuid(2))
   date  DateTime
-  title String   @default("Anteckning")
-  text  String
+  title String
+  text  String?
 
   schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
   scheduleId String
+
+  createdBy   User?   @relation(fields: [createdById], references: [id])
+  createdById String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -329,8 +332,10 @@ model User {
   createdRecipes  Recipe[]
   assignedRecipes ScheduledRecipe[]
 
-  membership HouseholdMember?
-  profile    UserProfile?
+  membership     HouseholdMember?
+  scheduledNotes ScheduledNote[]
+
+  profile UserProfile?
 
   @@unique([email])
   @@map("users")
