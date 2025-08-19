@@ -15,9 +15,10 @@ import { Edit, MoreHorizontal, Trash2 } from "lucide-react";
 type NoteCardProps = {
   note: ScheduledNote;
   onEdit: (note: ScheduledNote) => void;
+  onDelete: (noteId: string) => void;
 };
 
-export default function NoteCard({ note, onEdit }: NoteCardProps) {
+export default function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
   return (
     <article className="flex flex-col gap-2 rounded-md border border-border p-3">
       <div className="flex flex-col gap-1">
@@ -40,7 +41,9 @@ export default function NoteCard({ note, onEdit }: NoteCardProps) {
                   Redigera
                 </DropdownMenuItem>
 
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => setTimeout(() => onDelete(note.id), 0)}
+                >
                   <Trash2 className="text-destructive" />
                   Ta bort
                 </DropdownMenuItem>

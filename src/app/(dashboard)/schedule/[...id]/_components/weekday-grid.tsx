@@ -1,5 +1,8 @@
 "use client";
 
+import DeleteNoteAlert, {
+  DeleteNoteAlertState,
+} from "@/app/(dashboard)/schedule/[...id]/_components/delete-note-alert";
 import NoteCard from "@/app/(dashboard)/schedule/[...id]/_components/note-card";
 import SaveNoteDialog, {
   SaveNoteDialogState,
@@ -34,9 +37,13 @@ export default function WeekdayGrid({
     notes,
   );
 
-  const [saveDialogState, setSaveDialogState] = useState<SaveNoteDialogState>({
-    mode: "CLOSED",
-  });
+  // State for the dialogs
+  const [saveNoteDialogState, setSaveNoteDialogState] =
+    useState<SaveNoteDialogState>({
+      mode: "CLOSED",
+    });
+  const [deleteNoteAlertState, setDeleteNoteAlertState] =
+    useState<DeleteNoteAlertState>({ mode: "CLOSED" });
 
   return (
     <section>
@@ -79,7 +86,10 @@ export default function WeekdayGrid({
                   <NoteCard
                     note={note}
                     onEdit={(editedNote) =>
-                      setSaveDialogState({ mode: "EDIT", note: editedNote })
+                      setSaveNoteDialogState({ mode: "EDIT", note: editedNote })
+                    }
+                    onDelete={(noteId) =>
+                      setDeleteNoteAlertState({ mode: "OPEN", noteId })
                     }
                   />
                 </li>
@@ -91,8 +101,14 @@ export default function WeekdayGrid({
 
       <SaveNoteDialog
         scheduleId={scheduleId}
-        dialogState={saveDialogState}
-        setDialogState={setSaveDialogState}
+        dialogState={saveNoteDialogState}
+        setDialogState={setSaveNoteDialogState}
+      />
+
+      <DeleteNoteAlert
+        scheduleId={scheduleId}
+        alertState={deleteNoteAlertState}
+        setAlertState={setDeleteNoteAlertState}
       />
     </section>
   );

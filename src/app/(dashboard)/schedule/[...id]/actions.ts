@@ -2,6 +2,7 @@
 
 import {
   createScheduledNote,
+  deleteScheduledNote,
   updateScheduledNote,
 } from "@/data/scheduled-note/mutations";
 import { requireUser } from "@/data/user/verify-user";
@@ -114,5 +115,62 @@ export async function saveScheduledNote(
     message: validatedNoteId
       ? "Anteckningen sparades"
       : "Ny anteckning skapades",
+  };
+}
+
+type DeleteActionState = ActionState<
+  void,
+  { scheduleId?: string[]; noteId?: string[] }
+>;
+
+const deleteScheduledNoteActionSchema = z.object({
+  scheduleId: z.cuid2("Ogiltigt kalender-ID"),
+  noteId: z.cuid2("Ogiltigt antecknings-ID"),
+});
+
+export async function deleteScheduledNoteAction(
+  scheduleId: string,
+  noteId: string,
+): Promise<DeleteActionState> {
+  await requireUser();
+
+  // Validate the IDs
+  const validated = deleteScheduledNoteActionSchema.safeParse({
+    scheduleId,
+    noteId,
+  });
+
+  // Return error if validation fails
+  if (!validated.success) {
+    const errors = z.flattenError(validated.error).fieldErrors;
+
+    return {
+      success: false,
+      message:
+        "Ogiltigt kalender- eller antecknings-ID. Vänligen kontakta supporten",
+      errors,
+    };
+  }
+
+  const { scheduleId: validatedScheduleId, noteId: validatedNoteId } =
+    validated.data;
+
+  // Delete the scheduled note
+  const deleteResult = await deleteScheduledNote(validatedNoteId);
+
+  // Return error if deletion fails
+  if (!deleteResult.ok) {
+    return {
+      success: false,
+      message:
+        "Något gick fel när anteckningen skulle tas bort. Vänligen försök igen!",
+    };
+  }
+
+  revalidatePath(`/schedule/${validatedScheduleId}`);
+
+  return {
+    success: true,
+    message: "Anteckningen togs bort",
   };
 }
