@@ -6,13 +6,12 @@ import {
   CalendarPlus,
   ClockFading,
   ListPlus,
-  LucideIcon,
   Soup,
   Utensils,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { ReactNode, useState } from "react";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import H3 from "@/components/ui/typography/h3";
@@ -25,6 +24,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { MyRecipesDisplay, RecipeDisplayContent } from "@/lib/types";
 import BookmarkToggle from "@/components/recipe/bookmark-toggle";
+import StatValueSmall from "@/components/stat-value-small";
 
 type RecipeListCardProps = {
   recipe: RecipeDisplayContent;
@@ -141,30 +141,6 @@ export default function RecipeListCard({
         </Link>
       </Card>
     </article>
-  );
-}
-
-function StatValueSmall({
-  children,
-  icon: Icon,
-  desc,
-}: {
-  children: ReactNode;
-  icon: LucideIcon;
-  desc?: string;
-}) {
-  return (
-    <div
-      className={cn(
-        "flex h-[1lh] items-center gap-1 text-xs font-medium",
-        "nth-[2n+1]:border-r nth-[2n+1]:border-border nth-[2n+1]:pr-2",
-        "last:border-none last:pr-0 lg:border-r lg:border-border lg:pr-2",
-      )}
-    >
-      <Icon className="size-[14px]" />
-      <span>{children}</span>
-      <span className="text-muted-foreground">{desc}</span>
-    </div>
   );
 }
 
