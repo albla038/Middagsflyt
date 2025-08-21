@@ -1,6 +1,5 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,8 +15,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
+import UserAvatar from "@/components/user-avatar";
 import { authClient } from "@/lib/auth-client";
-import { nameToInitials } from "@/lib/utils";
 import { EllipsisVertical, Loader2, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
@@ -77,18 +76,7 @@ export default function NavUser() {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="size-8">
-                <AvatarImage
-                  src={user.image ?? `https://avatar.vercel.sh/${user.email}`}
-                  alt={user.name}
-                />
-
-                <AvatarFallback>
-                  {user.name && user.name.length > 0
-                    ? nameToInitials(user.name)
-                    : user.email.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
+              <UserAvatar user={user} />
               <div className="grid text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
                 <span className="truncate text-xs">{user.email}</span>
@@ -102,19 +90,8 @@ export default function NavUser() {
             side={isMobile ? "bottom" : "right"}
             sideOffset={4}
           >
-            <DropdownMenuLabel className="flex gap-2 font-normal">
-              <Avatar className="size-8">
-                <AvatarImage
-                  src={user.image ?? `https://avatar.vercel.sh/${user.email}`}
-                  alt={user.name}
-                />
-
-                <AvatarFallback>
-                  {user.name && user.name.length > 0
-                    ? nameToInitials(user.name)
-                    : user.email.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
+            <DropdownMenuLabel className="flex items-center gap-2 font-normal">
+              <UserAvatar user={user} />
               <div className="grid text-sm leading-tight">
                 <span className="font-medium">{user.name}</span>
                 <span className="text-xs">{user.email}</span>
