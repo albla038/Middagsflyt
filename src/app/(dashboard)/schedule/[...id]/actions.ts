@@ -5,6 +5,7 @@ import {
   deleteScheduledNote,
   updateScheduledNote,
 } from "@/data/scheduled-note/mutations";
+import { updateScheduledRecipeAssignee } from "@/data/scheduled-recipe/mutations";
 import { requireUser } from "@/data/user/verify-user";
 import { ActionState } from "@/lib/types";
 import { revalidatePath } from "next/cache";
@@ -24,7 +25,7 @@ type SaveFormState = ActionState<
 const saveScheduledNoteSchema = z.object({
   scheduleId: z.cuid2("Ogiltigt kalender-ID"),
   date: z.date("Ogiltigt datum"),
-  noteId: z.cuid2("Ogiltigt anteckings-ID").optional(),
+  noteId: z.cuid2("Ogiltigt antecknings-ID").optional(),
   title: z
     .string("Ange en giltig titel")
     .min(1, "Titeln måste ha minst en bokstav"),
@@ -172,5 +173,79 @@ export async function deleteScheduledNoteAction(
   return {
     success: true,
     message: "Anteckningen togs bort",
+  };
+}
+
+type UpdateAssigneeState = ActionState<
+  void,
+  {
+    scheduledRecipeId?: string[];
+    assigneeId?: string[];
+  }
+>;
+
+const updateAssigneeSchema = z.object({
+  scheduledRecipeId: z.cuid2("Ogiltigt recept-ID"),
+  assigneeId: z.string("Ogiltigt användar-ID").nullable(),
+  scheduleId: z.cuid2("Ogiltigt kalender-ID"),
+});
+
+export async function updateAssignee({
+  scheduledRecipeId,
+  assigneeId,
+  scheduleId,
+}: {
+  scheduledRecipeId: string;
+  assigneeId: string | null;
+  scheduleId: string;
+}): Promise<UpdateAssigneeState> {
+  await requireUser();
+
+  console.log("Received assignee ID:", assigneeId);
+
+  // Validate the IDs
+  const validated = updateAssigneeSchema.safeParse({
+    scheduledRecipeId,
+    assigneeId,
+    scheduleId,
+  });
+
+  // Return error if validation fails
+  if (!validated.success) {
+    const errors = z.flattenError(validated.error).fieldErrors;
+    console.log(errors);
+
+    return {
+      success: false,
+      message:
+        "Ogiltigt recept-, kalender- eller användar-ID. Vänligen kontakta supporten",
+      errors,
+    };
+  }
+
+  const {
+    scheduledRecipeId: validatedScheduledRecipeId,
+    assigneeId: validatedAssigneeId,
+    scheduleId: validatedScheduleId,
+  } = validated.data;
+
+  const mutationResult = await updateScheduledRecipeAssignee({
+    scheduledRecipeId: validatedScheduledRecipeId,
+    assigneeId: validatedAssigneeId,
+  });
+
+  // Return error if mutation fails
+  if (!mutationResult.ok) {
+    return {
+      success: false,
+      message: "Något gick fel när tilldelningen skulle uppdateras",
+    };
+  }
+
+  revalidatePath(`/schedule/${validatedScheduleId}`);
+
+  return {
+    success: true,
+    message: "Schemaläggningen uppdaterades",
   };
 }
