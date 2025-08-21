@@ -18,10 +18,8 @@ type WeekdayGridProps = {
   scheduleId: string;
   startDateOfWeek: Date;
   selectedDate: Date;
-  recipes: (ScheduledRecipe & {
-    recipe: Recipe;
-  })[];
-  notes: ScheduledNote[];
+  recipes: ScheduledRecipeDisplayContent[];
+  notes: ScheduledNoteDisplayContent[];
 };
 
 export default function WeekdayGrid({
@@ -30,6 +28,7 @@ export default function WeekdayGrid({
   selectedDate,
   notes,
   recipes,
+  notes,
 }: WeekdayGridProps) {
   // Transform the recipes and notes into a grid format grouped by day
   const recipesByWeekday = groupRecipesByWeekday(

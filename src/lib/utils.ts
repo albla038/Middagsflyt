@@ -1,6 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { ScheduledNote, ScheduledRecipe } from "@/lib/generated/prisma";
 import {
   addDays,
   endOfWeek,
@@ -12,6 +11,10 @@ import {
   subDays,
 } from "date-fns";
 import { sv } from "date-fns/locale";
+import {
+  ScheduledNoteDisplayContent,
+  ScheduledRecipeDisplayContent,
+} from "@/lib/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -117,15 +120,15 @@ export function calculateNextAndPrevWeekNumbers(startDateOfWeek: Date) {
 
 export function groupRecipesByWeekday(
   startDate: Date,
-  recipes: ScheduledRecipe[],
-  notes: ScheduledNote[],
+  recipes: ScheduledRecipeDisplayContent[],
+  notes: ScheduledNoteDisplayContent[],
 ) {
   const groupedRecipes = new Map<
     string,
     {
       date: Date;
-      recipes: ScheduledRecipe[];
-      notes: ScheduledNote[];
+      recipes: ScheduledRecipeDisplayContent[];
+      notes: ScheduledNoteDisplayContent[];
     }
   >();
 

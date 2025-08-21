@@ -2,12 +2,13 @@ import "server-only";
 
 import { requireUser } from "@/data/user/verify-user";
 import prisma from "@/lib/db";
+import { ScheduledRecipeDisplayContent } from "@/lib/types";
 
 export async function fetchScheduledRecipesByDateRange(
   scheduleId: string,
   startDate: Date,
   endDate: Date,
-) {
+): Promise<ScheduledRecipeDisplayContent[]> {
   const user = await requireUser();
 
   try {
@@ -29,8 +30,32 @@ export async function fetchScheduledRecipesByDateRange(
         },
       },
 
-      include: {
-        recipe: true,
+      select: {
+        id: true,
+        date: true,
+        servings: true,
+        note: true,
+        createdAt: true,
+        updatedAt: true,
+
+        recipe: {
+          select: {
+            id: true,
+            slug: true,
+            name: true,
+            recipeType: true,
+            proteinType: true,
+            totalTimeSeconds: true,
+          },
+        },
+
+        assignee: {
+          select: {
+            name: true,
+            email: true,
+            image: true,
+          },
+        },
       },
     });
   } catch (error) {

@@ -9,12 +9,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ScheduledNote } from "@/lib/generated/prisma";
+import { ScheduledNoteDisplayContent } from "@/lib/types";
 import { Edit, MoreHorizontal, Trash2 } from "lucide-react";
 
 type NoteCardProps = {
-  note: ScheduledNote;
-  onEdit: (note: ScheduledNote) => void;
+  note: ScheduledNoteDisplayContent;
+  onEdit: (note: ScheduledNoteDisplayContent) => void;
   onDelete: (noteId: string) => void;
 };
 

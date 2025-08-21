@@ -2,12 +2,13 @@ import "server-only";
 
 import { requireUser } from "@/data/user/verify-user";
 import prisma from "@/lib/db";
+import { ScheduledNoteDisplayContent } from "@/lib/types";
 
 export async function fetchScheduledNotesByDateRange(
   scheduleId: string,
   startDate: Date,
   endDate: Date,
-) {
+): Promise<ScheduledNoteDisplayContent[]> {
   const user = await requireUser();
 
   try {
@@ -25,6 +26,22 @@ export async function fetchScheduledNotesByDateRange(
         date: {
           gte: startDate,
           lte: endDate,
+        },
+      },
+
+      select: {
+        id: true,
+        date: true,
+        title: true,
+        text: true,
+        createdAt: true,
+        updatedAt: true,
+
+        createdBy: {
+          select: {
+            name: true,
+            email: true,
+          },
         },
       },
     });

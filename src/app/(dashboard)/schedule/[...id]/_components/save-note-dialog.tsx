@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 import { Textarea } from "@/components/ui/textarea";
-import { ScheduledNote } from "@/lib/generated/prisma";
+import { ScheduledNoteDisplayContent } from "@/lib/types";
 import { sv } from "date-fns/locale";
 import { LoaderCircle } from "lucide-react";
 import {
@@ -35,7 +35,7 @@ export type SaveNoteDialogState =
         date: Date;
       };
     }
-  | { mode: "EDIT"; note: ScheduledNote };
+  | { mode: "EDIT"; note: ScheduledNoteDisplayContent };
 
 type SaveNoteDialogProps = {
   scheduleId: string;
