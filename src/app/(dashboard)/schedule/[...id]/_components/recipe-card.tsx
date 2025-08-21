@@ -1,5 +1,6 @@
 "use client";
 
+import AssigneeSelect from "@/app/(dashboard)/schedule/[...id]/_components/assignee-select";
 import StatValueSmall from "@/components/stat-value-small";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ScheduledRecipeDisplayContent } from "@/lib/types";
+import { HouseholdMember, ScheduledRecipeDisplayContent } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import {
   ClockFading,
@@ -26,9 +27,15 @@ import Link from "next/link";
 
 type RecipeCardProps = {
   scheduledRecipe: ScheduledRecipeDisplayContent;
+  householdMembers: HouseholdMember[];
+  scheduleId: string;
 };
 
-export default function RecipeCard({ scheduledRecipe }: RecipeCardProps) {
+export default function RecipeCard({
+  scheduledRecipe,
+  householdMembers,
+  scheduleId,
+}: RecipeCardProps) {
   const {
     id: scheduledRecipeId,
     date,
@@ -93,6 +100,7 @@ export default function RecipeCard({ scheduledRecipe }: RecipeCardProps) {
         </DropdownMenu>
       </div>
 
+      {/* Recipe details */}
       <div className="flex flex-col gap-2">
         <Link
           href={`/saved-recipes/${slug}`} // TODO Replace with /[schedule]/[week]/[recipeSlug]
@@ -118,15 +126,6 @@ export default function RecipeCard({ scheduledRecipe }: RecipeCardProps) {
           )}
         </div>
 
-        {note && (
-          <div className="flex gap-1 text-xs text-muted-foreground">
-            <span className="flex h-[1lh] items-center">
-              <Notebook className="size-3" />
-            </span>
-            <p>{note}</p>
-          </div>
-        )}
-
         <div className="flex flex-wrap items-center gap-2">
           {proteinType && (
             <Badge variant="outline">
@@ -137,6 +136,24 @@ export default function RecipeCard({ scheduledRecipe }: RecipeCardProps) {
             {recipeType.charAt(0) + recipeType.slice(1).toLowerCase()}
           </Badge>
         </div>
+
+        {note && (
+          <div className="flex gap-1 text-xs text-muted-foreground">
+            <span className="flex h-[1lh] items-center">
+              <Notebook className="size-3" />
+            </span>
+            <p>{note}</p>
+          </div>
+        )}
+      </div>
+
+      <div className="mt-2">
+        <AssigneeSelect
+          assignee={assignee}
+          members={householdMembers}
+          scheduledRecipeId={scheduledRecipeId}
+          scheduleId={scheduleId}
+        />
       </div>
     </article>
   );

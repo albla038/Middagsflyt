@@ -5,10 +5,15 @@ import DeleteNoteAlert, {
   DeleteNoteAlertState,
 } from "@/app/(dashboard)/schedule/[...id]/_components/delete-note-alert";
 import NoteCard from "@/app/(dashboard)/schedule/[...id]/_components/note-card";
+import RecipeCard from "@/app/(dashboard)/schedule/[...id]/_components/recipe-card";
 import SaveNoteDialog, {
   SaveNoteDialogState,
 } from "@/app/(dashboard)/schedule/[...id]/_components/save-note-dialog";
-import { Recipe, ScheduledNote, ScheduledRecipe } from "@/lib/generated/prisma";
+import {
+  HouseholdMember,
+  ScheduledNoteDisplayContent,
+  ScheduledRecipeDisplayContent,
+} from "@/lib/types";
 import { cn, groupRecipesByWeekday } from "@/lib/utils";
 import { format, isSameDay, isToday } from "date-fns";
 import { sv } from "date-fns/locale";
@@ -20,15 +25,16 @@ type WeekdayGridProps = {
   selectedDate: Date;
   recipes: ScheduledRecipeDisplayContent[];
   notes: ScheduledNoteDisplayContent[];
+  householdMembers: HouseholdMember[];
 };
 
 export default function WeekdayGrid({
   scheduleId,
   startDateOfWeek,
   selectedDate,
-  notes,
   recipes,
   notes,
+  householdMembers,
 }: WeekdayGridProps) {
   // Transform the recipes and notes into a grid format grouped by day
   const recipesByWeekday = groupRecipesByWeekday(
@@ -78,9 +84,21 @@ export default function WeekdayGrid({
             </h2>
 
             {/* Recipes for the day */}
-            {/* <ul className="flex w-full flex-col gap-2"></ul> */}
+            {weekday.recipes.length > 0 && (
+              <ul className="flex w-full flex-col gap-2">
+                {weekday.recipes.map((recipe) => (
+                  <li key={recipe.id}>
+                    <RecipeCard
+                      scheduledRecipe={recipe}
+                      householdMembers={householdMembers}
+                      scheduleId={scheduleId}
+                    />
+                  </li>
+                ))}
+              </ul>
+            )}
 
-            {/*  */}
+            {/* Notes for the day */}
             {weekday.notes.length > 0 && (
               <ul className="flex w-full flex-col gap-2">
                 {weekday.notes.map((note) => (
