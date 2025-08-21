@@ -60,7 +60,7 @@ export default function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <p className="text-xs wrap-normal text-muted-foreground">{note.text}</p>
+        <p className="text-xs text-muted-foreground">{note.text}</p>
       </div>
     </article>
   );
