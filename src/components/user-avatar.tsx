@@ -4,11 +4,12 @@ import { User } from "better-auth";
 
 type UserAvatarProps = {
   user: User;
+  className?: string;
 };
 
-export default function UserAvatar({ user }: UserAvatarProps) {
+export default function UserAvatar({ user, className }: UserAvatarProps) {
   return (
-    <Avatar>
+    <Avatar className={className}>
       <AvatarImage
         src={user.image || `https://avatar.vercel.sh/${user.email}`}
         alt={user.name}
