@@ -49,13 +49,7 @@ export async function fetchScheduledRecipesByDateRange(
           },
         },
 
-        assignee: {
-          select: {
-            name: true,
-            email: true,
-            image: true,
-          },
-        },
+        assignee: true,
       },
     });
   } catch (error) {
