@@ -1,4 +1,5 @@
 import { ProteinType, RecipeType } from "@/lib/generated/prisma";
+import { User } from "better-auth";
 
 export type Result<Data, Err> =
   | {
@@ -54,6 +55,16 @@ export const MY_RECIPES_DISPLAY_OPTIONS = ["saved", "created"] as const;
 export type Order = (typeof ORDER_OPTIONS)[number];
 export type SortBy = (typeof SORT_BY_OPTIONS)[number];
 export type MyRecipesDisplay = (typeof MY_RECIPES_DISPLAY_OPTIONS)[number];
+
+export type ScheduleWithMembers = {
+  id: string;
+  name: string;
+  description: string | null;
+  members: {
+    role: string;
+    user: User;
+  }[];
+};
 
 export type ScheduledNoteDisplayContent = {
   id: string;

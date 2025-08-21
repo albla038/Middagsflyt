@@ -1,7 +1,9 @@
+import "server-only";
+
 import { requireUser } from "@/data/user/verify-user";
 import prisma from "@/lib/db";
 import { Schedule } from "@/lib/generated/prisma";
-import "server-only";
+import { ScheduleWithMembers } from "@/lib/types";
 
 export async function fetchAllSchedules(): Promise<Schedule[]> {
   const user = await requireUser();
@@ -26,9 +28,9 @@ export async function fetchAllSchedules(): Promise<Schedule[]> {
   }
 }
 
-export async function fetchScheduleById(
+export async function fetchScheduleAndMembersById(
   scheduleId: string,
-): Promise<Schedule | null> {
+): Promise<ScheduleWithMembers | null> {
   const user = await requireUser();
 
   try {
@@ -41,9 +43,30 @@ export async function fetchScheduleById(
           },
         },
       },
+
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        household: {
+          select: {
+            members: {
+              select: {
+                role: true,
+                user: true,
+              },
+            },
+          },
+        },
+      },
     });
 
-    return schedule;
+    if (!schedule) {
+      return null;
+    }
+
+    const { household, ...rest } = schedule;
+    return { ...rest, members: household.members };
   } catch (error) {
     throw new Error(
       "Något gick fel när kalendern hämtades, vänligen försök igen!",

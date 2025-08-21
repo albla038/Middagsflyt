@@ -2,7 +2,7 @@ import Header, { BreadcrumbItem } from "@/app/(dashboard)/_components/header";
 import WeekdayGrid from "@/app/(dashboard)/schedule/[...id]/_components/weekday-grid";
 import { Button } from "@/components/ui/button";
 import H1 from "@/components/ui/typography/h1";
-import { fetchScheduleById } from "@/data/schedule/queries";
+import { fetchScheduleAndMembersById } from "@/data/schedule/queries";
 import { fetchScheduledNotesByDateRange } from "@/data/scheduled-note/queries";
 import { fetchScheduledRecipesByDateRange } from "@/data/scheduled-recipe/queries";
 import {
@@ -70,7 +70,7 @@ export default async function Page({
   const { id, year, week } = validatedParams.data;
 
   // Fetch the schedule by ID to ensure it exists and get its details
-  const schedule = await fetchScheduleById(id);
+  const schedule = await fetchScheduleAndMembersById(id);
   if (!schedule) {
     notFound();
   }
@@ -121,7 +121,7 @@ export default async function Page({
       <Header breadcrumbs={breadcrumbs} />
 
       {/* // TODO Remove max width */}
-      <main className="grid w-full max-w-[64rem] gap-12 px-2 py-16">
+      <main className="grid w-full gap-12 px-2 py-16 xl:max-w-[64rem] 2xl:max-w-[72rem]">
         <div className="flex justify-between">
           <div className="grid gap-2">
             <div className="flex items-center gap-3">
@@ -185,6 +185,7 @@ export default async function Page({
 
         <WeekdayGrid
           scheduleId={id}
+          householdMembers={schedule.members}
           startDateOfWeek={startDateOfWeek}
           selectedDate={
             selectedDate ? parse(selectedDate, "yyyy-MM-dd", new Date()) : today
