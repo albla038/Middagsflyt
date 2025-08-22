@@ -119,7 +119,7 @@ export async function saveScheduledNote(
   };
 }
 
-type DeleteActionState = ActionState<
+type DeleteNoteActionState = ActionState<
   void,
   { scheduleId?: string[]; noteId?: string[] }
 >;
@@ -129,10 +129,13 @@ const deleteScheduledNoteActionSchema = z.object({
   noteId: z.cuid2("Ogiltigt antecknings-ID"),
 });
 
-export async function deleteScheduledNoteAction(
-  scheduleId: string,
-  noteId: string,
-): Promise<DeleteActionState> {
+export async function deleteScheduledNoteAction({
+  scheduleId,
+  noteId,
+}: {
+  scheduleId: string;
+  noteId: string;
+}): Promise<DeleteNoteActionState> {
   await requireUser();
 
   // Validate the IDs

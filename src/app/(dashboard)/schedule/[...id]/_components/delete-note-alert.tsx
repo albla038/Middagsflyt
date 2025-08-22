@@ -33,10 +33,10 @@ export default function DeleteNoteAlert({
 
   async function handleDelete() {
     if (isOpen) {
-      const state = await deleteScheduledNoteAction(
+      const state = await deleteScheduledNoteAction({
         scheduleId,
-        alertState.noteId,
-      );
+        noteId: alertState.noteId,
+      });
 
       if (state) {
         if (state.success) {
