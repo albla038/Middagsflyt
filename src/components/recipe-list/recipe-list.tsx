@@ -64,7 +64,7 @@ export default function RecipeList({
       ) : (
         <ul
           className={cn(
-            "grid gap-4",
+            "grid gap-5",
             "min-[40rem]:grid-cols-2 min-[64rem]:grid-cols-3",
           )}
         >

@@ -106,7 +106,7 @@ export default function RecipeListCard({
             />
           </div>
 
-          <CardContent className="grid gap-2 pt-3 pb-6">
+          <CardContent className="grid gap-2 pt-3 pb-4 px-4">
             <div className="flex flex-wrap items-center gap-2">
               {proteinType && (
                 <Badge variant="secondary">
