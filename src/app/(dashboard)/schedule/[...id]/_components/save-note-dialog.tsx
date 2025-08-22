@@ -13,7 +13,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-
 import { Textarea } from "@/components/ui/textarea";
 import { ScheduledNoteDisplayContent } from "@/lib/types";
 import { sv } from "date-fns/locale";
@@ -100,19 +99,8 @@ export default function SaveNoteDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <form action={action} className="grid gap-4">
+        <form action={action} className="grid gap-6">
           <div className="flex flex-col justify-between gap-4 md:flex-row">
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={(value) => {
-                if (value) setDate(value);
-              }}
-              locale={sv}
-              className="h-fit w-full rounded-md border border-border p-3 shadow-xs md:w-fit"
-              showWeekNumber
-            />
-
             <div className="flex flex-col gap-4 md:w-xs">
               <div className="grid gap-1">
                 <Input
@@ -153,6 +141,17 @@ export default function SaveNoteDialog({
                   ))}
               </div>
             </div>
+
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={(value) => {
+                if (value) setDate(value);
+              }}
+              locale={sv}
+              className="h-fit w-full rounded-md border border-border p-3 md:w-fit"
+              showWeekNumber
+            />
           </div>
 
           <DialogFooter>
