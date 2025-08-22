@@ -2,6 +2,7 @@
 
 import BookmarkToggle from "@/components/recipe/bookmark-toggle";
 import CopyLinkButton from "@/components/recipe/copy-link-button";
+import ServingsControl from "@/components/servings-control";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -11,7 +12,7 @@ import H2 from "@/components/ui/typography/h2";
 import useScreenWakeLock from "@/hooks/use-screen-wake-lock";
 import { Unit } from "@/lib/generated/prisma";
 import { cn, formatQuantityDecimal } from "@/lib/utils";
-import { CalendarPlus, ForkKnife, ListPlus, Minus, Plus } from "lucide-react";
+import { CalendarPlus, ListPlus } from "lucide-react";
 import { useReducer, useState } from "react";
 
 type IngredientContent = {
@@ -191,40 +192,12 @@ export default function RecipeContent({
           {/* Header */}
           <div className="flex justify-between border-b border-border pb-3">
             <H2>Ingredienser</H2>
-            {/* Portion control */}
-            <div className="flex items-center gap-2">
-              <Button
-                variant={"ghost"}
-                className="h-7"
-                disabled={servings <= 1}
-                onClick={() =>
-                  setServings((prevState) =>
-                    prevState - defaultServings / 2 > 0
-                      ? prevState - defaultServings / 2
-                      : prevState,
-                  )
-                }
-              >
-                <Minus className="size-5" />
-              </Button>
-              <span className="flex items-center gap-1 font-medium">
-                <ForkKnife className="size-5" />
-                {servings}
-              </span>
-              <Button
-                variant="ghost"
-                className="h-7"
-                onClick={() =>
-                  setServings((prevState) =>
-                    prevState + defaultServings / 2 > 0
-                      ? prevState + defaultServings / 2
-                      : prevState,
-                  )
-                }
-              >
-                <Plus className="size-5" />
-              </Button>
-            </div>
+
+            <ServingsControl
+              servings={servings}
+              setServings={setServings}
+              defaultServings={defaultServings}
+            />
           </div>
           {/* Ingredients list */}
           <ScrollArea className="grow sm:max-h-[calc(100svh-150px)]">
