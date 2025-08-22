@@ -4,6 +4,9 @@ import AddButton from "@/app/(dashboard)/schedule/[...id]/_components/add-button
 import DeleteNoteAlert, {
   DeleteNoteAlertState,
 } from "@/app/(dashboard)/schedule/[...id]/_components/delete-note-alert";
+import DeleteRecipeAlert, {
+  DeleteRecipeAlertState,
+} from "@/app/(dashboard)/schedule/[...id]/_components/delete-recipe-alert";
 import NoteCard from "@/app/(dashboard)/schedule/[...id]/_components/note-card";
 import RecipeCard from "@/app/(dashboard)/schedule/[...id]/_components/recipe-card";
 import SaveNoteDialog, {
@@ -43,13 +46,16 @@ export default function WeekdayGrid({
     notes,
   );
 
-  // State for the dialogs
+  // State for the note dialogs
   const [saveNoteDialogState, setSaveNoteDialogState] =
     useState<SaveNoteDialogState>({
       mode: "CLOSED",
     });
   const [deleteNoteAlertState, setDeleteNoteAlertState] =
     useState<DeleteNoteAlertState>({ mode: "CLOSED" });
+
+  const [deleteRecipeAlertState, setDeleteRecipeAlertState] =
+    useState<DeleteRecipeAlertState>({ mode: "CLOSED" });
 
   return (
     <section>
@@ -92,6 +98,12 @@ export default function WeekdayGrid({
                       scheduledRecipe={recipe}
                       householdMembers={householdMembers}
                       scheduleId={scheduleId}
+                      onDelete={(scheduledRecipeId) =>
+                        setDeleteRecipeAlertState({
+                          mode: "OPEN",
+                          scheduledRecipeId,
+                        })
+                      }
                     />
                   </li>
                 ))}
@@ -147,6 +159,12 @@ export default function WeekdayGrid({
         scheduleId={scheduleId}
         alertState={deleteNoteAlertState}
         setAlertState={setDeleteNoteAlertState}
+      />
+
+      <DeleteRecipeAlert
+        scheduleId={scheduleId}
+        alertState={deleteRecipeAlertState}
+        setAlertState={setDeleteRecipeAlertState}
       />
     </section>
   );

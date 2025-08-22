@@ -29,12 +29,16 @@ type RecipeCardProps = {
   scheduledRecipe: ScheduledRecipeDisplayContent;
   householdMembers: HouseholdMember[];
   scheduleId: string;
+  onEdit: (scheduledRecipe: ScheduledRecipeDisplayContent) => void;
+  onDelete: (scheduledRecipeId: string) => void;
 };
 
 export default function RecipeCard({
   scheduledRecipe,
   householdMembers,
   scheduleId,
+  onEdit,
+  onDelete,
 }: RecipeCardProps) {
   const {
     id: scheduledRecipeId,
@@ -81,8 +85,11 @@ export default function RecipeCard({
                 Redigera
               </DropdownMenuItem>
 
-              {/* // TODO Add action */}
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={() =>
+                  setTimeout(() => onDelete(scheduledRecipeId), 0)
+                }
+              >
                 <Trash2 className="text-destructive" />
                 Ta bort
               </DropdownMenuItem>
