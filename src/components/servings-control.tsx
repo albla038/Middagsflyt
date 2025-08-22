@@ -16,6 +16,7 @@ export default function ServingsControl({
   return (
     <div className="flex items-center gap-2">
       <Button
+        type="button"
         variant={"ghost"}
         className="h-7"
         disabled={servings <= 1}
@@ -34,6 +35,7 @@ export default function ServingsControl({
         {servings}
       </span>
       <Button
+        type="button"
         variant="ghost"
         className="h-7"
         onClick={() =>
