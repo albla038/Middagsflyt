@@ -5,7 +5,10 @@ import {
   deleteScheduledNote,
   updateScheduledNote,
 } from "@/data/scheduled-note/mutations";
-import { updateScheduledRecipeAssignee } from "@/data/scheduled-recipe/mutations";
+import {
+  deleteScheduledRecipe,
+  updateScheduledRecipeAssignee,
+} from "@/data/scheduled-recipe/mutations";
 import { requireUser } from "@/data/user/verify-user";
 import { ActionState } from "@/lib/types";
 import { revalidatePath } from "next/cache";
@@ -250,5 +253,67 @@ export async function updateAssignee({
   return {
     success: true,
     message: "Schemaläggningen uppdaterades",
+  };
+}
+
+type DeleteRecipeActionState = ActionState<
+  void,
+  { scheduledRecipeId?: string[]; scheduleId?: string[] }
+>;
+
+const deleteScheduledRecipeActionSchema = z.object({
+  scheduledRecipeId: z.cuid2("Ogiltigt recept-ID"),
+  scheduleId: z.cuid2("Ogiltigt kalender-ID"),
+});
+
+export async function deleteScheduledRecipeAction({
+  scheduledRecipeId,
+  scheduleId,
+}: {
+  scheduledRecipeId: string;
+  scheduleId: string;
+}): Promise<DeleteRecipeActionState> {
+  await requireUser();
+
+  // Validate the IDs
+  const validated = deleteScheduledRecipeActionSchema.safeParse({
+    scheduledRecipeId,
+    scheduleId,
+  });
+
+  // Return error if validation fails
+  if (!validated.success) {
+    const errors = z.flattenError(validated.error).fieldErrors;
+
+    return {
+      success: false,
+      message:
+        "Ogiltigt recept- eller kalender-ID. Vänligen kontakta supporten",
+      errors,
+    };
+  }
+
+  const {
+    scheduledRecipeId: validatedScheduledRecipeId,
+    scheduleId: validatedScheduleId,
+  } = validated.data;
+
+  // Delete the scheduled recipe
+  const deleteResult = await deleteScheduledRecipe(validatedScheduledRecipeId);
+
+  // Return error if deletion fails
+  if (!deleteResult.ok) {
+    return {
+      success: false,
+      message:
+        "Något gick fel när det schemaläggningen skulle tas bort. Vänligen försök igen!",
+    };
+  }
+
+  revalidatePath(`/schedule/${validatedScheduleId}`);
+
+  return {
+    success: true,
+    message: "Schemaläggningen togs bort",
   };
 }

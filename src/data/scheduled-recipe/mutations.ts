@@ -45,3 +45,38 @@ export async function updateScheduledRecipeAssignee({
     };
   }
 }
+
+export async function deleteScheduledRecipe(
+  scheduledRecipeId: string,
+): Promise<Result<void, Error>> {
+  const user = await requireUser();
+
+  try {
+    await prisma.scheduledRecipe.delete({
+      where: {
+        id: scheduledRecipeId,
+
+        // Ensure the schedule belongs to the user's household
+        schedule: {
+          household: {
+            members: {
+              some: { userId: user.id },
+            },
+          },
+        },
+      },
+    });
+
+    return {
+      ok: true,
+      data: undefined,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      error: new Error("Failed to delete scheduled recipe", {
+        cause: error instanceof Error ? error : new Error(String(error)),
+      }),
+    };
+  }
+}
