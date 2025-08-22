@@ -28,7 +28,7 @@ export default function AddRecipeDialogButton() {
             Välj hur du vill lägga till receptet
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-6 py-4">
+        <div className="grid gap-6">
           <ImportUrlForm />
           <div
             className={cn(
