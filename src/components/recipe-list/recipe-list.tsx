@@ -4,7 +4,8 @@ import SearchBar from "@/components/recipe-list/search-bar";
 import SortSelect from "@/components/recipe-list/sort-select";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MyRecipesDisplay, RecipeDisplayContent } from "@/lib/types";
+import { RecipeDisplayContent } from "@/lib/schemas/recipe";
+import { MyRecipesDisplay } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Grid2X2, ListFilter, Rows3 } from "lucide-react";
 

@@ -22,9 +22,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MyRecipesDisplay, RecipeDisplayContent } from "@/lib/types";
+import { MyRecipesDisplay } from "@/lib/types";
 import BookmarkToggle from "@/components/recipe/bookmark-toggle";
 import StatValueSmall from "@/components/stat-value-small";
+import { RecipeDisplayContent } from "@/lib/schemas/recipe";
 
 type RecipeListCardProps = {
   recipe: RecipeDisplayContent;

@@ -3,7 +3,8 @@ import "server-only";
 import { ProteinType } from "@/lib/generated/prisma";
 import prisma from "@/lib/db";
 import { requireUser } from "@/data/user/verify-user";
-import { Order, RecipeDisplayContent, SortBy } from "@/lib/types";
+import { Order, SortBy } from "@/lib/types";
+import { RecipeDisplayContent } from "@/lib/schemas/recipe";
 
 // HELPER FUNCTIONS
 function searchFilters(searchQuery: string) {
@@ -21,7 +22,7 @@ function searchFilters(searchQuery: string) {
       },
     },
 
-    // Description search sometimes leads to akward results
+    // Description search sometimes leads to awkward results
     // {
     //   description: {
     //     contains: searchQuery,

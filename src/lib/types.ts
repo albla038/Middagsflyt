@@ -33,21 +33,6 @@ export type ActionState<Data, Err> =
     }
   | null;
 
-export type RecipeDisplayContent = {
-  id: string;
-  name: string;
-  slug: string;
-  recipeYield: number | null;
-  imageUrl: string | null;
-  recipeType: RecipeType;
-  proteinType: ProteinType | null;
-  totalTimeSeconds: number | null;
-  isSaved: boolean;
-  isImported?: boolean;
-  isCreatedByUser?: boolean;
-  scheduledDate?: Date;
-};
-
 export const ORDER_OPTIONS = ["asc", "desc"] as const;
 export const SORT_BY_OPTIONS = ["createdAt", "name"] as const;
 export const MY_RECIPES_DISPLAY_OPTIONS = ["saved", "created"] as const;
