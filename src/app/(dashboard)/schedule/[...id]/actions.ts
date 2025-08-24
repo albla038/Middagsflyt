@@ -244,7 +244,8 @@ export async function updateAssignee({
   if (!mutationResult.ok) {
     return {
       success: false,
-      message: "Något gick fel när tilldelningen skulle uppdateras",
+      message:
+        "Något gick fel när schemaläggningens ansvariga person skulle uppdateras. Vänligen försök igen!",
     };
   }
 
