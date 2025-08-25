@@ -1,6 +1,12 @@
 import { API_BASE_URL } from "@/lib/constants";
-import { recipeDisplayContentSchema } from "@/lib/schemas/recipe";
+import {
+  RecipeDisplayContent,
+  recipeDisplayContentSchema,
+} from "@/lib/schemas/recipe";
 import { Order, SortBy } from "@/lib/types";
+import { z } from "zod/v4";
+
+const validationSchema = z.array(recipeDisplayContentSchema);
 
 export async function fetchSavedRecipes({
   query,
@@ -10,7 +16,7 @@ export async function fetchSavedRecipes({
   query: string;
   order?: Order;
   sort?: SortBy;
-}) {
+}): Promise<RecipeDisplayContent[]> {
   const searchParams = new URLSearchParams({ query, order, sort });
 
   // Fetch the data
@@ -29,7 +35,7 @@ export async function fetchSavedRecipes({
   const data = await response.json();
 
   // Validate the data
-  const validated = recipeDisplayContentSchema.safeParse(data);
+  const validated = validationSchema.safeParse(data);
 
   // Throw error if validation fails
   if (!validated.success) {
