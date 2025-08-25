@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { CircleAlert, CircleCheck, LoaderCircle } from "lucide-react";
-import ThemeProvider from "@/components/ui/theme-provider";
+import ThemeProvider from "@/providers/theme-provider";
 
 const inter = Inter({
   subsets: ["latin"],
