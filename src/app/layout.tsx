@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { CircleAlert, CircleCheck, LoaderCircle } from "lucide-react";
 import ThemeProvider from "@/providers/theme-provider";
+import ReactQueryProvider from "@/providers/react-query-provider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,14 +24,16 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} min-h-svh font-inter antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+        <ReactQueryProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </ReactQueryProvider>
         <Toaster
           icons={{
             success: <CircleCheck className="size-4 text-primary" />,
