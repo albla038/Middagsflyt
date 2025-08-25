@@ -5,9 +5,9 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ComponentPropsWithoutRef } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
-type SearhBarProps = ComponentPropsWithoutRef<"input">;
+type SearchBarProps = ComponentPropsWithoutRef<"input">;
 
-export default function SearchBar({ ...rest }: SearhBarProps) {
+export default function SearchBar({ ...rest }: SearchBarProps) {
   const params = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
