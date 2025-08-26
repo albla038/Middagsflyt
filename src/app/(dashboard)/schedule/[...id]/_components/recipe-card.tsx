@@ -1,6 +1,7 @@
 "use client";
 
 import AssigneeSelect from "@/app/(dashboard)/schedule/[...id]/_components/assignee-select";
+import { rescheduleRecipe } from "@/app/(dashboard)/schedule/[...id]/actions";
 import StatValueSmall from "@/components/stat-value-small";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,14 +18,16 @@ import H3 from "@/components/ui/typography/h3";
 import { HouseholdMember, ScheduledRecipeDisplayContent } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import {
+  ArrowLeft,
+  ArrowRight,
   ClockFading,
-  Edit,
   MoreHorizontal,
   Notebook,
   Trash2,
   Utensils,
 } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 type RecipeCardProps = {
   scheduledRecipe: ScheduledRecipeDisplayContent;
@@ -60,6 +63,23 @@ export default function RecipeCard({
     recipeType,
   } = recipe;
 
+  async function handleDateChange(daysDifference: number) {
+    const state = await rescheduleRecipe({
+      scheduledRecipeId: scheduledRecipe.id,
+      scheduleId,
+      previousDate: date,
+      difference: daysDifference,
+    });
+
+    if (state) {
+      if (state.success) {
+        toast.success(state.message);
+      } else {
+        toast.error(state.message);
+      }
+    }
+  }
+
   return (
     <article
       className={cn(
@@ -80,12 +100,19 @@ export default function RecipeCard({
 
           <DropdownMenuContent align="start" side="right" sideOffset={8}>
             <DropdownMenuGroup>
-              {/* // TODO Add action */}
-              <DropdownMenuItem>
-                <Edit />
-                Redigera
+              {/* Next day action */}
+              <DropdownMenuItem onSelect={() => handleDateChange(1)}>
+                <ArrowRight />
+                Flytta till nästa dag
               </DropdownMenuItem>
 
+              {/* Previous day action */}
+              <DropdownMenuItem onSelect={() => handleDateChange(-1)}>
+                <ArrowLeft />
+                Flytta till föregående dag
+              </DropdownMenuItem>
+
+              {/* Remove action */}
               <DropdownMenuItem
                 onSelect={() =>
                   setTimeout(() => onDelete(scheduledRecipeId), 0)
