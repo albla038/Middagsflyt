@@ -9,7 +9,12 @@ export default function H3({
   className?: string;
 }) {
   return (
-    <h3 className={cn(className, "text-base font-semibold tracking-tight")}>
+    <h3
+      className={cn(
+        "text-base font-semibold tracking-tight text-pretty",
+        className,
+      )}
+    >
       {children}
     </h3>
   );

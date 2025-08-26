@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import H3 from "@/components/ui/typography/h3";
 import { HouseholdMember, ScheduledRecipeDisplayContent } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import {
@@ -113,13 +114,7 @@ export default function RecipeCard({
           href={`/saved-recipes/${slug}`} // TODO Replace with /[schedule]/[week]/[recipeSlug]
           className={"hover:underline"}
         >
-          <h3
-            className={
-              "line-clamp-2 text-base font-medium tracking-tight text-pretty"
-            }
-          >
-            {name}
-          </h3>
+          <H3 className="line-clamp-2">{name}</H3>
         </Link>
 
         <div className="flex flex-wrap items-center gap-2">
