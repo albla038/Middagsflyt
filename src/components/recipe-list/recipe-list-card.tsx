@@ -107,7 +107,7 @@ export default function RecipeListCard({
             />
           </div>
 
-          <CardContent className="grid gap-2 pt-3 pb-4 px-4">
+          <CardContent className="grid gap-2 px-4 pt-3 pb-4">
             <div className="flex flex-wrap items-center gap-2">
               {proteinType && (
                 <Badge variant="secondary">
@@ -126,7 +126,7 @@ export default function RecipeListCard({
               )}
             </div>
             <div className="grid gap-1">
-              <H3 className="truncate">{name}</H3>
+              <H3 className="">{name}</H3>
               <div className="flex flex-wrap items-center gap-2">
                 {totalTimeSeconds && (
                   <StatValueSmall icon={ClockFading} desc="min">
