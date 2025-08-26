@@ -4,6 +4,66 @@ import { Result } from "@/lib/types";
 import { requireUser } from "@/data/user/verify-user";
 import prisma from "@/lib/db";
 
+export async function createScheduledRecipe({
+  scheduleId,
+  recipeId,
+  date,
+  servings,
+  assigneeId,
+  note,
+}: {
+  scheduleId: string;
+  recipeId: string;
+  date: Date;
+  servings: number;
+  assigneeId: string | undefined;
+  note: string | null;
+}): Promise<Result<void, Error>> {
+  const user = await requireUser();
+
+  try {
+    await prisma.scheduledRecipe.create({
+      data: {
+        schedule: {
+          // Ensure the schedule belongs to the user's household
+          connect: {
+            id: scheduleId,
+            household: {
+              members: {
+                some: { userId: user.id },
+              },
+            },
+          },
+        },
+        recipe: {
+          connect: { id: recipeId },
+        },
+        assignee: assigneeId
+          ? {
+              connect: { id: assigneeId },
+            }
+          : undefined,
+
+        date,
+        servings,
+        note,
+      },
+    });
+
+    return {
+      ok: true,
+      data: undefined,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      error: new Error("Failed to create scheduled recipe", {
+        cause: error instanceof Error ? error : new Error(String(error)),
+      }),
+    };
+  }
+}
+
 export async function updateScheduledRecipeAssignee({
   scheduledRecipeId,
   assigneeId,
