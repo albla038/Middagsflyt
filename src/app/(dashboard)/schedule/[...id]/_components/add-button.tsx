@@ -24,7 +24,7 @@ export default function AddButton({ onAddRecipe, onAddNote }: AddButtonProps) {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent>
-        <DropdownMenuItem onSelect={() => setTimeout(onAddRecipe, 0)}>
+        <DropdownMenuItem onSelect={onAddRecipe}>
           <CalendarClock />
           Schemalägg recept
         </DropdownMenuItem>

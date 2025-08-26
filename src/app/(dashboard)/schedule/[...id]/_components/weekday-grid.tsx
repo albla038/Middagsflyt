@@ -20,6 +20,7 @@ import {
 import { cn, groupRecipesByWeekday } from "@/lib/utils";
 import { format, isSameDay, isToday } from "date-fns";
 import { sv } from "date-fns/locale";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type WeekdayGridProps = {
@@ -39,6 +40,8 @@ export default function WeekdayGrid({
   notes,
   householdMembers,
 }: WeekdayGridProps) {
+  const router = useRouter();
+
   // Transform the recipes and notes into a grid format grouped by day
   const recipesByWeekday = groupRecipesByWeekday(
     startDateOfWeek,
@@ -104,6 +107,7 @@ export default function WeekdayGrid({
                           scheduledRecipeId,
                         })
                       }
+                      onEdit={() => {}}
                     />
                   </li>
                 ))}
@@ -134,7 +138,9 @@ export default function WeekdayGrid({
 
             <AddButton
               onAddRecipe={() => {
-                return; // TODO open dialog to add recipe
+                router.push(
+                  `/schedule/${scheduleId}/create?date=${weekdayKey}`,
+                );
               }}
               onAddNote={() =>
                 setSaveNoteDialogState({
