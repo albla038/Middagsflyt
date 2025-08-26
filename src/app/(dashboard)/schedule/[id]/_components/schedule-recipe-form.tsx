@@ -44,8 +44,8 @@ export default function ScheduleRecipeForm({
 }: ScheduleRecipeFormProps) {
   const router = useRouter();
 
+  // STATE for selected recipe and assignee
   const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
-
   const [assigneeId, setAssigneeId] = useState<string | undefined>(undefined);
   const assignee = members.find(
     (member) => member.user.id === assigneeId,
@@ -55,6 +55,7 @@ export default function ScheduleRecipeForm({
   const [defaultServings, setDefaultServings] = useState(4);
   const [servings, setServings] = useState(defaultServings);
 
+  // Get the list of recipes
   const recipes = use(recipeData);
 
   const selectedRecipe = recipes.find(
@@ -247,8 +248,11 @@ export default function ScheduleRecipeForm({
           </div>
 
           <div className="flex items-center justify-end gap-2">
-            {/* // TODO Route back */}
-            <Button type="button" variant="outline">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.back()}
+            >
               Avbryt
             </Button>
             <Button type="submit" disabled={!selectedRecipe || isPending}>
