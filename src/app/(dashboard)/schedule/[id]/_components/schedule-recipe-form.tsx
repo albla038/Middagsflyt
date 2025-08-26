@@ -163,12 +163,13 @@ export default function ScheduleRecipeForm({
                   defaultServings={defaultServings}
                 />
               </div>
-              {/* {!state?.success &&
-                    state?.errors?.title?.map((errorMessage, idx) => (
-                      <p key={idx} className="text-xs text-destructive">
-                        {errorMessage}
-                      </p>
-                    ))} */}
+
+              {!state?.success &&
+                state?.errors?.servings?.map((errorMessage, idx) => (
+                  <p key={idx} className="text-xs text-destructive">
+                    {errorMessage}
+                  </p>
+                ))}
             </div>
           </div>
 
@@ -215,12 +216,12 @@ export default function ScheduleRecipeForm({
                 </SelectContent>
               </Select>
 
-              {/* {!state?.success &&
-                    state?.errors?.title?.map((errorMessage, idx) => (
-                      <p key={idx} className="text-xs text-destructive">
-                        {errorMessage}
-                      </p>
-                    ))} */}
+              {!state?.success &&
+                state?.errors?.assigneeId?.map((errorMessage, idx) => (
+                  <p key={idx} className="text-xs text-destructive">
+                    {errorMessage}
+                  </p>
+                ))}
             </div>
           </div>
 
@@ -232,16 +233,16 @@ export default function ScheduleRecipeForm({
                 id="note"
                 name="note"
                 placeholder="Valfri fritext"
-                // aria-invalid={!state?.success && !!state?.errors?.text}
+                aria-invalid={!state?.success && !!state?.errors?.note}
                 className="bg-background"
               />
-              {/* 
-                  {!state?.success &&
-                    state?.errors?.text?.map((errorMessage, idx) => (
-                      <p key={idx} className="text-xs text-destructive">
-                        {errorMessage}
-                      </p>
-                    ))} */}
+
+              {!state?.success &&
+                state?.errors?.note?.map((errorMessage, idx) => (
+                  <p key={idx} className="text-xs text-destructive">
+                    {errorMessage}
+                  </p>
+                ))}
             </div>
           </div>
 
