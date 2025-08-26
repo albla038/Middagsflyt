@@ -23,13 +23,18 @@ export default function ScheduleCalendar() {
 
   function handleSelect(date: Date | undefined) {
     if (date) {
-      const scheduleId = params.id?.at(0);
+      const scheduleId = Array.isArray(params.id)
+        ? params.id?.at(0)
+        : params.id;
       const year = getISOWeekYear(date);
       const week = getISOWeek(date);
 
       const newSearchParams = new URLSearchParams(searchParams);
       newSearchParams.set("date", format(date, "yyyy-MM-dd"));
-      if (pathname.includes(`/schedule/${scheduleId}`)) {
+
+      if (pathname.includes(`/schedule/${scheduleId}/create`)) {
+        router.replace(`${pathname}/?${newSearchParams.toString()}`);
+      } else if (pathname.includes(`/schedule/${scheduleId}`)) {
         router.replace(
           `/schedule/${scheduleId}/${year}/${week}?${newSearchParams.toString()}`,
         );
