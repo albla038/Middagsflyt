@@ -27,7 +27,7 @@ export default function RecipeSelectionCard({
     recipeType,
     proteinType,
     totalTimeSeconds,
-    scheduledDate,
+    scheduledDates,
   } = recipe;
 
   const [isImageLoading, setImageLoading] = useState(true);
@@ -74,16 +74,20 @@ export default function RecipeSelectionCard({
             />
 
             {/* // Show scheduled date if the recipe is scheduled in the future */}
-            {scheduledDate && scheduledDate >= new Date() && (
+            {scheduledDates && (
               <div className="absolute top-2 right-2">
-                <Badge variant="secondary">
-                  <CalendarClock />
-                  {scheduledDate.toLocaleDateString("sv-SE", {
-                    weekday: "short",
-                    month: "short",
-                    day: "numeric",
-                  })}
-                </Badge>
+                {scheduledDates.map((date) => (
+                  <li key={date.toISOString()}>
+                    <Badge variant="secondary" className="w-full">
+                      <CalendarClock />
+                      {date.toLocaleDateString("sv-SE", {
+                        weekday: "short",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </Badge>
+                  </li>
+                ))}
               </div>
             )}
           </div>

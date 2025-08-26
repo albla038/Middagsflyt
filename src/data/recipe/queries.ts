@@ -5,6 +5,7 @@ import prisma from "@/lib/db";
 import { requireUser } from "@/data/user/verify-user";
 import { Order, SortBy } from "@/lib/types";
 import { RecipeDisplayContent } from "@/lib/schemas/recipe";
+import { startOfToday } from "date-fns";
 
 // HELPER FUNCTIONS
 function searchFilters(searchQuery: string) {
@@ -248,6 +249,12 @@ export async function fetchAllSavedRecipes(
             recipeYield: true,
             isImported: true,
             createdById: true,
+
+            schedules: {
+              select: {
+                date: true,
+              },
+            },
           },
         },
       },
@@ -255,11 +262,15 @@ export async function fetchAllSavedRecipes(
 
     return data.map((item) => {
       const { recipe } = item;
-      const { createdById, ...rest } = recipe;
+      const { createdById, schedules, ...rest } = recipe;
+
       return {
         ...rest,
         isSaved: true,
         isCreatedByUser: createdById === user.id,
+        scheduledDates: schedules
+          .map((scheduledRecipe) => scheduledRecipe.date)
+          .filter((date) => startOfToday() <= date),
       };
     });
   } catch (error) {

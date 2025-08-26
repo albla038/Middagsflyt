@@ -52,7 +52,7 @@ export default function RecipeListCard({
     isCreatedByUser,
     isImported,
     isSaved,
-    scheduledDate,
+    scheduledDates,
   } = recipe;
 
   return (
@@ -87,18 +87,24 @@ export default function RecipeListCard({
               </div>
             )}
 
-            {scheduledDate && (
+            {/* // Show scheduled date if the recipe is scheduled in the future */}
+            {scheduledDates && (
               <div className="absolute top-2 left-2">
-                <Badge variant="secondary">
-                  <CalendarClock />
-                  {scheduledDate.toLocaleDateString("sv-SE", {
-                    weekday: "short",
-                    month: "short",
-                    day: "numeric",
-                  })}
-                </Badge>
+                {scheduledDates.map((date) => (
+                  <li key={date.toISOString()}>
+                    <Badge variant="secondary" className="w-full">
+                      <CalendarClock />
+                      {date.toLocaleDateString("sv-SE", {
+                        weekday: "short",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </Badge>
+                  </li>
+                ))}
               </div>
             )}
+
             <ActionButtons
               isSaved={isSaved}
               id={id}

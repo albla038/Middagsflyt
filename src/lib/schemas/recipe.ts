@@ -13,7 +13,7 @@ export const recipeDisplayContentSchema = z.object({
   isSaved: z.boolean(),
   isImported: z.boolean().optional(),
   isCreatedByUser: z.boolean().optional(),
-  scheduledDate: z.date().optional(),
+  scheduledDates: z.array(z.date()).optional(),
 });
 
 export type RecipeDisplayContent = z.infer<typeof recipeDisplayContentSchema>;
