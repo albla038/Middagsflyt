@@ -8,9 +8,11 @@ import {
 import {
   deleteScheduledRecipe,
   updateScheduledRecipeAssignee,
+  updateScheduledRecipeDate,
 } from "@/data/scheduled-recipe/mutations";
 import { requireUser } from "@/data/user/verify-user";
 import { ActionState } from "@/lib/types";
+import { addDays } from "date-fns";
 import { revalidatePath } from "next/cache";
 import { z } from "zod/v4";
 
@@ -246,6 +248,82 @@ export async function updateAssignee({
       success: false,
       message:
         "Något gick fel när schemaläggningens ansvariga person skulle uppdateras. Vänligen försök igen!",
+    };
+  }
+
+  revalidatePath(`/schedule/${validatedScheduleId}`);
+
+  return {
+    success: true,
+    message: "Schemaläggningen uppdaterades",
+  };
+}
+
+type RescheduleRecipeState = ActionState<
+  void,
+  { scheduledRecipeId?: string[]; scheduleId?: string[]; newDate?: string[] }
+>;
+
+const rescheduleRecipeSchema = z.object({
+  scheduledRecipeId: z.cuid2("Ogiltigt recept-ID"),
+  scheduleId: z.cuid2("Ogiltigt kalender-ID"),
+  previousDate: z.date("Ogiltigt datum"),
+  difference: z.number().multipleOf(1, "Ogiltigt antal dagar"),
+});
+
+export async function rescheduleRecipe({
+  scheduledRecipeId,
+  scheduleId,
+  previousDate,
+  difference,
+}: {
+  scheduledRecipeId: string;
+  scheduleId: string;
+  previousDate: Date;
+  difference: number;
+}): Promise<RescheduleRecipeState> {
+  await requireUser();
+
+  // Validate the data
+  const validated = rescheduleRecipeSchema.safeParse({
+    scheduledRecipeId,
+    scheduleId,
+    previousDate,
+    difference,
+  });
+
+  // Return error if validation fails
+  if (!validated.success) {
+    const errors = z.flattenError(validated.error).fieldErrors;
+
+    return {
+      success: false,
+      message:
+        "Ogiltigt recept-, kalender-ID eller datum. Vänligen kontakta supporten",
+      errors,
+    };
+  }
+
+  const {
+    scheduledRecipeId: validatedScheduledRecipeId,
+    scheduleId: validatedScheduleId,
+    previousDate: validatedPreviousDate,
+    difference: validatedDifference,
+  } = validated.data;
+
+  const newDate = addDays(validatedPreviousDate, validatedDifference);
+
+  const mutationResult = await updateScheduledRecipeDate(
+    validatedScheduledRecipeId,
+    newDate,
+  );
+
+  // Return error if mutation fails
+  if (!mutationResult.ok) {
+    return {
+      success: false,
+      message:
+        "Något gick fel när schemaläggningen skulle flyttas. Vänligen försök igen!",
     };
   }
 
