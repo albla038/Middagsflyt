@@ -21,6 +21,7 @@ import {
   ArrowLeft,
   ArrowRight,
   ClockFading,
+  Edit,
   MoreHorizontal,
   Notebook,
   Trash2,
@@ -33,7 +34,7 @@ type RecipeCardProps = {
   scheduledRecipe: ScheduledRecipeDisplayContent;
   householdMembers: HouseholdMember[];
   scheduleId: string;
-  onEdit: (scheduledRecipe: ScheduledRecipeDisplayContent) => void;
+  onEditNote: (scheduledRecipe: ScheduledRecipeDisplayContent) => void;
   onDelete: (scheduledRecipeId: string) => void;
 };
 
@@ -41,7 +42,7 @@ export default function RecipeCard({
   scheduledRecipe,
   householdMembers,
   scheduleId,
-  onEdit,
+  onEditNote,
   onDelete,
 }: RecipeCardProps) {
   const {
@@ -110,6 +111,16 @@ export default function RecipeCard({
               <DropdownMenuItem onSelect={() => handleDateChange(-1)}>
                 <ArrowLeft />
                 Flytta till föregående dag
+              </DropdownMenuItem>
+
+              {/* Edit note action */}
+              <DropdownMenuItem
+                onSelect={() =>
+                  setTimeout(() => onEditNote(scheduledRecipe), 0)
+                }
+              >
+                <Edit />
+                Redigera anteckning
               </DropdownMenuItem>
 
               {/* Remove action */}

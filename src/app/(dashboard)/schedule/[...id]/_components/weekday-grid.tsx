@@ -7,6 +7,9 @@ import DeleteNoteAlert, {
 import DeleteRecipeAlert, {
   DeleteRecipeAlertState,
 } from "@/app/(dashboard)/schedule/[...id]/_components/delete-recipe-alert";
+import EditRecipeNoteDialog, {
+  EditRecipeNoteDialogState,
+} from "@/app/(dashboard)/schedule/[...id]/_components/edit-recipe-note-dialog";
 import NoteCard from "@/app/(dashboard)/schedule/[...id]/_components/note-card";
 import RecipeCard from "@/app/(dashboard)/schedule/[...id]/_components/recipe-card";
 import SaveNoteDialog, {
@@ -57,6 +60,8 @@ export default function WeekdayGrid({
   const [deleteNoteAlertState, setDeleteNoteAlertState] =
     useState<DeleteNoteAlertState>({ mode: "CLOSED" });
 
+  const [editRecipeNoteDialogState, setEditRecipeNoteDialogState] =
+    useState<EditRecipeNoteDialogState>({ mode: "CLOSED" });
   const [deleteRecipeAlertState, setDeleteRecipeAlertState] =
     useState<DeleteRecipeAlertState>({ mode: "CLOSED" });
 
@@ -107,7 +112,12 @@ export default function WeekdayGrid({
                           scheduledRecipeId,
                         })
                       }
-                      onEdit={() => {}}
+                      onEditNote={(scheduledRecipe) => {
+                        setEditRecipeNoteDialogState({
+                          mode: "EDITING",
+                          scheduledRecipe,
+                        });
+                      }}
                     />
                   </li>
                 ))}
@@ -165,6 +175,12 @@ export default function WeekdayGrid({
         scheduleId={scheduleId}
         alertState={deleteNoteAlertState}
         setAlertState={setDeleteNoteAlertState}
+      />
+
+      <EditRecipeNoteDialog
+        scheduleId={scheduleId}
+        dialogState={editRecipeNoteDialogState}
+        setDialogState={setEditRecipeNoteDialogState}
       />
 
       <DeleteRecipeAlert

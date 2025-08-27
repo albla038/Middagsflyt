@@ -9,6 +9,7 @@ import {
   deleteScheduledRecipe,
   updateScheduledRecipeAssignee,
   updateScheduledRecipeDate,
+  updateScheduledRecipeNote,
 } from "@/data/scheduled-recipe/mutations";
 import { requireUser } from "@/data/user/verify-user";
 import { ActionState } from "@/lib/types";
@@ -328,6 +329,78 @@ export async function rescheduleRecipe({
   }
 
   revalidatePath(`/schedule/${validatedScheduleId}`);
+
+  return {
+    success: true,
+    message: "Schemaläggningen uppdaterades",
+  };
+}
+
+type EditScheduledRecipeNoteState = ActionState<
+  void,
+  {
+    scheduledRecipeId?: string[];
+    scheduleId?: string[];
+    note?: string[];
+  }
+>;
+
+const editScheduledRecipeNoteSchema = z.object({
+  scheduledRecipeId: z.cuid2("Ogiltigt recept-ID"),
+  scheduleId: z.cuid2("Ogiltigt kalender-ID"),
+  note: z.preprocess(
+    (value) => (typeof value === "string" && value.trim() ? value : null),
+    z.string("Ange en giltig text").nullable(),
+  ),
+});
+
+export async function editScheduledRecipeNote(
+  scheduledRecipeId: string | undefined,
+  scheduleId: string,
+  prevState: EditScheduledRecipeNoteState,
+  formData: FormData,
+): Promise<EditScheduledRecipeNoteState> {
+  await requireUser();
+
+  const validated = editScheduledRecipeNoteSchema.safeParse({
+    scheduledRecipeId,
+    scheduleId,
+    ...Object.fromEntries(formData),
+  });
+
+  if (!validated.success) {
+    const errors = z.flattenError(validated.error).fieldErrors;
+
+    if (errors.note) {
+      return {
+        success: false,
+        message: "Ogiltig inmatning. Vänligen försök igen.",
+        errors,
+      };
+    }
+
+    return {
+      success: false,
+      message:
+        "Ogiltigt recept- eller kalender-ID. Vänligen kontakta supporten.",
+      errors,
+    };
+  }
+
+  const mutationResult = await updateScheduledRecipeNote(
+    validated.data.scheduledRecipeId,
+    validated.data.note,
+  );
+
+  if (!mutationResult.ok) {
+    return {
+      success: false,
+      message:
+        "Något gick fel när anteckningen skulle uppdateras. Vänligen försök igen.",
+    };
+  }
+
+  revalidatePath(`/schedule/${validated.data.scheduleId}`);
 
   return {
     success: true,

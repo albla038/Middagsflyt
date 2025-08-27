@@ -143,6 +143,42 @@ export async function updateScheduledRecipeDate(
   }
 }
 
+export async function updateScheduledRecipeNote(
+  scheduledRecipeId: string,
+  note: string | null,
+): Promise<Result<void, Error>> {
+  const user = await requireUser();
+
+  try {
+    await prisma.scheduledRecipe.update({
+      where: {
+        id: scheduledRecipeId,
+        schedule: {
+          household: {
+            members: {
+              some: { userId: user.id },
+            },
+          },
+        },
+      },
+
+      data: { note },
+    });
+
+    return {
+      ok: true,
+      data: undefined,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      error: new Error("Failed to update scheduled recipe note", {
+        cause: error instanceof Error ? error : new Error(String(error)),
+      }),
+    };
+  }
+}
+
 export async function deleteScheduledRecipe(
   scheduledRecipeId: string,
 ): Promise<Result<void, Error>> {
