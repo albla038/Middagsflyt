@@ -113,7 +113,11 @@ export default async function Page({
   );
 
   const numberOfServings = recipes.reduce((total, recipe) => {
-    return total + (recipe.servings || 0);
+    if (recipe.recipe.recipeType === "HUVUDRÄTT") {
+      return total + (recipe.servings || 0);
+    } else {
+      return total;
+    }
   }, 0);
 
   return (
