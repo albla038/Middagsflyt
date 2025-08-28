@@ -2,6 +2,7 @@
 
 import AssigneeSelect from "@/app/(dashboard)/schedule/[...id]/_components/assignee-select";
 import { rescheduleRecipe } from "@/app/(dashboard)/schedule/[...id]/actions";
+import { useSelection } from "@/app/(dashboard)/schedule/[...id]/selection-provider";
 import StatValueSmall from "@/components/stat-value-small";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -34,6 +35,7 @@ type RecipeCardProps = {
   scheduledRecipe: ScheduledRecipeDisplayContent;
   householdMembers: HouseholdMember[];
   scheduleId: string;
+  isChecked: boolean;
   onEditNote: (scheduledRecipe: ScheduledRecipeDisplayContent) => void;
   onDelete: (scheduledRecipeId: string) => void;
 };
@@ -42,9 +44,12 @@ export default function RecipeCard({
   scheduledRecipe,
   householdMembers,
   scheduleId,
+  isChecked,
   onEditNote,
   onDelete,
 }: RecipeCardProps) {
+  const { dispatch } = useSelection();
+
   const {
     id: scheduledRecipeId,
     date,
@@ -83,7 +88,21 @@ export default function RecipeCard({
     >
       {/* Action buttons */}
       <div className="flex items-center justify-between">
-        <Checkbox />
+        <Checkbox
+          checked={isChecked}
+          onCheckedChange={() =>
+            dispatch({
+              type: "TOGGLE_RECIPE",
+              payload: {
+                scheduleId,
+                scheduledRecipe: {
+                  id: scheduledRecipeId,
+                  name,
+                },
+              },
+            })
+          }
+        />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

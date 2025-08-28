@@ -18,14 +18,7 @@ import {
   startOfDay,
 } from "date-fns";
 import { sv } from "date-fns/locale";
-import {
-  ArrowLeft,
-  ArrowRight,
-  CopyCheck,
-  ListPlus,
-  Utensils,
-  WandSparkles,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, Utensils } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod/v4";
@@ -125,7 +118,7 @@ export default async function Page({
       <Header breadcrumbs={breadcrumbs} />
 
       {/* // TODO Remove max width */}
-      <main className="grid w-full gap-12 px-2 py-16 xl:max-w-[64rem] 2xl:max-w-[72rem]">
+      <main className="relative grid w-full gap-12 px-2 py-16 xl:max-w-[64rem] 2xl:max-w-[72rem]">
         <div className="flex justify-between">
           <div className="grid gap-2">
             <div className="flex items-center gap-3">
@@ -171,19 +164,6 @@ export default async function Page({
                 <span className="text-muted-foreground">portioner totalt</span>
               </span>
             </p>
-          </div>
-
-          {/* Action buttons */}
-          <div className="flex items-start gap-2">
-            <Button variant="ghost" size="icon">
-              <WandSparkles />
-            </Button>
-            <Button variant="secondary">
-              <CopyCheck /> Välj alla
-            </Button>
-            <Button>
-              <ListPlus /> Lägg i inköpslista
-            </Button>
           </div>
         </div>
 
