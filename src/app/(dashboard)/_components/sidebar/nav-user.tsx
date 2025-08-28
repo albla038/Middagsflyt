@@ -12,10 +12,10 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import UserAvatar from "@/components/user-avatar";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { authClient } from "@/lib/auth-client";
 import { EllipsisVertical, Loader2, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -26,7 +26,7 @@ export default function NavUser() {
   const { data: session, isPending } = authClient.useSession();
   const [logOutPending, startLogOutTransition] = useTransition();
   const router = useRouter();
-  const { isMobile } = useSidebar();
+  const isMobile = useIsMobile();
 
   function logOut() {
     startLogOutTransition(async () => {
@@ -48,7 +48,9 @@ export default function NavUser() {
     });
   }
 
-  if (isPending) {
+  const user = session?.user;
+
+  if (isPending || !user) {
     return (
       <SidebarMenu>
         <SidebarMenuItem>
@@ -63,9 +65,6 @@ export default function NavUser() {
       </SidebarMenu>
     );
   }
-
-  const user = session?.user;
-  if (!user) return null;
 
   return (
     <SidebarMenu>
