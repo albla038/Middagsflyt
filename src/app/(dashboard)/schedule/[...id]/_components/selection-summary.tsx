@@ -23,7 +23,7 @@ export default function SelectionSummary({
   }
 
   return (
-    <Card className="sticky bottom-16 left-2 w-full gap-4 bg-primary-foreground/95 md:max-w-xl">
+    <Card className="sticky bottom-16 left-2 mt-auto w-full gap-4 bg-primary-foreground/95 md:max-w-xl">
       <CardHeader>
         <div className="flex items-center justify-between">
           <H2 className="leading-none">Valda recept</H2>

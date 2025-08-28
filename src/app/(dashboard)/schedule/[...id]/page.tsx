@@ -1,4 +1,5 @@
 import Header, { BreadcrumbItem } from "@/app/(dashboard)/_components/header";
+import ActionButtons from "@/app/(dashboard)/schedule/[...id]/_components/action-buttons";
 import SelectionSummary from "@/app/(dashboard)/schedule/[...id]/_components/selection-summary";
 import WeekdayGrid from "@/app/(dashboard)/schedule/[...id]/_components/weekday-grid";
 import { Button } from "@/components/ui/button";
@@ -170,6 +171,8 @@ export default async function Page({
                 </span>
               </p>
             </div>
+
+            <ActionButtons scheduleId={id} recipes={recipes} />
           </div>
 
           <WeekdayGrid
