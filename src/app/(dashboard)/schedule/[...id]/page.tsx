@@ -1,6 +1,8 @@
 import Header, { BreadcrumbItem } from "@/app/(dashboard)/_components/header";
+import SelectionSummary from "@/app/(dashboard)/schedule/[...id]/_components/selection-summary";
 import WeekdayGrid from "@/app/(dashboard)/schedule/[...id]/_components/weekday-grid";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import H1 from "@/components/ui/typography/h1";
 import { fetchScheduleAndMembersById } from "@/data/schedule/queries";
 import { fetchScheduledNotesByDateRange } from "@/data/scheduled-note/queries";
@@ -114,70 +116,78 @@ export default async function Page({
   }, 0);
 
   return (
-    <div className="relative flex h-svh w-full flex-col items-center">
-      <Header breadcrumbs={breadcrumbs} />
+    <ScrollArea className="h-full">
+      <div className="relative flex h-svh w-full flex-col items-center">
+        <Header breadcrumbs={breadcrumbs} />
 
-      {/* // TODO Remove max width */}
-      <main className="relative grid w-full gap-12 px-2 py-16 xl:max-w-[64rem] 2xl:max-w-[72rem]">
-        <div className="flex justify-between">
-          <div className="grid gap-2">
-            <div className="flex items-center gap-3">
-              {/* WeekNavigator buttons */}
-              <div className="flex items-center gap-2">
-                <Button
-                  asChild
-                  variant="secondary"
-                  size="icon"
-                  className="size-7"
-                >
-                  <Link
-                    href={`/schedule/${id}/${prevWeekYear}/${prevWeek}${selectedDate ? `?date=${selectedDate}` : ""}`}
+        {/* // TODO Remove max width */}
+        <main className="relative flex size-full flex-col gap-12 px-2 py-16 xl:max-w-[64rem] 2xl:max-w-[72rem]">
+          <div className="flex justify-between">
+            <div className="grid gap-2">
+              <div className="flex items-center gap-3">
+                {/* WeekNavigator buttons */}
+                <div className="flex items-center gap-2">
+                  <Button
+                    asChild
+                    variant="secondary"
+                    size="icon"
+                    className="size-7"
                   >
-                    <ArrowLeft />
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  variant="secondary"
-                  size="icon"
-                  className="size-7"
-                >
-                  <Link
-                    href={`/schedule/${id}/${nextWeekYear}/${nextWeek}${selectedDate ? `?date=${selectedDate}` : ""}`}
+                    <Link
+                      href={`/schedule/${id}/${prevWeekYear}/${prevWeek}${selectedDate ? `?date=${selectedDate}` : ""}`}
+                    >
+                      <ArrowLeft />
+                    </Link>
+                  </Button>
+                  <Button
+                    asChild
+                    variant="secondary"
+                    size="icon"
+                    className="size-7"
                   >
-                    <ArrowRight />
-                  </Link>
-                </Button>
+                    <Link
+                      href={`/schedule/${id}/${nextWeekYear}/${nextWeek}${selectedDate ? `?date=${selectedDate}` : ""}`}
+                    >
+                      <ArrowRight />
+                    </Link>
+                  </Button>
+                </div>
+
+                <H1>
+                  Vecka {week}{" "}
+                  <span className="text-muted-foreground">
+                    ({formattedDateRange})
+                  </span>
+                </H1>
               </div>
-
-              <H1>
-                Vecka {week}{" "}
-                <span className="text-muted-foreground">
-                  ({formattedDateRange})
+              <p className="flex items-center gap-1">
+                <Utensils className="size-4" />
+                <span className="text-lg">
+                  {numberOfServings}{" "}
+                  <span className="text-muted-foreground">
+                    portioner totalt
+                  </span>
                 </span>
-              </H1>
+              </p>
             </div>
-            <p className="flex items-center gap-1">
-              <Utensils className="size-4" />
-              <span className="text-lg">
-                {numberOfServings}{" "}
-                <span className="text-muted-foreground">portioner totalt</span>
-              </span>
-            </p>
           </div>
-        </div>
 
-        <WeekdayGrid
-          scheduleId={id}
-          householdMembers={schedule.members}
-          startDateOfWeek={startDateOfWeek}
-          selectedDate={
-            selectedDate ? parse(selectedDate, "yyyy-MM-dd", new Date()) : today
-          }
-          recipes={recipes}
-          notes={notes}
-        />
-      </main>
-    </div>
+          <WeekdayGrid
+            scheduleId={id}
+            householdMembers={schedule.members}
+            startDateOfWeek={startDateOfWeek}
+            selectedDate={
+              selectedDate
+                ? parse(selectedDate, "yyyy-MM-dd", new Date())
+                : today
+            }
+            recipes={recipes}
+            notes={notes}
+          />
+
+          <SelectionSummary scheduleId={id} />
+        </main>
+      </div>
+    </ScrollArea>
   );
 }

@@ -83,7 +83,7 @@ export default function RecipeCard({
     <article
       className={cn(
         "flex flex-col gap-2 rounded-md border border-subtle bg-subtle p-3",
-        "has-[[aria-checked=true]]:border-primary has-[[aria-checked=true]]:bg-primary-foreground",
+        "has-[[aria-checked=true]]:border-primary",
       )}
     >
       {/* Action buttons */}

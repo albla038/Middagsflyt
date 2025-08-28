@@ -1,6 +1,7 @@
 "use client";
 
 import { deleteScheduledRecipeAction } from "@/app/(dashboard)/schedule/[...id]/actions";
+import { useSelection } from "@/app/(dashboard)/schedule/[...id]/selection-provider";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -29,6 +30,8 @@ export default function DeleteRecipeAlert({
   alertState,
   setAlertState,
 }: DeleteRecipeAlertProps) {
+  const { dispatch } = useSelection();
+
   const isOpen = alertState.mode === "OPEN";
 
   async function handleDelete() {
@@ -40,6 +43,16 @@ export default function DeleteRecipeAlert({
 
       if (state) {
         if (state.success) {
+          dispatch({
+            type: "TOGGLE_RECIPE",
+            payload: {
+              scheduleId,
+              scheduledRecipe: {
+                id: alertState.scheduledRecipeId,
+                name: "",
+              },
+            },
+          });
           toast.success(state.message);
         } else {
           toast.error(state.message);

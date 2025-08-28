@@ -75,7 +75,7 @@ export default function WeekdayGrid({
 
   return (
     <>
-      <div className="absolute top-0 right-0 flex items-start gap-2 pr-2 pt-16">
+      <div className="absolute top-16 right-2 flex items-start gap-2">
         {/* <Button variant="ghost" size="icon">
         <WandSparkles />
       </Button> */}
