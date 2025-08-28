@@ -22,7 +22,7 @@ import {
   ArrowRight,
   ClockFading,
   Edit,
-  MoreHorizontal,
+  MoreVertical,
   Notebook,
   Trash2,
   Utensils,
@@ -55,14 +55,7 @@ export default function RecipeCard({
     createdAt,
   } = scheduledRecipe;
 
-  const {
-    id: recipeId,
-    slug,
-    name,
-    totalTimeSeconds,
-    proteinType,
-    recipeType,
-  } = recipe;
+  const { slug, name, totalTimeSeconds, proteinType, recipeType } = recipe;
 
   async function handleDateChange(daysDifference: number) {
     const state = await rescheduleRecipe({
@@ -95,7 +88,7 @@ export default function RecipeCard({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="size-5">
-              <MoreHorizontal className="size-full" />
+              <MoreVertical className="size-4" />
             </Button>
           </DropdownMenuTrigger>
 

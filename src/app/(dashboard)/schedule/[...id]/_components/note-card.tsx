@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScheduledNoteDisplayContent } from "@/lib/types";
-import { Edit, MoreHorizontal, Trash2 } from "lucide-react";
+import { Edit, MoreVertical, Trash2 } from "lucide-react";
 
 type NoteCardProps = {
   note: ScheduledNoteDisplayContent;
@@ -28,7 +28,7 @@ export default function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="size-5">
-                <MoreHorizontal className="size-full" />
+                <MoreVertical className="size-4" />
               </Button>
             </DropdownMenuTrigger>
 
