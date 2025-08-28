@@ -96,7 +96,10 @@ function selectionReducer(
   }
 }
 
-type SelectionContext = [SelectionState, ActionDispatch<[action: Action]>];
+type SelectionContext = {
+  selectionState: SelectionState;
+  dispatch: ActionDispatch<[action: Action]>;
+};
 
 export const SelectionContext = createContext<SelectionContext | undefined>(
   undefined,
@@ -107,9 +110,13 @@ export default function SelectionProvider({
 }: {
   children: ReactNode;
 }) {
-  const value = useReducer(selectionReducer, {});
+  const [selectionState, dispatch] = useReducer(selectionReducer, {});
 
-  return <SelectionContext value={value}>{children}</SelectionContext>;
+  return (
+    <SelectionContext value={{ selectionState, dispatch }}>
+      {children}
+    </SelectionContext>
+  );
 }
 
 export function useSelection() {
