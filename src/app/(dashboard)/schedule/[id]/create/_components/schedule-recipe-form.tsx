@@ -1,6 +1,6 @@
 "use client";
 
-import RecipeSelectionCard from "@/app/(dashboard)/schedule/[id]/_components/recipe-selection-card";
+import RecipeSelectionCard from "@/app/(dashboard)/schedule/[id]/create/_components/recipe-selection-card";
 import { scheduleRecipe } from "@/app/(dashboard)/schedule/[id]/create/actions";
 import OrderByToggle from "@/components/recipe-list/order-by-toggle";
 import SearchBar from "@/components/recipe-list/search-bar";

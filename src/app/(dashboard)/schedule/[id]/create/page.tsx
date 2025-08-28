@@ -1,5 +1,5 @@
 import Header, { BreadcrumbItem } from "@/app/(dashboard)/_components/header";
-import ScheduleRecipeForm from "@/app/(dashboard)/schedule/[id]/_components/schedule-recipe-form";
+import ScheduleRecipeForm from "@/app/(dashboard)/schedule/[id]/create/_components/schedule-recipe-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import H1 from "@/components/ui/typography/h1";
 import { fetchAllSavedRecipes } from "@/data/recipe/queries";
