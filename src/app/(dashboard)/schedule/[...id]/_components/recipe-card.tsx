@@ -145,7 +145,7 @@ export default function RecipeCard({
           href={`/saved-recipes/${slug}`} // TODO Replace with /[schedule]/[week]/[recipeSlug]
           className={"hover:underline"}
         >
-          <H3 className="line-clamp-2">{name}</H3>
+          <H3 className="line-clamp-2 truncate">{name}</H3>
         </Link>
 
         <div className="flex flex-wrap items-center gap-2">

@@ -23,7 +23,9 @@ export default function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
     <article className="flex flex-col gap-2 rounded-md border border-border p-3">
       <div className="flex flex-col gap-1">
         <div className="flex items-start justify-between text-sm">
-          <h3 className="font-medium text-pretty">{note.title}</h3>
+          <h3 className="truncate font-medium tracking-tight text-wrap break-all">
+            {note.title}
+          </h3>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
