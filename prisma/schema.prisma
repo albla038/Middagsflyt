@@ -91,7 +91,8 @@ model Ingredient {
   ingredientAliases IngredientAlias[] // for alternative spellings
 
   // This ingredient can be part of many recipe ingredients
-  recipes RecipeIngredient[]
+  recipes           RecipeIngredient[]
+  shoppingListItems ShoppingListItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -230,8 +231,10 @@ model Household {
   id   String @id @default(cuid(2))
   name String
 
-  members      HouseholdMember[]
+  members HouseholdMember[]
+
   schedules    Schedule[]
+  shoppingList ShoppingList[]
   savedRecipes SavedRecipe[]
 
   createdAt DateTime @default(now())
@@ -293,6 +296,8 @@ model ScheduledRecipe {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  shoppingListItems ScheduledRecipeSource[]
+
   @@index([date])
   @@index([scheduleId])
   @@map("scheduled_recipes")
@@ -316,6 +321,60 @@ model ScheduledNote {
   @@index([date])
   @@index([scheduleId])
   @@map("scheduled_notes")
+}
+
+model ShoppingList {
+  id   String @id @default(cuid(2))
+  name String
+
+  household   Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  householdId String
+
+  items ShoppingListItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([householdId])
+  @@map("shopping_lists")
+}
+
+model ShoppingListItem {
+  id               String  @id @default(cuid(2))
+  name             String
+  quantity         Float?
+  unit             Unit?
+  displayOrder     Float?
+  isPurchased      Boolean @default(false)
+  isManuallyEdited Boolean @default(false)
+
+  shoppingList   ShoppingList @relation(fields: [shoppingListId], references: [id], onDelete: Cascade)
+  shoppingListId String
+
+  ingredient   Ingredient? @relation(fields: [ingredientId], references: [id])
+  ingredientId String?
+
+  sources ScheduledRecipeSource[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([shoppingListId])
+  @@map("shopping_list_items")
+}
+
+model ScheduledRecipeSource {
+  shoppingListItem   ShoppingListItem @relation(fields: [shoppingListItemId], references: [id], onDelete: Cascade)
+  shoppingListItemId String
+
+  scheduledRecipe   ScheduledRecipe @relation(fields: [scheduledRecipeId], references: [id], onDelete: Cascade)
+  scheduledRecipeId String
+
+  quantity Float
+  unit     Unit
+
+  @@id([shoppingListItemId, scheduledRecipeId])
+  @@map("shopping_list_item_sources")
 }
 
 model User {
