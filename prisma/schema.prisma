@@ -104,7 +104,8 @@ model IngredientCategory {
   id   String @id @default(cuid(2))
   name String @unique // e.g., "Grönsaker & Frukt", "Skafferi"...
 
-  ingredients Ingredient[]
+  ingredients       Ingredient[]
+  shoppingListItems ShoppingListItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -351,8 +352,13 @@ model ShoppingListItem {
   shoppingList   ShoppingList @relation(fields: [shoppingListId], references: [id], onDelete: Cascade)
   shoppingListId String
 
+  // Link to ingredient, if it exists
   ingredient   Ingredient? @relation(fields: [ingredientId], references: [id])
   ingredientId String?
+
+  // A copy of the category for this specific list item, allowing overrides
+  category   IngredientCategory? @relation(fields: [categoryId], references: [id])
+  categoryId String?
 
   sources ScheduledRecipeSource[]
 
