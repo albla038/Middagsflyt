@@ -1,12 +1,15 @@
 import { fetchShoppingList } from "@/data/shopping-list/queries";
 import { verifyUser } from "@/data/user/verify-user";
 import { safeQuery } from "@/lib/safe-query";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod/v4";
 
 const idSchema = z.cuid2();
 
-export async function GET({ params }: { params: Promise<{ id: string }> }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
   const user = await verifyUser();
 
   if (!user) {
