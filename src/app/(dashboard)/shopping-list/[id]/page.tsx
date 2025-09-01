@@ -1,0 +1,53 @@
+import Header, { BreadcrumbItem } from "@/app/(dashboard)/_components/header";
+import ShoppingList from "@/app/(dashboard)/shopping-list/[id]/_components/shopping-list";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  fetchShoppingList,
+} from "@/data/shopping-list/queries";
+import { shoppingListQueryOptions } from "@/hooks/queries/shopping-list/queries";
+import { getQueryClient } from "@/lib/query-client";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { notFound } from "next/navigation";
+import { z } from "zod/v4";
+
+const paramsSchema = z.object({ id: z.cuid2() });
+
+export default async function ShoppingListPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const validatedId = paramsSchema.safeParse(await params);
+  if (!validatedId.success) {
+    notFound();
+  }
+  const { id } = validatedId.data;
+
+  // fetchQuery() instead of prefetch to get access to the data in the server component
+  const queryClient = getQueryClient();
+  const list = await queryClient.fetchQuery({
+    queryKey: shoppingListQueryOptions(id).queryKey,
+    queryFn: () => fetchShoppingList(id),
+  });
+
+  if (!list) {
+    notFound();
+  }
+
+  const breadcrumbs: BreadcrumbItem[] = [
+    {
+      label: list.name,
+    },
+  ];
+
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <ScrollArea className="h-full">
+        <div className="relative flex w-full flex-col">
+          <Header breadcrumbs={breadcrumbs} />
+          <ShoppingList listId={id} />
+        </div>
+      </ScrollArea>
+    </HydrationBoundary>
+  );
+}
