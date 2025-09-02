@@ -9,6 +9,8 @@ const shoppingListItemSchema = z.object({
   displayOrder: z.number().nullable(),
   isPurchased: z.boolean(),
   isManuallyEdited: z.boolean(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
 });
 
 export const shoppingListResponseSchema = z.object({
