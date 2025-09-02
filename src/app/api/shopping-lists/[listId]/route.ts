@@ -4,11 +4,11 @@ import { safeQuery } from "@/lib/safe-query";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod/v4";
 
-const paramsSchema = z.object({ id: z.cuid2() });
+const paramsSchema = z.object({ listId: z.cuid2() });
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ listId: string }> },
 ) {
   const user = await verifyUser();
 
@@ -27,9 +27,9 @@ export async function GET(
     );
   }
 
-  const { id } = validated.data;
+  const { listId } = validated.data;
 
-  const shoppingListRes = await safeQuery(() => fetchShoppingList(id));
+  const shoppingListRes = await safeQuery(() => fetchShoppingList(listId));
 
   if (!shoppingListRes.ok) {
     return NextResponse.json(
