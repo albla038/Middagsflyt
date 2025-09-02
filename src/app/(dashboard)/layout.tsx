@@ -6,12 +6,12 @@ import { ReactNode } from "react";
 export default function ScheduleLayout({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider>
-      <div className="flex h-svh w-full">
-        <AppSidebar />
-        <RecipeSelection>
-          <div className="w-full">{children}</div>
-        </RecipeSelection>
-      </div>
+      <RecipeSelection>
+        <div className="flex h-svh w-full">
+          <AppSidebar />
+          <div className="h-full w-full">{children}</div>
+        </div>
+      </RecipeSelection>
     </SidebarProvider>
   );
 }

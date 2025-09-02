@@ -1,12 +1,12 @@
 import Header, { BreadcrumbItem } from "@/app/(dashboard)/_components/header";
 import ShoppingList from "@/app/(dashboard)/shopping-list/[id]/_components/shopping-list";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  fetchShoppingList,
-} from "@/data/shopping-list/queries";
+import { fetchShoppingList } from "@/data/shopping-list/queries";
 import { shoppingListQueryOptions } from "@/hooks/queries/shopping-list/queries";
 import { getQueryClient } from "@/lib/query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { MoreVertical } from "lucide-react";
 import { notFound } from "next/navigation";
 import { z } from "zod/v4";
 
@@ -42,10 +42,16 @@ export default async function ShoppingListPage({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ScrollArea className="h-full">
-        <div className="relative flex w-full flex-col">
-          <Header breadcrumbs={breadcrumbs} />
-          <ShoppingList listId={id} />
+      <ScrollArea className="h-full w-full bg-subtle">
+        <div className="relative flex flex-col items-center">
+          <Header breadcrumbs={breadcrumbs}>
+            <Button variant="ghost" size="icon" className="size-8">
+              <MoreVertical />
+            </Button>
+          </Header>
+          <main className="w-full max-w-xl">
+            <ShoppingList listId={id} />
+          </main>
         </div>
       </ScrollArea>
     </HydrationBoundary>
