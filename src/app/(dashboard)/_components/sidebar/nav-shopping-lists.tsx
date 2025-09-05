@@ -1,3 +1,5 @@
+"use client";
+
 import {
   SidebarGroup,
   SidebarGroupAction,
@@ -12,12 +14,26 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { List, ListOrdered, Plus } from "lucide-react";
+import { ShoppingList } from "@/lib/generated/prisma";
+import { List, Plus } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { use } from "react";
 
-export default function NavShoppingLists() {
+type NavShoppingListsProps = {
+  shoppingListsData: Promise<ShoppingList[]>;
+};
+
+export default function NavShoppingLists({
+  shoppingListsData,
+}: NavShoppingListsProps) {
+  const pathname = usePathname();
+
+  const shoppingLists = use(shoppingListsData);
+
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Inköpslisor</SidebarGroupLabel>
+      <SidebarGroupLabel>Inköpslistor</SidebarGroupLabel>
 
       <Tooltip delayDuration={200}>
         <TooltipTrigger asChild>
@@ -32,18 +48,15 @@ export default function NavShoppingLists() {
 
       <SidebarGroupContent>
         <SidebarMenu>
-
-          <SidebarMenuItem>
-            <SidebarMenuButton disabled>
-              <List /> <span>Att handla 7 aug.</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-
-          <SidebarMenuItem>
-            <SidebarMenuButton disabled>
-              <ListOrdered /> <span>Favoritvaror</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+          {shoppingLists.map((list) => (
+            <SidebarMenuItem key={list.id}>
+              <SidebarMenuButton isActive={pathname.includes(list.id)} asChild>
+                <Link href={`/shopping-list/${list.id}`}>
+                  <List /> <span>{list.name}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>

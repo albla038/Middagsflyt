@@ -21,9 +21,11 @@ import {
 import Link from "next/link";
 import { fetchAllSchedules } from "@/data/schedule/queries";
 import { Suspense } from "react";
+import { fetchAllShoppingLists } from "@/data/shopping-list/queries";
 
 export default function AppSidebar() {
   const scheduleData = fetchAllSchedules();
+  const shoppingListsData = fetchAllShoppingLists();
 
   return (
     <Sidebar collapsible="icon">
@@ -58,7 +60,9 @@ export default function AppSidebar() {
           </SidebarGroup>
 
           {/* Shopping lists menu */}
-          <NavShoppingLists />
+          <Suspense>
+            <NavShoppingLists shoppingListsData={shoppingListsData} />
+          </Suspense>
         </SidebarContent>
       </ScrollArea>
 
