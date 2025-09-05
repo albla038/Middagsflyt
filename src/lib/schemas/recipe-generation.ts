@@ -12,11 +12,14 @@ const recipeIngredient = z.object({
   }),
   name: z.string().min(1).meta({
     description:
-      "The unique, internal identifier for a single ingredient. The name must be in singular, lowercase form and contain no special characters like '&'. Use spaces for multi-word ingredients. Examples: 'mjöl', 'potatis', 'gul lök'. This must represent only one item. If the source text suggests alternatives (e.g., 'ris eller couscous', 'mat & bak smör'), you MUST choose only the most essential term ('ris', 'smör').",
+      "The unique, internal identifier for a single ingredient. The name must be in singular, lowercase form and contain no special characters like '&'. Multi-word names should also be in singular form and use spaces. Examples: 'mjöl', 'potatis', 'gul lök'. This must represent only one item. If the source text suggests alternatives (e.g., 'ris eller couscous', 'mat & bak smör'), you MUST choose only the most essential term ('ris', 'smör').",
   }),
   note: z.string().optional().meta({
     description:
-      "Any additional information about the ingredient from the source text. This includes preparation details, package size if the unit is 'FÖRP' (e.g. '(à 400 g)'), or other remarks .",
+      // "Any additional information about the ingredient from the source text, that does not belong in the 'text' field. This includes preparation details, package size if the unit is 'FÖRP' (e.g. '(à 400 g)'), or other remarks. If the information is already included elsewhere, leave this field empty",
+      "Supplementary details about the ingredient that do not fit in other fields. This includes preparation notes (e.g., 'finhackad', 'rumstempererat'), specific types (e.g., 'gärna ekologisk'), or package information (e.g., '(à 400 g)'). Do NOT repeat information already captured in the 'text', 'quantity', or 'unit' fields. If no such details exist, omit this field.",
+
+    // TODO Improve. Do not allow duplicates from the text
   }),
   quantity: z.number().optional().meta({
     description:
@@ -24,7 +27,7 @@ const recipeIngredient = z.object({
   }),
   unit: z.enum(Unit).optional().meta({
     description:
-      "The unit of measurement for the ingredient. This must be one of the predefined units. It must appear here, and not in the 'recipeIngredient' text.",
+      "The unit of measurement for the ingredient. This must be one of the predefined units. It must appear here, and not in the 'text' field.",
   }),
 });
 
