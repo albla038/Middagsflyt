@@ -69,10 +69,12 @@ export default async function Page({
               Sparade recept
             </H1>
             <div className="flex items-start gap-2">
-              <SavedOrCreatedTabs
-                savedCount={savedRecipesCount}
-                createdCount={createdRecipesCount}
-              />
+              <Suspense>
+                <SavedOrCreatedTabs
+                  savedCount={savedRecipesCount}
+                  createdCount={createdRecipesCount}
+                />
+              </Suspense>
               <AddRecipeDialogButton />
             </div>
           </div>

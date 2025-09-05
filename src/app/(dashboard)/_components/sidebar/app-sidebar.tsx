@@ -20,6 +20,7 @@ import {
 
 import Link from "next/link";
 import { fetchAllSchedules } from "@/data/schedule/queries";
+import { Suspense } from "react";
 
 export default function AppSidebar() {
   const scheduleData = fetchAllSchedules();
@@ -44,7 +45,9 @@ export default function AppSidebar() {
       <ScrollArea className="flex min-h-0 flex-1 flex-col">
         <SidebarContent>
           {/* Schedule menu */}
-          <NavSchedule scheduleData={scheduleData} />
+          <Suspense>
+            <NavSchedule scheduleData={scheduleData} />
+          </Suspense>
 
           {/* Recipes menu */}
           <SidebarGroup>

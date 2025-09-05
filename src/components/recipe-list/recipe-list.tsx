@@ -8,6 +8,7 @@ import { RecipeDisplayContent } from "@/lib/schemas/recipe";
 import { MyRecipesDisplay } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Grid2X2, ListFilter, Rows3 } from "lucide-react";
+import { Suspense } from "react";
 
 type RecipeListProps = {
   recipes: RecipeDisplayContent[];
@@ -25,20 +26,26 @@ export default function RecipeList({
   return (
     <div className="grid gap-4">
       <div className="flex items-center justify-between gap-2">
-        <SearchBar
-          placeholder="Sök recept..."
-          // className="w-[calc((1/3*100%)-0.5rem)]"
-          className="w-sm"
-        />
+        <Suspense>
+          <SearchBar
+            placeholder="Sök recept..."
+            // className="w-[calc((1/3*100%)-0.5rem)]"
+            className="w-sm"
+          />
+        </Suspense>
         <div className="flex items-center gap-2">
-          <OrderByToggle />
+          <Suspense>
+            <OrderByToggle />
+          </Suspense>
 
           <Button variant="outline" disabled>
             <ListFilter />
             <span>Filtrera</span>
           </Button>
 
-          <SortSelect />
+          <Suspense>
+            <SortSelect />
+          </Suspense>
 
           <Tabs defaultValue="grid">
             <TabsList>
