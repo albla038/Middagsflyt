@@ -1,5 +1,5 @@
 import { API_BASE_URL } from "@/lib/constants";
-import { ErrorResponseSchema } from "@/lib/schemas/response";
+import { responseSchema } from "@/lib/schemas/response";
 import {
   ShoppingListResponse,
   shoppingListResponseSchema,
@@ -9,26 +9,44 @@ export async function fetchShoppingList(
   listId: string,
 ): Promise<ShoppingListResponse> {
   // Fetch the data
-  const response = await fetch(`${API_BASE_URL}/api/shopping-lists/${listId}`);
-  const data = await response.json();
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}/api/shopping-lists/${listId}`);
+  } catch (error) {
+    throw new Error(
+      "Ett nätverksfel inträffade när inköpslistan skulle hämtas. Vänligen försök igen.",
+      {
+        cause: error instanceof Error ? error : new Error(String(error)),
+      },
+    );
+  }
+
+  let resData: unknown;
+  try {
+    resData = await response.json();
+  } catch {
+    throw new Error(`HTTP-fel ${response.status}: ${response.statusText}`);
+  }
 
   // Throw error if response is not ok
   if (!response.ok) {
-    const error = ErrorResponseSchema.safeParse(data);
+    const error = responseSchema.safeParse(resData);
     if (error.success) {
       throw new Error(error.data.message);
     } else {
-      throw new Error(`HTTP error ${response.status} ${response.statusText}`);
+      throw new Error(`HTTP-fel ${response.status}: ${response.statusText}`);
     }
   }
-
   // Validate the data
-  const validated = shoppingListResponseSchema.safeParse(data);
+  const validated = shoppingListResponseSchema.safeParse(resData);
 
   // Throw error if validation fails
   if (!validated.success) {
     throw new Error(
-      `Något gick fel när sparade recept skulle hämtas. Vänlig försök igen!`,
+      `Något gick fel när inköpslistan skulle hämtas. Vänligen försök igen!`,
+      {
+        cause: validated.error,
+      },
     );
   }
 
