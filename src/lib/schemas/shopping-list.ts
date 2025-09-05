@@ -1,7 +1,7 @@
 import { Unit } from "@/lib/generated/prisma";
 import { z } from "zod/v4";
 
-const shoppingListItemSchema = z.object({
+const shoppingListItemResponseSchema = z.object({
   id: z.cuid2(),
   name: z.string(),
   quantity: z.number().nullable(),
@@ -9,15 +9,34 @@ const shoppingListItemSchema = z.object({
   displayOrder: z.number().nullable(),
   isPurchased: z.boolean(),
   isManuallyEdited: z.boolean(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.iso.datetime().transform((str) => new Date(str)),
+  updatedAt: z.iso.datetime().transform((str) => new Date(str)),
 });
+
+export type ShoppingListItemResponse = z.infer<
+  typeof shoppingListItemResponseSchema
+>;
 
 export const shoppingListResponseSchema = z.object({
   id: z.cuid2(),
   name: z.string(),
-  items: z.array(shoppingListItemSchema),
+  items: z.array(shoppingListItemResponseSchema),
 });
 
-export type ShoppingListItem = z.infer<typeof shoppingListItemSchema>;
 export type ShoppingListResponse = z.infer<typeof shoppingListResponseSchema>;
+
+export const shoppingListItemUpdateSchema = z.object({
+  name: z.string().min(1, "Varans namn måste ha minst en bokstav").optional(),
+  quantity: z.number().nullable().optional(),
+  unit: z.enum(Unit).nullable().optional(),
+  displayOrder: z.number().nullable().optional(),
+  isPurchased: z.boolean().optional(),
+  isManuallyEdited: z.boolean().optional(),
+
+  // Relations
+  categoryId: z.cuid2().nullable().optional(),
+});
+
+export type ShoppingListItemUpdate = z.infer<
+  typeof shoppingListItemUpdateSchema
+>;
