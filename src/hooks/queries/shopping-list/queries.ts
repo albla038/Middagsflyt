@@ -3,7 +3,7 @@ import { queryOptions, useQuery } from "@tanstack/react-query";
 
 export function shoppingListQueryOptions(listId: string) {
   return queryOptions({
-    queryKey: ["shoppingList", "list", listId],
+    queryKey: ["shoppingList", listId],
     queryFn: () => fetchShoppingList(listId),
     enabled: !!listId,
   });
