@@ -90,12 +90,10 @@ export async function POST(
   }
 
   // Create the shopping list item
-  const mutationResult = await safeQuery(() =>
-    createShoppingListItem({
-      listId,
-      data: validatedBody.data,
-    }),
-  );
+  const mutationResult = await createShoppingListItem({
+    listId,
+    data: validatedBody.data,
+  });
 
   // Return 500 if mutation fails
   if (!mutationResult.ok) {
