@@ -68,8 +68,5 @@ export async function PATCH(
     );
   }
 
-  return NextResponse.json(
-    { message: "Shopping list item updated successfully" },
-    { status: 200 },
-  );
+  return NextResponse.json(mutationResult.data, { status: 200 });
 }

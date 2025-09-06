@@ -103,8 +103,5 @@ export async function POST(
     );
   }
 
-  return NextResponse.json(
-    { message: "Shopping list item created successfully" },
-    { status: 201 },
-  );
+  return NextResponse.json(mutationResult.data, { status: 201 });
 }
