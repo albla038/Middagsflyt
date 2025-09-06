@@ -68,6 +68,7 @@ export async function createShoppingListItem({
   }
 }
 
+// Update function to be used ONLY in route handler for user requests
 export async function updateShoppingListItem({
   listId,
   itemId,
@@ -83,7 +84,6 @@ export async function updateShoppingListItem({
     const result = await prisma.shoppingListItem.update({
       where: {
         id: itemId,
-        isManuallyEdited: true,
 
         shoppingList: {
           id: listId,
@@ -96,7 +96,10 @@ export async function updateShoppingListItem({
         },
       },
 
-      data,
+      data: {
+        ...data,
+        isManuallyEdited: true,
+      },
     });
 
     return { ok: true, data: result };
