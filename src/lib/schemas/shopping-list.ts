@@ -11,6 +11,8 @@ const shoppingListItemResponseSchema = z.object({
   isManuallyEdited: z.boolean(),
   createdAt: z.iso.datetime().transform((str) => new Date(str)),
   updatedAt: z.iso.datetime().transform((str) => new Date(str)),
+
+  // TODO Add Relations
 });
 
 export type ShoppingListItemResponse = z.infer<
@@ -25,6 +27,21 @@ export const shoppingListResponseSchema = z.object({
 
 export type ShoppingListResponse = z.infer<typeof shoppingListResponseSchema>;
 
+export const shoppingListItemCreateSchema = z.object({
+  id: z.cuid2(),
+  name: z.string().min(1, "Varans namn måste ha minst en bokstav"),
+  quantity: z.number().nullable().optional(),
+  unit: z.enum(Unit).nullable().optional(),
+  displayOrder: z.number().nullable().optional(),
+
+  // TODO Add Relations
+  // categoryId: z.cuid2().nullable().optional(),
+});
+
+export type ShoppingListItemCreate = z.infer<
+  typeof shoppingListItemCreateSchema
+>;
+
 export const shoppingListItemUpdateSchema = z.object({
   name: z.string().min(1, "Varans namn måste ha minst en bokstav").optional(),
   quantity: z.number().nullable().optional(),
@@ -33,8 +50,8 @@ export const shoppingListItemUpdateSchema = z.object({
   isPurchased: z.boolean().optional(),
   isManuallyEdited: z.boolean().optional(),
 
-  // Relations
-  categoryId: z.cuid2().nullable().optional(),
+  // TODO Add Relations
+  // categoryId: z.cuid2().nullable().optional(),
 });
 
 export type ShoppingListItemUpdate = z.infer<
