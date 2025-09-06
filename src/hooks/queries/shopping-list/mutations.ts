@@ -3,6 +3,7 @@ import { getQueryClient } from "@/lib/query-client";
 import { ShoppingListItemUpdate } from "@/lib/schemas/shopping-list";
 import { updateShoppingListItem } from "@/lib/services/shopping-list-items/mutations";
 import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export function useUpdateShoppingListItem(listId: string) {
   const queryClient = getQueryClient();
@@ -45,7 +46,7 @@ export function useUpdateShoppingListItem(listId: string) {
 
     // If the mutation fails, roll back data
     onError: (err, updatedItem, context) => {
-      // TODO Display error
+      toast.error(err.message);
       queryClient.setQueryData(
         shoppingListQueryOptions(listId).queryKey,
         context?.previousShoppingList,
