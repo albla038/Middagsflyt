@@ -30,12 +30,12 @@ export type ShoppingListResponse = z.infer<typeof shoppingListResponseSchema>;
 export const shoppingListItemCreateSchema = z.object({
   id: z.cuid2(),
   name: z.string().min(1, "Varans namn måste ha minst en bokstav"),
-  quantity: z.number().nullable().optional(),
-  unit: z.enum(Unit).nullable().optional(),
-  displayOrder: z.number().nullable().optional(),
+  quantity: z.number().nullable(),
+  unit: z.enum(Unit).nullable(),
+  displayOrder: z.number().nullable(),
 
   // TODO Add Relations
-  // categoryId: z.cuid2().nullable().optional(),
+  // categoryId: z.cuid2().nullable(),
 });
 
 export type ShoppingListItemCreate = z.infer<
@@ -48,7 +48,6 @@ export const shoppingListItemUpdateSchema = z.object({
   unit: z.enum(Unit).nullable().optional(),
   displayOrder: z.number().nullable().optional(),
   isPurchased: z.boolean().optional(),
-  isManuallyEdited: z.boolean().optional(),
 
   // TODO Add Relations
   // categoryId: z.cuid2().nullable().optional(),

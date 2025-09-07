@@ -1,13 +1,79 @@
 import { shoppingListQueryOptions } from "@/hooks/queries/shopping-list/queries";
 import { getQueryClient } from "@/lib/query-client";
-import { ShoppingListItemUpdate } from "@/lib/schemas/shopping-list";
-import { updateShoppingListItem } from "@/lib/services/shopping-list-items/mutations";
+import {
+  ShoppingListItemCreate,
+  ShoppingListItemUpdate,
+} from "@/lib/schemas/shopping-list";
+import {
+  createShoppingListItem,
+  updateShoppingListItem,
+} from "@/lib/services/shopping-list-items/mutations";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-export function useUpdateShoppingListItem(listId: string) {
-  const queryClient = getQueryClient();
+const queryClient = getQueryClient();
 
+export function useCreateShoppingListItem(listId: string) {
+  return useMutation({
+    mutationFn: (
+      newItem: ShoppingListItemCreate, // TODO Refactor to object param?
+    ) =>
+      createShoppingListItem({
+        listId,
+        data: newItem,
+      }),
+
+    onMutate: async (newItem) => {
+      const queryKey = shoppingListQueryOptions(listId).queryKey; // TODO Move to top of function?
+
+      await queryClient.cancelQueries({ queryKey });
+
+      // Snapshot the previous state
+      const prevShoppingList = queryClient.getQueryData(queryKey);
+
+      // Add to the new state optimistically
+      queryClient.setQueryData(queryKey, (old) => {
+        if (!old) return old;
+
+        const now = new Date();
+
+        return {
+          ...old,
+          items: [
+            {
+              ...newItem,
+              isPurchased: false,
+              isManuallyEdited: true,
+              createdAt: now,
+              updatedAt: now,
+            },
+            ...old.items,
+          ],
+        };
+      });
+
+      // Return a context object with the snapshotted state
+      return { prevShoppingList };
+    },
+
+    // If the mutation fails, roll back data
+    onError: (err, updatedItem, context) => {
+      toast.error(err.message);
+      queryClient.setQueryData(
+        shoppingListQueryOptions(listId).queryKey,
+        context?.prevShoppingList,
+      );
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: shoppingListQueryOptions(listId).queryKey,
+      });
+    },
+  });
+}
+
+export function useUpdateShoppingListItem(listId: string) {
   return useMutation({
     mutationFn: ({
       itemId,
@@ -24,9 +90,9 @@ export function useUpdateShoppingListItem(listId: string) {
       await queryClient.cancelQueries({ queryKey });
 
       // Snapshot the previous state
-      const previousShoppingList = queryClient.getQueryData(queryKey);
+      const prevShoppingList = queryClient.getQueryData(queryKey);
 
-      // Update to the new state
+      // Update to the new state optimistically
       queryClient.setQueryData(queryKey, (old) => {
         if (!old) return old;
 
@@ -41,7 +107,7 @@ export function useUpdateShoppingListItem(listId: string) {
       });
 
       // Return a context object with the snapshotted state
-      return { previousShoppingList };
+      return { prevShoppingList };
     },
 
     // If the mutation fails, roll back data
@@ -49,7 +115,7 @@ export function useUpdateShoppingListItem(listId: string) {
       toast.error(err.message);
       queryClient.setQueryData(
         shoppingListQueryOptions(listId).queryKey,
-        context?.previousShoppingList,
+        context?.prevShoppingList,
       );
     },
 

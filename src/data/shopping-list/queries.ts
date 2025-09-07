@@ -49,7 +49,9 @@ export async function fetchShoppingList(
         id: true,
         name: true,
 
-        items: true,
+        items: {
+          orderBy: {createdAt: "desc"}
+        },
 
         //     // TODO Add relations when needed
         //     // ingredient: {
