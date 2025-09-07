@@ -43,13 +43,14 @@ export default async function ShoppingListPage({
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <ScrollArea className="h-full w-full bg-subtle">
-        <div className="relative flex flex-col items-center">
+        <div className="relative flex h-svh flex-col items-center">
           <Header breadcrumbs={breadcrumbs}>
+            {/* // TODO replace with dropdown menu */}
             <Button variant="ghost" size="icon" className="size-8">
               <MoreVertical />
             </Button>
           </Header>
-          <main className="w-full max-w-xl">
+          <main className="relative h-full w-full max-w-lg">
             <ShoppingList listId={id} />
           </main>
         </div>
