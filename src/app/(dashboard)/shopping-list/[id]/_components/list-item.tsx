@@ -1,13 +1,12 @@
 "use client";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { ShoppingListItem } from "@/lib/schemas/shopping-list";
+import { ShoppingListItemResponse } from "@/lib/schemas/shopping-list";
 import { cn } from "@/lib/utils";
 import { GripVertical } from "lucide-react";
 
 type ListItemProps = {
-  item: ShoppingListItem;
+  item: ShoppingListItemResponse;
   onTogglePurchased: (itemId: string, isPurchased: boolean) => void;
   onEdit: (itemId: string) => void;
 };
@@ -20,9 +19,9 @@ export default function ListItem({
   const { id, name, quantity, unit, isPurchased } = item;
 
   return (
-    <Label
+    <div
       className={cn(
-        "flex w-full items-center gap-2 text-base font-normal",
+        "flex items-center gap-2",
         "has-data-[state=checked]:text-muted-foreground",
       )}
     >
@@ -37,10 +36,12 @@ export default function ListItem({
         className="flex grow items-center justify-start gap-1"
         onClick={() => onEdit(id)}
       >
-        <div className="flex items-center gap-0.5 text-muted-foreground">
-          <span>{quantity}</span>
-          {unit && unit !== "ST" && <span>{unit.toLocaleLowerCase()}</span>}
-        </div>
+        {quantity && (
+          <div className="flex items-center gap-0.5 text-muted-foreground">
+            <span>{quantity}</span>
+            {unit && unit !== "ST" && <span>{unit.toLocaleLowerCase()}</span>}
+          </div>
+        )}
 
         <span className="line-clamp-1 truncate">{name}</span>
       </div>
@@ -51,6 +52,6 @@ export default function ListItem({
 
         <GripVertical className="cursor-move text-muted-foreground/50" />
       </div>
-    </Label>
+    </div>
   );
 }
