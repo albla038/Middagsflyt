@@ -21,11 +21,12 @@ export default function ListItem({
   return (
     <div
       className={cn(
-        "flex items-center gap-2",
+        "flex cursor-pointer items-center gap-2",
         "has-data-[state=checked]:text-muted-foreground",
       )}
     >
       <Checkbox
+        className="cursor-pointer"
         checked={isPurchased}
         onCheckedChange={(checked) => {
           if (typeof checked === "boolean") onTogglePurchased(id, checked);
