@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,10 +9,8 @@ import {
 } from "@/components/ui/dialog";
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
@@ -22,7 +19,7 @@ import { ReactNode } from "react";
 
 type ResponsiveDialogProps = {
   children: ReactNode;
-  title: string;
+  title?: string;
   description?: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -41,18 +38,16 @@ export default function ResponsiveDialog({
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerContent>
-          <DrawerHeader>
-            <DrawerTitle>{title}</DrawerTitle>
-            <DrawerDescription>{description}</DrawerDescription>
-          </DrawerHeader>
+          {title && (
+            <DrawerHeader>
+              <DrawerTitle>{title}</DrawerTitle>
+              {description && (
+                <DrawerDescription>{description}</DrawerDescription>
+              )}
+            </DrawerHeader>
+          )}
 
-          <div className="px-4">{children}</div>
-
-          <DrawerFooter className="pt-2">
-            <DrawerClose asChild>
-              <Button variant="outline">Close</Button>
-            </DrawerClose>
-          </DrawerFooter>
+          <div className="p-4">{children}</div>
         </DrawerContent>
       </Drawer>
     );
@@ -60,11 +55,15 @@ export default function ResponsiveDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
-        </DialogHeader>
+      <DialogContent showCloseButton={!!title}>
+        {title && (
+          <DialogHeader>
+            <DialogTitle>{title}</DialogTitle>
+            {description && (
+              <DialogDescription>{description}</DialogDescription>
+            )}
+          </DialogHeader>
+        )}
 
         {children}
       </DialogContent>
