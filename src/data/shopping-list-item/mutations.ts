@@ -3,7 +3,7 @@ import "server-only";
 import { requireUser } from "@/data/user/verify-user";
 import { Result } from "@/lib/types";
 import prisma from "@/lib/db";
-import { ShoppingListItem } from "@/lib/generated/prisma";
+import { Prisma, ShoppingListItem } from "@/lib/generated/prisma";
 import {
   ShoppingListItemCreate,
   ShoppingListItemUpdate,
@@ -115,6 +115,55 @@ export async function updateShoppingListItem({
       ok: false,
       error: new Error(
         "Något gick fel när varan skulle uppdateras. Vänligen försök igen.",
+        { cause: error instanceof Error ? error : Error(String(error)) },
+      ),
+    };
+  }
+}
+
+export async function deleteShoppingListItem({
+  listId,
+  itemId,
+}: {
+  listId: string;
+  itemId: string;
+}): Promise<Result<ShoppingListItem, Error>> {
+  const user = await requireUser();
+
+  try {
+    const result = await prisma.shoppingListItem.delete({
+      where: {
+        id: itemId,
+
+        shoppingList: {
+          id: listId,
+          household: {
+            members: {
+              some: { userId: user.id },
+            },
+          },
+        },
+      },
+    });
+
+    return { ok: true, data: result };
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
+      return {
+        ok: false,
+        error: new Error("Varan du försöker radera finns inte.", {
+          cause: error,
+        }),
+      };
+    }
+
+    return {
+      ok: false,
+      error: new Error(
+        "Något gick fel när varan skulle raderas. Vänligen försök igen.",
         { cause: error instanceof Error ? error : Error(String(error)) },
       ),
     };
