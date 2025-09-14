@@ -1,8 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { DialogClose, DialogFooter, DialogTitle } from "@/components/ui/dialog";
-import { DrawerTitle } from "@/components/ui/drawer";
+import {
+  DialogClose,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { DrawerDescription, DrawerTitle } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -98,11 +103,21 @@ export default function EditItemForm({
   return (
     <Form {...form}>
       <form className="grid gap-4" onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="flex items-center justify-between">
+        <div className="flex items-start justify-between">
           {isMobile ? (
-            <DrawerTitle>Redigera vara</DrawerTitle>
+            <div className="grid gap-2">
+              <DrawerTitle>Redigera vara</DrawerTitle>
+              <DrawerDescription>
+                Redigera eller ta bort varan
+              </DrawerDescription>
+            </div>
           ) : (
-            <DialogTitle>Redigera vara</DialogTitle>
+            <div className="grid gap-2">
+              <DialogTitle>Redigera vara</DialogTitle>
+              <DialogDescription>
+                Redigera eller ta bort varan
+              </DialogDescription>
+            </div>
           )}
           <Button
             type="button"
