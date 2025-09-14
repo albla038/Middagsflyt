@@ -34,7 +34,7 @@ export async function fetchShoppingList(
   const user = await requireUser();
 
   try {
-    return await prisma.shoppingList.findUnique({
+    const list = await prisma.shoppingList.findUnique({
       where: {
         id: listId,
 
@@ -50,23 +50,35 @@ export async function fetchShoppingList(
         name: true,
 
         items: {
-          orderBy: {createdAt: "desc"}
-        },
+          orderBy: { createdAt: "desc" },
 
-        //     // TODO Add relations when needed
-        //     // ingredient: {
-        //     //   select: {}
-        //     // },
-        //     // category: {
-        //     //   select: { id: true, name: true },
-        //     // },
-        //     // sources: {
-        //     //   select: {},
-        //     // },
-        //   },
-        // },
+          select: {
+            // All scalar fields
+            id: true,
+            name: true,
+            quantity: true,
+            unit: true,
+            displayOrder: true,
+            isPurchased: true,
+            isManuallyEdited: true,
+
+            createdAt: true,
+            updatedAt: true,
+
+            // Relations
+            category: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+            // TODO Add more relations
+          },
+        },
       },
     });
+
+    return list;
   } catch (error) {
     throw new Error(
       "Något gick fel när inköpslistan skulle hämtas. Vänligen försök igen.",

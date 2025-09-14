@@ -2,6 +2,7 @@ import Header, { BreadcrumbItem } from "@/app/(dashboard)/_components/header";
 import ShoppingList from "@/app/(dashboard)/shopping-list/[id]/_components/shopping-list";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { fetchIngredientCategories } from "@/data/ingredient-category/queries";
 import { fetchShoppingList } from "@/data/shopping-list/queries";
 import { shoppingListQueryOptions } from "@/hooks/queries/shopping-list/queries";
 import { getQueryClient } from "@/lib/query-client";
@@ -40,6 +41,8 @@ export default async function ShoppingListPage({
     },
   ];
 
+  const categories = await fetchIngredientCategories();
+
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <ScrollArea className="h-full w-full bg-subtle">
@@ -51,7 +54,7 @@ export default async function ShoppingListPage({
             </Button>
           </Header>
           <main className="relative h-full w-full max-w-lg">
-            <ShoppingList listId={id} />
+            <ShoppingList listId={id} categories={categories} />
           </main>
         </div>
       </ScrollArea>
