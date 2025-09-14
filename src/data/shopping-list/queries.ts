@@ -52,28 +52,8 @@ export async function fetchShoppingList(
         items: {
           orderBy: { createdAt: "desc" },
 
-          select: {
-            // All scalar fields
-            id: true,
-            name: true,
-            quantity: true,
-            unit: true,
-            displayOrder: true,
-            isPurchased: true,
-            isManuallyEdited: true,
-
-            createdAt: true,
-            updatedAt: true,
-
-            // Relations
-            category: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-            // TODO Add more relations
-          },
+          // TODO Add relations
+          // include: {},
         },
       },
     });

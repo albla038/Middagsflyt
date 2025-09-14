@@ -13,13 +13,7 @@ const shoppingListItemResponseSchema = z.object({
   createdAt: z.iso.datetime().transform((str) => new Date(str)),
   updatedAt: z.iso.datetime().transform((str) => new Date(str)),
 
-  // Relations
-  category: z
-    .object({
-      id: z.cuid2(),
-      name: z.string(),
-    })
-    .nullable(),
+  categoryId: z.cuid2().nullable(),
   // TODO Add more relations
 });
 
@@ -42,8 +36,8 @@ export const shoppingListItemCreateSchema = z.object({
   unit: z.enum(Unit).nullable(),
   displayOrder: z.number().nullable(),
 
-  // TODO Add Relations
-  // categoryId: z.cuid2().nullable(),
+  categoryId: z.cuid2().nullable(),
+  // TODO Add more relations
 });
 
 export type ShoppingListItemCreate = z.infer<
@@ -61,8 +55,8 @@ export const shoppingListItemUpdateSchema = z.object({
   displayOrder: z.number().nullable().optional(),
   isPurchased: z.boolean().optional(),
 
-  // TODO Add Relations
   categoryId: z.cuid2().nullable().optional(),
+  // TODO Add Relations
 });
 
 export type ShoppingListItemUpdate = z.infer<
@@ -77,8 +71,8 @@ export const shoppingListItemEditFormSchema = z.object({
   quantity: z.number().positive("Ange en positiv mängd").nullable(),
   unit: z.enum(Unit).nullable(),
 
+  categoryId: z.cuid2().nullable(),
   // TODO Add Relations
-  categoryId: z.cuid2().nullable().optional(),
 });
 
 export type ShoppingListItemEditForm = z.infer<

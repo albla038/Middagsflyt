@@ -68,6 +68,7 @@ export default function ShoppingList({
             quantity: null,
             unit: null,
             displayOrder: null,
+            categoryId: null,
           })
         }
       />

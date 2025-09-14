@@ -47,11 +47,18 @@ export async function createShoppingListItem({
 
     const result = await prisma.shoppingListItem.create({
       data: {
-        ...data,
+        id: data.id,
+        name: data.name,
+        quantity: data.quantity,
+        unit: data.unit,
+        displayOrder: data.displayOrder,
         isManuallyEdited: true,
 
         shoppingList: {
           connect: { id: listId },
+        },
+        category: {
+          connect: data.categoryId ? { id: data.categoryId } : undefined,
         },
       },
     });
