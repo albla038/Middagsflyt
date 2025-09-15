@@ -1,4 +1,4 @@
-import { shoppingListQueryOptions } from "@/hooks/queries/shopping-list/queries";
+import { shoppingListQueryOptions } from "@/hooks/queries/shopping-list/options";
 import { getQueryClient } from "@/lib/query-client";
 import {
   ShoppingListItemCreate,
@@ -56,7 +56,7 @@ export function useCreateShoppingListItem(listId: string) {
     },
 
     // If the mutation fails, roll back data
-    onError: (err, updatedItem, context) => {
+    onError: (err, updatedList, context) => {
       toast.error(err.message);
       queryClient.setQueryData(queryKey, context?.prevShoppingList);
     },
@@ -107,12 +107,18 @@ export function useUpdateShoppingListItem(listId: string) {
     },
 
     // If the mutation fails, roll back data
-    onError: (err, updatedItem, context) => {
+    onError: (err, updatedList, context) => {
       toast.error(err.message);
-      queryClient.setQueryData(
+      queryClient.setQueryData(queryKey, context?.prevShoppingList);
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
         queryKey,
-        context?.prevShoppingList,
-      );
+      });
+    },
+  });
+}
     },
 
     onSettled: () => {

@@ -1,13 +1,5 @@
-import { fetchShoppingList } from "@/lib/services/shopping-lists/queries";
-import { queryOptions, useQuery } from "@tanstack/react-query";
-
-export function shoppingListQueryOptions(listId: string) {
-  return queryOptions({
-    queryKey: ["shoppingList", listId],
-    queryFn: () => fetchShoppingList(listId),
-    enabled: !!listId,
-  });
-}
+import { shoppingListQueryOptions } from "@/hooks/queries/shopping-list/options";
+import { useQuery } from "@tanstack/react-query";
 
 export function useShoppingList(listId: string) {
   return useQuery(shoppingListQueryOptions(listId));

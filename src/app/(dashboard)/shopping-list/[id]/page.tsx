@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { fetchIngredientCategories } from "@/data/ingredient-category/queries";
 import { fetchShoppingList } from "@/data/shopping-list/queries";
-import { shoppingListQueryOptions } from "@/hooks/queries/shopping-list/queries";
+import { shoppingListQueryOptions } from "@/hooks/queries/shopping-list/options";
 import { getQueryClient } from "@/lib/query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { MoreVertical } from "lucide-react";
