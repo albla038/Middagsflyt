@@ -25,14 +25,16 @@ export async function fetchShoppingList(
   try {
     resData = await response.json();
   } catch {
-    throw new Error(`HTTP-fel ${response.status}: ${response.statusText}`);
+    throw new Error(
+      "Kunde inte tolka svaret från servern. Vänligen försök igen.",
+    );
   }
 
   // Throw error if response is not ok
   if (!response.ok) {
-    const error = responseSchema.safeParse(resData);
-    if (error.success) {
-      throw new Error(error.data.message);
+    const validatedErrorRes = responseSchema.safeParse(resData);
+    if (validatedErrorRes.success) {
+      throw new Error(validatedErrorRes.data.message);
     } else {
       throw new Error(`HTTP-fel ${response.status}: ${response.statusText}`);
     }

@@ -26,7 +26,7 @@ export async function createShoppingListItem({
     );
   } catch (error) {
     throw new Error(
-      "Ett nätverksfel inträffade vid uppdatering av varan. Vänligen försök igen.",
+      "Ett nätverksfel inträffade när varan skulle skapas. Vänligen försök igen.",
       {
         cause: error instanceof Error ? error : new Error(String(error)),
       },
@@ -37,14 +37,16 @@ export async function createShoppingListItem({
   try {
     resData = await response.json();
   } catch {
-    throw new Error(`HTTP-fel ${response.status}: ${response.statusText}`);
+    throw new Error(
+      "Kunde inte tolka svaret från servern. Vänligen försök igen.",
+    );
   }
 
   if (!response.ok) {
-    const error = zodErrorResponseSchema.safeParse(resData);
-    if (error.success) {
-      throw new Error(error.data.message, {
-        cause: error.data.errors,
+    const validatedErrorRes = zodErrorResponseSchema.safeParse(resData);
+    if (validatedErrorRes.success) {
+      throw new Error(validatedErrorRes.data.message, {
+        cause: validatedErrorRes.data.errors,
       });
     } else {
       throw new Error(`HTTP-fel ${response.status}: ${response.statusText}`);
@@ -75,7 +77,7 @@ export async function updateShoppingListItem({
     );
   } catch (error) {
     throw new Error(
-      "Ett nätverksfel inträffade vid uppdatering av varan. Vänligen försök igen.",
+      "Ett nätverksfel inträffade när varan skulle uppdateras. Vänligen försök igen.",
       {
         cause: error instanceof Error ? error : new Error(String(error)),
       },
@@ -86,7 +88,22 @@ export async function updateShoppingListItem({
   try {
     resData = await response.json();
   } catch {
-    throw new Error(`HTTP-fel ${response.status}: ${response.statusText}`);
+    throw new Error(
+      "Kunde inte tolka svaret från servern. Vänligen försök igen.",
+    );
+  }
+
+  if (!response.ok) {
+    const validatedErrorRes = zodErrorResponseSchema.safeParse(resData);
+    if (validatedErrorRes.success) {
+      throw new Error(validatedErrorRes.data.message, {
+        cause: validatedErrorRes.data.errors,
+      });
+    } else {
+      throw new Error(`HTTP-fel ${response.status}: ${response.statusText}`);
+    }
+  }
+}
   }
 
   if (!response.ok) {
