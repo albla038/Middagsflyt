@@ -6,6 +6,7 @@ import {
 } from "@/lib/schemas/shopping-list";
 import {
   createShoppingListItem,
+  deleteShoppingListItem,
   updateShoppingListItem,
 } from "@/lib/services/shopping-list-items/mutations";
 import { useMutation } from "@tanstack/react-query";
@@ -119,11 +120,47 @@ export function useUpdateShoppingListItem(listId: string) {
     },
   });
 }
+
+export function useDeleteShoppingListItem(listId: string) {
+  // Get query key from options object
+  const queryKey = shoppingListQueryOptions(listId).queryKey;
+
+  return useMutation({
+    mutationFn: (itemId: string) =>
+      deleteShoppingListItem({
+        listId,
+        itemId,
+      }),
+
+    onMutate: async (itemIdToDelete) => {
+      await queryClient.cancelQueries({ queryKey });
+
+      // Snapshot the previous state
+      const prevShoppingList = queryClient.getQueryData(queryKey);
+
+      // Update to the new state optimistically
+      queryClient.setQueryData(queryKey, (old) => {
+        if (!old) return old;
+
+        return {
+          ...old,
+          items: old.items.filter((item) => item.id !== itemIdToDelete),
+        };
+      });
+
+      // Return a context object with the snapshotted state
+      return { prevShoppingList };
+    },
+
+    // If the mutation fails, roll back data
+    onError: (err, updatedList, context) => {
+      toast.error(err.message);
+      queryClient.setQueryData(queryKey, context?.prevShoppingList);
     },
 
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKey,
+        queryKey,
       });
     },
   });

@@ -34,7 +34,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useUpdateShoppingListItem } from "@/hooks/queries/shopping-list/mutations";
+import {
+  useDeleteShoppingListItem,
+  useUpdateShoppingListItem,
+} from "@/hooks/queries/shopping-list/mutations";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
@@ -53,10 +56,13 @@ export default function EditItemForm({
   categories,
   onOpenChange,
 }: EditItemFormProps) {
+  // Query hook
   const { data: list, isPending, error } = useShoppingList(listId);
   const item = list?.items.find((item) => item.id === itemId);
 
+  // Mutation hooks
   const { mutate: updateItem } = useUpdateShoppingListItem(listId);
+  const { mutate: deleteItem } = useDeleteShoppingListItem(listId);
 
   const form = useForm<ShoppingListItemEditForm>({
     resolver: zodResolver(shoppingListItemEditFormSchema),
@@ -119,12 +125,17 @@ export default function EditItemForm({
               </DialogDescription>
             </div>
           )}
+
+          {/* Delete item action button */}
           <Button
             type="button"
             variant="ghost"
             size="sm"
             className="text-destructive hover:text-destructive"
-            onClick={() => {}} // TODO Implement delete
+            onClick={() => {
+              deleteItem(item.id);
+              onOpenChange(false);
+            }}
           >
             <Trash2 />
             <span>Ta bort</span>
@@ -194,8 +205,8 @@ export default function EditItemForm({
                 <FormControl>
                   <Input
                     type="number"
-                    step={0.1}
-                    min={0}
+                    step={0.5}
+                    min={0.5}
                     placeholder="Ange mängd"
                     autoComplete="off"
                     {...field}
