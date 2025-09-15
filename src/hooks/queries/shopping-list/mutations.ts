@@ -14,18 +14,17 @@ import { toast } from "sonner";
 const queryClient = getQueryClient();
 
 export function useCreateShoppingListItem(listId: string) {
+  // Get query key from options object
+  const queryKey = shoppingListQueryOptions(listId).queryKey;
+
   return useMutation({
-    mutationFn: (
-      newItem: ShoppingListItemCreate, // TODO Refactor to object param?
-    ) =>
+    mutationFn: (newItem: ShoppingListItemCreate) =>
       createShoppingListItem({
         listId,
         data: newItem,
       }),
 
     onMutate: async (newItem) => {
-      const queryKey = shoppingListQueryOptions(listId).queryKey; // TODO Move to top of function?
-
       await queryClient.cancelQueries({ queryKey });
 
       // Snapshot the previous state
@@ -59,21 +58,21 @@ export function useCreateShoppingListItem(listId: string) {
     // If the mutation fails, roll back data
     onError: (err, updatedItem, context) => {
       toast.error(err.message);
-      queryClient.setQueryData(
-        shoppingListQueryOptions(listId).queryKey,
-        context?.prevShoppingList,
-      );
+      queryClient.setQueryData(queryKey, context?.prevShoppingList);
     },
 
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey: shoppingListQueryOptions(listId).queryKey,
+        queryKey,
       });
     },
   });
 }
 
 export function useUpdateShoppingListItem(listId: string) {
+  // Get query key from options object
+  const queryKey = shoppingListQueryOptions(listId).queryKey;
+
   return useMutation({
     mutationFn: ({
       itemId,
@@ -84,9 +83,6 @@ export function useUpdateShoppingListItem(listId: string) {
     }) => updateShoppingListItem({ listId, itemId, data }),
 
     onMutate: async (updatedItem) => {
-      // Get query key from options object
-      const queryKey = shoppingListQueryOptions(listId).queryKey;
-
       await queryClient.cancelQueries({ queryKey });
 
       // Snapshot the previous state
@@ -114,14 +110,14 @@ export function useUpdateShoppingListItem(listId: string) {
     onError: (err, updatedItem, context) => {
       toast.error(err.message);
       queryClient.setQueryData(
-        shoppingListQueryOptions(listId).queryKey,
+        queryKey,
         context?.prevShoppingList,
       );
     },
 
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey: shoppingListQueryOptions(listId).queryKey,
+        queryKey: queryKey,
       });
     },
   });
