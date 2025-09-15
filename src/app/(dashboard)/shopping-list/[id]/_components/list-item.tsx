@@ -38,10 +38,14 @@ export default function ListItem({
         onClick={() => onEdit(id)}
       >
         {quantity && (
-          <div className="flex items-center gap-0.5 text-muted-foreground">
-            <span>{quantity}</span>
-            {unit && unit !== "ST" && <span>{unit.toLocaleLowerCase()}</span>}
-          </div>
+          <>
+            <span className="text-muted-foreground">{quantity}</span>
+            {unit && unit !== "ST" && (
+              <span className="text-muted-foreground">
+                {unit.toLocaleLowerCase()}
+              </span>
+            )}
+          </>
         )}
 
         <span className="line-clamp-1 truncate">{name}</span>
