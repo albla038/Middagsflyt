@@ -15,6 +15,7 @@ import {
   ScheduledNoteDisplayContent,
   ScheduledRecipeDisplayContent,
 } from "@/lib/types";
+import { ShoppingListItemResponse } from "@/lib/schemas/shopping-list";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -166,4 +167,52 @@ export function groupRecipesByWeekday(
   });
 
   return groupedRecipes;
+}
+
+export function groupItemsByCategory(
+  items: ShoppingListItemResponse[],
+  categories: { id: string; name: string }[],
+) {
+  // Map category IDs to names for easy lookup
+  const categoryMap = new Map<string, string>();
+  categories.forEach(({ id, name }) => categoryMap.set(id, name));
+
+  const groupedItems = new Map<string, ShoppingListItemResponse[]>();
+
+  // Sort items into categories
+  items.forEach((item) => {
+    if (item.isPurchased) {
+      // Items that are purchased go into a separate "Purchased" category
+      const categoryData = groupedItems.get("Handlat");
+      if (categoryData) {
+        categoryData.push(item);
+      } else {
+        groupedItems.set("Handlat", [item]);
+      }
+    } else if (!item.categoryId) {
+      // Items without a category go into an "Other" category
+      const categoryData = groupedItems.get("Övrigt");
+      if (categoryData) {
+        categoryData.push(item);
+      } else {
+        groupedItems.set("Övrigt", [item]);
+      }
+    } else {
+      // Get category name from ID
+      const categoryName = categoryMap.get(item.categoryId);
+      if (!categoryName) {
+        throw new Error(`Category not found for id: ${item.categoryId}`);
+      }
+
+      // Items with a category go into their respective category
+      const categoryData = groupedItems.get(categoryName);
+      if (categoryData) {
+        categoryData.push(item);
+      } else {
+        groupedItems.set(categoryName, [item]);
+      }
+    }
+  });
+
+  return groupedItems;
 }

@@ -10,6 +10,7 @@ import {
   useUpdateShoppingListItem,
 } from "@/hooks/queries/shopping-list/mutations";
 import { useShoppingList } from "@/hooks/queries/shopping-list/queries";
+import { groupItemsByCategory } from "@/lib/utils";
 import { createId } from "@paralleldrive/cuid2";
 import { useState } from "react";
 
@@ -39,26 +40,58 @@ export default function ShoppingList({
 
   const { items } = list;
 
+  // Group items by category for display
+  const groupedItems = groupItemsByCategory(items, categories);
+
   return (
     <div className="flex h-full flex-col justify-between">
-      <div className="flex flex-col gap-2 p-2">
-        <div className="flex flex-col gap-3 rounded-md bg-background p-3">
-          <Label>{String("Övrigt").toUpperCase()}</Label>
-          <ul className="grid gap-2">
-            {items.map((item) => (
-              <li key={item.id}>
-                <ListItem
-                  item={item}
-                  onTogglePurchased={(itemId, isPurchased) => {
-                    updateItem({ itemId, data: { isPurchased } });
-                  }}
-                  onEdit={(itemId) => setEditingItemId(itemId)}
-                />
+      <ul className="flex flex-col gap-2 p-2">
+        {/*  Categories except "Purchased" */}
+        {[...groupedItems].map(
+          ([name, items]) =>
+            name !== "Handlat" && (
+              <li
+                key={name}
+                className="flex flex-col gap-3 rounded-md bg-background p-3"
+              >
+                <Label>{name.toUpperCase()}</Label>
+                <ul className="grid gap-2">
+                  {items.map((item) => (
+                    <li key={item.id}>
+                      <ListItem
+                        item={item}
+                        onTogglePurchased={(itemId, isPurchased) => {
+                          updateItem({ itemId, data: { isPurchased } });
+                        }}
+                        onEdit={(itemId) => setEditingItemId(itemId)}
+                      />
+                    </li>
+                  ))}
+                </ul>
               </li>
-            ))}
-          </ul>
-        </div>
-      </div>
+            ),
+        )}
+
+        {/* Purchased items */}
+        {groupedItems.has("Handlat") && (
+          <li className="flex flex-col gap-3 rounded-md p-3">
+            <Label>{"Handlat".toUpperCase()}</Label>
+            <ul className="grid gap-2">
+              {groupedItems.get("Handlat")?.map((item) => (
+                <li key={item.id}>
+                  <ListItem
+                    item={item}
+                    onTogglePurchased={(itemId, isPurchased) => {
+                      updateItem({ itemId, data: { isPurchased } });
+                    }}
+                    onEdit={(itemId) => setEditingItemId(itemId)}
+                  />
+                </li>
+              ))}
+            </ul>
+          </li>
+        )}
+      </ul>
 
       <ListInput
         onCreateItem={(value) =>
