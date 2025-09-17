@@ -179,38 +179,37 @@ export function groupItemsByCategory(
 
   const groupedItems = new Map<string, ShoppingListItemResponse[]>();
 
+  // Pre-populate the map to maintain a consistent order
+  categories.forEach(({ name }) => groupedItems.set(name, []));
+  groupedItems.set("Handlat", []);
+
   // Sort items into categories
   items.forEach((item) => {
+    let categoryName: string;
+
     if (item.isPurchased) {
-      // Items that are purchased go into a separate "Purchased" category
-      const categoryData = groupedItems.get("Handlat");
-      if (categoryData) {
-        categoryData.push(item);
-      } else {
-        groupedItems.set("Handlat", [item]);
-      }
+      categoryName = "Handlat";
     } else if (!item.categoryId) {
-      // Items without a category go into an "Other" category
-      const categoryData = groupedItems.get("Övrigt");
-      if (categoryData) {
-        categoryData.push(item);
-      } else {
-        groupedItems.set("Övrigt", [item]);
-      }
+      categoryName = "Övrigt";
     } else {
       // Get category name from ID
-      const categoryName = categoryMap.get(item.categoryId);
-      if (!categoryName) {
+      const foundCategoryName = categoryMap.get(item.categoryId);
+      if (!foundCategoryName) {
         throw new Error(`Category not found for id: ${item.categoryId}`);
       }
 
-      // Items with a category go into their respective category
-      const categoryData = groupedItems.get(categoryName);
-      if (categoryData) {
-        categoryData.push(item);
-      } else {
-        groupedItems.set(categoryName, [item]);
-      }
+      categoryName = foundCategoryName;
+    }
+
+    const categoryData = groupedItems.get(categoryName);
+    if (categoryData) {
+      categoryData.push(item);
+    }
+  });
+
+  [...groupedItems].forEach(([category, items]) => {
+    if (items.length === 0) {
+      groupedItems.delete(category);
     }
   });
 
