@@ -12,6 +12,26 @@ import { createId } from "@paralleldrive/cuid2";
 import Fuse from "fuse.js";
 import { IngredientWithAlias } from "@/lib/types";
 
+function isExactMatch(
+  ingredient: IngredientWithAlias,
+  matchValue: string,
+): boolean {
+  const trimmedMatchValue = matchValue.trim().toLowerCase();
+  if (!trimmedMatchValue) return false;
+
+  const { name, displayNameSingular, displayNamePlural, ingredientAliases } =
+    ingredient;
+
+  return (
+    name.toLowerCase() === trimmedMatchValue ||
+    displayNameSingular.toLowerCase() === trimmedMatchValue ||
+    displayNamePlural.toLowerCase() === trimmedMatchValue ||
+    ingredientAliases.some(
+      (alias) => alias.name.toLowerCase() === trimmedMatchValue,
+    )
+  );
+}
+
 type ListInputProps = {
   listId: string;
   ingredients: IngredientWithAlias[];
@@ -40,24 +60,19 @@ export default function ListInput({ listId, ingredients }: ListInputProps) {
     [ingredients],
   );
 
-  const filteredIngredients = fuse.search(value).map(({ item }) => item);
+  console.log(fuse.search(value));
+  const filteredIngredients = fuse
+    .search(value)
+    .filter(({ item }) => !isExactMatch(item, value))
+    .map(({ item }) => item);
 
   function handleSubmit() {
     const trimmedValue = value.trim();
 
-    if (trimmedValue !== "") {
-      const existingIngredient = ingredients.find((ingredient) => {
-        const { name, displayNameSingular, displayNamePlural } = ingredient;
-
-        return (
-          name.toLowerCase() === trimmedValue.toLowerCase() ||
-          displayNameSingular.toLowerCase() === trimmedValue.toLowerCase() ||
-          displayNamePlural.toLowerCase() === trimmedValue.toLowerCase() ||
-          ingredient.ingredientAliases.some(
-            (alias) => alias.name.toLowerCase() === trimmedValue.toLowerCase(),
-          )
-        );
-      });
+    if (trimmedValue) {
+      const existingIngredient = ingredients.find((ingredient) =>
+        isExactMatch(ingredient, trimmedValue),
+      );
 
       const unit = existingIngredient?.shoppingUnit || null;
       const categoryId = existingIngredient?.ingredientCategoryId || null;
