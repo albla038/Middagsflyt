@@ -1,6 +1,8 @@
 import "server-only";
 
 import prisma from "@/lib/db";
+import { Ingredient } from "@/lib/generated/prisma";
+import { IngredientWithAlias } from "@/lib/types";
 
 export async function fetchMissingIngredients(
   ingredientList: string[],
@@ -38,6 +40,34 @@ export async function fetchMissingIngredients(
     return [...missingNames];
   } catch (error) {
     throw new Error("Failed to fetch missing ingredients", {
+      cause: error instanceof Error ? error : new Error(String(error)),
+    });
+  }
+}
+
+export async function fetchAllIngredientsWithAlias(): Promise<IngredientWithAlias[]> {
+  try {
+    const ingredients = await prisma.ingredient.findMany({
+      orderBy: { name: "asc" },
+      select: {
+        id: true,
+        name: true,
+        displayNameSingular: true,
+        displayNamePlural: true,
+        shoppingUnit: true,
+        ingredientCategoryId: true,
+
+        ingredientAliases: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    return ingredients;
+  } catch (error) {
+    throw new Error("Failed to fetch ingredients", {
       cause: error instanceof Error ? error : new Error(String(error)),
     });
   }

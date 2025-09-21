@@ -1,4 +1,4 @@
-import { ProteinType, RecipeType } from "@/lib/generated/prisma";
+import { ProteinType, RecipeType, Unit } from "@/lib/generated/prisma";
 import { User } from "better-auth";
 
 export type Result<Data, Err> =
@@ -82,4 +82,14 @@ export type ScheduledRecipeDisplayContent = {
     totalTimeSeconds: number | null;
   };
   assignee: User | null;
+};
+
+export type IngredientWithAlias = {
+  id: string;
+  name: string;
+  displayNameSingular: string;
+  displayNamePlural: string;
+  shoppingUnit: Unit;
+  ingredientCategoryId: string;
+  ingredientAliases: { name: string }[];
 };

@@ -3,6 +3,7 @@ import ShoppingList from "@/app/(dashboard)/shopping-list/[id]/_components/shopp
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { fetchIngredientCategories } from "@/data/ingredient-category/queries";
+import { fetchAllIngredientsWithAlias } from "@/data/ingredient/queries";
 import { fetchShoppingList } from "@/data/shopping-list/queries";
 import { shoppingListQueryOptions } from "@/hooks/queries/shopping-list/options";
 import { getQueryClient } from "@/lib/query-client";
@@ -41,7 +42,11 @@ export default async function ShoppingListPage({
     },
   ];
 
-  const categories = await fetchIngredientCategories();
+  // const categories = await fetchIngredientCategories();
+  const [categories, ingredients] = await Promise.all([
+    fetchIngredientCategories(),
+    fetchAllIngredientsWithAlias(),
+  ]);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
@@ -54,7 +59,11 @@ export default async function ShoppingListPage({
             </Button>
           </Header>
           <main className="relative h-full w-full max-w-lg">
-            <ShoppingList listId={id} categories={categories} />
+            <ShoppingList
+              listId={id}
+              categories={categories}
+              ingredients={ingredients}
+            />
           </main>
         </div>
       </ScrollArea>

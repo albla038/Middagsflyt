@@ -6,26 +6,26 @@ import ListItem from "@/app/(dashboard)/shopping-list/[id]/_components/list-item
 import ResponsiveDialog from "@/components/responsive-dialog";
 import { Label } from "@/components/ui/label";
 import {
-  useCreateShoppingListItem,
   useUpdateShoppingListItem,
 } from "@/hooks/queries/shopping-list/mutations";
 import { useShoppingList } from "@/hooks/queries/shopping-list/queries";
+import { IngredientWithAlias } from "@/lib/types";
 import { groupItemsByCategory } from "@/lib/utils";
-import { createId } from "@paralleldrive/cuid2";
 import { useState } from "react";
 
 type ShoppingListProps = {
   listId: string;
   categories: { id: string; name: string }[];
+  ingredients: IngredientWithAlias[];
 };
 
 export default function ShoppingList({
   listId,
   categories,
+  ingredients,
 }: ShoppingListProps) {
   const { data: list, isPending, error } = useShoppingList(listId);
   const { mutate: updateItem } = useUpdateShoppingListItem(listId);
-  const { mutate: createItem } = useCreateShoppingListItem(listId);
 
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   // consider saving last edited item id with a usePrevious hook
@@ -93,18 +93,7 @@ export default function ShoppingList({
         )}
       </ul>
 
-      <ListInput
-        onCreateItem={(value) =>
-          createItem({
-            id: createId(),
-            name: value,
-            quantity: null,
-            unit: null,
-            displayOrder: null,
-            categoryId: null,
-          })
-        }
-      />
+      <ListInput listId={listId} ingredients={ingredients} />
 
       <ResponsiveDialog
         open={!!editingItemId}
