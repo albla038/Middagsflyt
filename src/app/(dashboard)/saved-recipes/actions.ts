@@ -1,6 +1,6 @@
 "use server";
 
-import { z } from "zod/v4";
+import z from "zod";
 import { scrapeRecipeData } from "@/lib/scraping";
 import { createRecipeFromGeneratedData } from "@/data/recipe/mutations";
 import { revalidatePath } from "next/cache";

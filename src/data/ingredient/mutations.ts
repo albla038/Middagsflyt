@@ -6,7 +6,7 @@ import {
   generatedIngredientsSchema,
 } from "@/lib/schemas/ingredient-generation";
 import { generateIngredientsWithLlm } from "@/lib/llm";
-import { z } from "zod/v4";
+import z from "zod";
 import prisma from "@/lib/db";
 import { Ingredient } from "@/lib/generated/prisma";
 

@@ -24,7 +24,7 @@ import { sv } from "date-fns/locale";
 import { ArrowLeft, ArrowRight, Utensils } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { z } from "zod/v4";
+import z from "zod";
 
 export default async function Page({
   params,

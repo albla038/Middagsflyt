@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import { z } from "zod/v4";
+import z from "zod";
 import { Result } from "@/lib/types";
 import { JsonLdRecipe } from "@/lib/schemas/json-ld-recipe";
 import { parse, toSeconds } from "iso8601-duration";

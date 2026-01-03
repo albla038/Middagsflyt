@@ -9,7 +9,7 @@ import H1 from "@/components/ui/typography/h1";
 import RecipeList from "@/components/recipe-list/recipe-list";
 import { Button } from "@/components/ui/button";
 import { Bookmark, ChevronRight, Database, LoaderCircle } from "lucide-react";
-import { z } from "zod/v4";
+import z from "zod";
 import SavedOrCreatedTabs from "@/app/(dashboard)/saved-recipes/_components/saved-or-created-tabs";
 import { Suspense } from "react";
 import {

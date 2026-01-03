@@ -2,7 +2,7 @@ import { createShoppingListItem } from "@/data/shopping-list-item/mutations";
 import { verifyUser } from "@/data/user/verify-user";
 import { shoppingListItemCreateSchema } from "@/lib/schemas/shopping-list";
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod/v4";
+import z from "zod";
 
 const paramsSchema = z.object({ listId: z.cuid2() });
 

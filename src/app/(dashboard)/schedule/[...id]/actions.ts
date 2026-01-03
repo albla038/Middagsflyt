@@ -15,7 +15,7 @@ import { requireUser } from "@/data/user/verify-user";
 import { ActionState } from "@/lib/types";
 import { addDays } from "date-fns";
 import { revalidatePath } from "next/cache";
-import { z } from "zod/v4";
+import z from "zod";
 
 type SaveFormState = ActionState<
   void,

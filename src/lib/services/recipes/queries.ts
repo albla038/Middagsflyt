@@ -4,7 +4,7 @@ import {
   recipeDisplayContentSchema,
 } from "@/lib/schemas/recipe";
 import { Order, SortBy } from "@/lib/types";
-import { z } from "zod/v4";
+import z from "zod";
 
 const validationSchema = z.array(recipeDisplayContentSchema);
 

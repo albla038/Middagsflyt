@@ -1,5 +1,5 @@
 import { Unit } from "@/lib/generated/prisma";
-import { z } from "zod/v4";
+import z from "zod";
 
 const shoppingListItemResponseSchema = z.object({
   id: z.cuid2(),

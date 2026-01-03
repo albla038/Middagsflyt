@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import z from "zod";
 
 const recipeIngredientSchema = z.union([
   z.array(z.string().min(1)).min(1),

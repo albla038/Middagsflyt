@@ -1,5 +1,5 @@
 import { ProteinType, RecipeType, Unit } from "@/lib/generated/prisma";
-import { z } from "zod/v4";
+import z from "zod";
 
 const recipeIngredient = z.object({
   referenceId: z.int().meta({

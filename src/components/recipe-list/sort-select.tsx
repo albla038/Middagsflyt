@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { SORT_BY_OPTIONS, SortBy } from "@/lib/types";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { z } from "zod/v4";
+import z from "zod";
 
 const sortSchema = z.enum(SORT_BY_OPTIONS).catch("createdAt");
 

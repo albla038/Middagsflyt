@@ -9,7 +9,7 @@ import {
   recipeLlmResponseSchema,
 } from "@/lib/schemas/recipe-generation";
 import { PermissionResult, Result } from "@/lib/types";
-import { z } from "zod/v4";
+import z from "zod";
 
 // TODO Change userAgent in production
 async function checkUrlPermission(

@@ -10,7 +10,7 @@ import { getQueryClient } from "@/lib/query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { MoreVertical } from "lucide-react";
 import { notFound } from "next/navigation";
-import { z } from "zod/v4";
+import z from "zod";
 
 const paramsSchema = z.object({ id: z.cuid2() });
 

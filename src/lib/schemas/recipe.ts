@@ -1,5 +1,5 @@
 import { ProteinType, RecipeType } from "@/lib/generated/prisma";
-import { z } from "zod/v4";
+import z from "zod";
 
 export const recipeDisplayContentSchema = z.object({
   id: z.string(),

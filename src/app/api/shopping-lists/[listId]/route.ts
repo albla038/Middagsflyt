@@ -2,7 +2,7 @@ import { fetchShoppingList } from "@/data/shopping-list/queries";
 import { verifyUser } from "@/data/user/verify-user";
 import { safeQuery } from "@/lib/safe-query";
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod/v4";
+import z from "zod";
 
 const paramsSchema = z.object({ listId: z.cuid2() });
 

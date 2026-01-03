@@ -3,7 +3,7 @@ import { verifyUser } from "@/data/user/verify-user";
 import { safeQuery } from "@/lib/safe-query";
 import { ORDER_OPTIONS, SORT_BY_OPTIONS } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod/v4";
+import z from "zod";
 
 const searchParamsSchema = z.object({
   query: z.string().catch(""),

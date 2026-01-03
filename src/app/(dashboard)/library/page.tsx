@@ -3,7 +3,7 @@ import { fetchAllRecipesForUser } from "@/data/recipe/queries";
 import H1 from "@/components/ui/typography/h1";
 import RecipeList from "@/components/recipe-list/recipe-list";
 import { Database, LoaderCircle } from "lucide-react";
-import { z } from "zod/v4";
+import z from "zod";
 import { Suspense } from "react";
 import { ORDER_OPTIONS, SORT_BY_OPTIONS } from "@/lib/types";
 

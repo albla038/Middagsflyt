@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import z from "zod";
 
 import { Unit } from "@/lib/generated/prisma";
 import { fetchIngredientCategories } from "@/data/ingredient-category/queries";
