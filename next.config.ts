@@ -1,14 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true, // TODO Switch of in production
-  },
   images: {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "**",
+        hostname: "**", // TODO Remove in production
         pathname: "**/*.(jpg|jpeg|png|gif|svg|webp)",
       },
     ],
