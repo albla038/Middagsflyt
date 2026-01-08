@@ -1,4 +1,3 @@
-import { API_BASE_URL } from "@/lib/constants";
 import {
   RecipeDisplayContent,
   recipeDisplayContentSchema,
@@ -20,9 +19,7 @@ export async function fetchSavedRecipes({
   const searchParams = new URLSearchParams({ query, order, sort });
 
   // Fetch the data
-  const response = await fetch(
-    `${API_BASE_URL}/api/recipes/saved?${searchParams.toString()}`,
-  );
+  const response = await fetch(`/api/recipes/saved?${searchParams.toString()}`);
 
   // Throw error if response is not ok
   if (!response.ok) {

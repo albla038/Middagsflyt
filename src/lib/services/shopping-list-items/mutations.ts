@@ -1,4 +1,3 @@
-import { API_BASE_URL } from "@/lib/constants";
 import { zodErrorResponseSchema } from "@/lib/schemas/response";
 import {
   ShoppingListItemCreate,
@@ -15,7 +14,7 @@ export async function createShoppingListItem({
   let response: Response;
   try {
     response = await fetch(
-      `${API_BASE_URL}/api/shopping-lists/${listId}/items`,
+      `/api/shopping-lists/${listId}/items`,
       {
         method: "POST",
         headers: {
@@ -66,7 +65,7 @@ export async function updateShoppingListItem({
   let response: Response;
   try {
     response = await fetch(
-      `${API_BASE_URL}/api/shopping-lists/${listId}/items/${itemId}`,
+      `/api/shopping-lists/${listId}/items/${itemId}`,
       {
         method: "PATCH",
         headers: {
@@ -115,7 +114,7 @@ export async function deleteShoppingListItem({
   let response: Response;
   try {
     response = await fetch(
-      `${API_BASE_URL}/api/shopping-lists/${listId}/items/${itemId}`,
+      `/api/shopping-lists/${listId}/items/${itemId}`,
       {
         method: "DELETE",
       },

@@ -1,4 +1,3 @@
-import { API_BASE_URL } from "@/lib/constants";
 import { responseSchema } from "@/lib/schemas/response";
 import {
   ShoppingListResponse,
@@ -11,7 +10,7 @@ export async function fetchShoppingList(
   // Fetch the data
   let response: Response;
   try {
-    response = await fetch(`${API_BASE_URL}/api/shopping-lists/${listId}`);
+    response = await fetch(`/api/shopping-lists/${listId}`);
   } catch (error) {
     throw new Error(
       "Ett nätverksfel inträffade när inköpslistan skulle hämtas. Vänligen försök igen.",
