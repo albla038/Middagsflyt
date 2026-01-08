@@ -43,9 +43,9 @@ export default function NavShoppingLists({
           if (!open) setCreateDialogOpen(false);
         }}
         title="Skapa ny inköpslista"
-        description="Listan delas automatisk med alla medlemmar i ditt hushåll" // TODO Check
+        description="Listan delas automatisk med alla medlemmar i ditt hushåll"
       >
-        <CreateShoppingListForm />
+        <CreateShoppingListForm onClose={() => setCreateDialogOpen(false)} />
       </ResponsiveDialog>
 
       <SidebarGroup>

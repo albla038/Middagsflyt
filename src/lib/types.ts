@@ -33,6 +33,18 @@ export type ActionState<Data, Err> =
     }
   | null;
 
+export type ActionResult<Data, Err> =
+  | {
+      success: true;
+      message: string;
+      data?: Data;
+    }
+  | {
+      success: false;
+      message: string;
+      errors?: Err;
+    };
+
 export const ORDER_OPTIONS = ["asc", "desc"] as const;
 export const SORT_BY_OPTIONS = ["createdAt", "name"] as const;
 export const MY_RECIPES_DISPLAY_OPTIONS = ["saved", "created"] as const;

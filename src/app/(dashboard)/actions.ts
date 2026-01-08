@@ -5,8 +5,13 @@ import {
   deleteSchedule,
   renameSchedule,
 } from "@/data/schedule/mutations";
+import { createShoppingList } from "@/data/shopping-list/mutations";
 import { requireUser } from "@/data/user/verify-user";
-import { ActionState } from "@/lib/types";
+import {
+  ShoppingListCreate,
+  shoppingListCreateSchema,
+} from "@/lib/schemas/shopping-list";
+import { ActionResult, ActionState } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 import z from "zod";
 
@@ -125,5 +130,43 @@ export async function deleteScheduleAction(
   return {
     success: true,
     message: "Kalendern togs bort",
+  };
+}
+
+export async function createShoppingListAction(
+  data: ShoppingListCreate,
+): Promise<ActionResult<{ id: string }, { name?: string[] }>> {
+  await requireUser();
+
+  // Validate name
+  const validated = shoppingListCreateSchema.safeParse(data);
+
+  // Return errors if validation fails
+  if (!validated.success) {
+    const errors = z.flattenError(validated.error).fieldErrors;
+
+    return {
+      success: false,
+      message: "Ogiltigt namn. Vänligen försök igen",
+      errors,
+    };
+  }
+
+  const createResult = await createShoppingList(validated.data.name);
+
+  // Return error if creation fails
+  if (!createResult.ok) {
+    return {
+      success: false,
+      message: "Något gick fel när listan skulle skapas. Vänligen försök igen.",
+    };
+  }
+
+  revalidatePath("/shopping-list");
+
+  return {
+    success: true,
+    message: `"${data.name}" skapades`,
+    data: { id: createResult.data.id },
   };
 }

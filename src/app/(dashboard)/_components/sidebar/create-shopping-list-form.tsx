@@ -1,5 +1,6 @@
 "use client";
 
+import { createShoppingListAction } from "@/app/(dashboard)/actions";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -8,14 +9,24 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import {
-  ShoppingListCreateForm,
-  shoppingListCreateFormSchema,
+  ShoppingListCreate,
+  shoppingListCreateSchema,
 } from "@/lib/schemas/shopping-list";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
 
-export default function CreateShoppingListForm() {
+type CreateShoppingListFormProps = {
+  onClose: () => void;
+};
+
+export default function CreateShoppingListForm({
+  onClose,
+}: CreateShoppingListFormProps) {
   const today = new Date();
   const dateString = today.toLocaleDateString("sv-SE", {
     month: "short",
@@ -23,14 +34,35 @@ export default function CreateShoppingListForm() {
   });
   const defaultName = `Att handla ${dateString}`;
 
-  const form = useForm<ShoppingListCreateForm>({
-    resolver: zodResolver(shoppingListCreateFormSchema),
+  const form = useForm<ShoppingListCreate>({
+    resolver: zodResolver(shoppingListCreateSchema),
     defaultValues: {
       name: defaultName,
     },
   });
 
-  function onSubmit(data: ShoppingListCreateForm) {}
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
+  function onSubmit(data: ShoppingListCreate) {
+    // Trim whitespace
+    data.name = data.name.trim();
+
+    startTransition(async () => {
+      const result = await createShoppingListAction(data);
+
+      if (!result.success) {
+        toast.error(result.message);
+        return;
+      }
+
+      onClose();
+      toast.success(result.message);
+
+      // Navigate to the new shopping list
+      router.push(`/shopping-list/${result.data?.id}`);
+    });
+  }
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -46,15 +78,22 @@ export default function CreateShoppingListForm() {
                 id={field.name}
                 aria-invalid={fieldState.invalid}
                 placeholder={defaultName}
-                required
                 autoComplete="off"
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
 
             <Field orientation="responsive">
-              <Button type="submit">Spara</Button>
-              <Button type="button" variant="outline">
+              <Button type="submit" disabled={isPending}>
+                {isPending ? (
+                  <>
+                    <Spinner /> <span>Sparar...</span>
+                  </>
+                ) : (
+                  <span>Spara</span>
+                )}
+              </Button>
+              <Button type="button" variant="outline" onClick={onClose}>
                 Avbryt
               </Button>
             </Field>
