@@ -60,7 +60,7 @@ export default function NavSchedule({ scheduleData }: NavScheduleProps) {
   const searchParams = useSearchParams();
 
   // State to manage the collapsible open state
-  const [collapsibleOpen, setCollapsibleOpen] = useState(
+  const [collapsibleOpen, setCollapsibleOpen] = useState(() =>
     pathname.includes(pagePath),
   );
 

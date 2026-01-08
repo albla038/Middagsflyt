@@ -60,7 +60,6 @@ export default function ListInput({ listId, ingredients }: ListInputProps) {
     [ingredients],
   );
 
-  console.log(fuse.search(value));
   const filteredIngredients = fuse
     .search(value)
     .filter(({ item }) => !isExactMatch(item, value))

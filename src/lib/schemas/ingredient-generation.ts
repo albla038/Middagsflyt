@@ -1,9 +1,9 @@
 import z from "zod";
 
 import { Unit } from "@/lib/generated/prisma";
-import { fetchIngredientCategories } from "@/data/ingredient-category/queries";
+import { fetchIngredientCategoryNames } from "@/data/ingredient-category/queries";
 
-const ingredientCategorySchema = z.enum(await fetchIngredientCategories());
+const ingredientCategorySchema = z.enum(await fetchIngredientCategoryNames()); // TODO Move to function to fetch list on demand
 
 export const generatedIngredientsSchema = z.array(
   z.object({
