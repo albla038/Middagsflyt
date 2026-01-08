@@ -1,6 +1,7 @@
 "use client";
 
-import CreateShoppingListForm from "@/app/(dashboard)/_components/sidebar/create-shopping-list-form";
+import SaveShoppingListForm from "@/app/(dashboard)/_components/sidebar/shopping-list/save-form";
+import ShoppingListItem from "@/app/(dashboard)/_components/sidebar/shopping-list/list-item";
 import ResponsiveDialog from "@/components/responsive-dialog";
 import {
   SidebarGroup,
@@ -8,8 +9,6 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import {
   Tooltip,
@@ -17,9 +16,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ShoppingList } from "@/lib/generated/prisma";
-import { List, Plus } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Plus } from "lucide-react";
 import { use, useState } from "react";
 
 type NavShoppingListsProps = {
@@ -29,23 +26,20 @@ type NavShoppingListsProps = {
 export default function NavShoppingLists({
   shoppingListsData,
 }: NavShoppingListsProps) {
-  const pathname = usePathname();
-
   const shoppingLists = use(shoppingListsData);
 
-  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [isCreateDialogOpen, setCreateDialogOpen] = useState(false);
 
   return (
     <>
+      {/* Create dialog */}
       <ResponsiveDialog
-        open={createDialogOpen}
-        onOpenChange={(open) => {
-          if (!open) setCreateDialogOpen(false);
-        }}
+        open={isCreateDialogOpen}
+        onOpenChange={setCreateDialogOpen}
         title="Skapa ny inköpslista"
         description="Listan delas automatisk med alla medlemmar i ditt hushåll"
       >
-        <CreateShoppingListForm onClose={() => setCreateDialogOpen(false)} />
+        <SaveShoppingListForm onClose={() => setCreateDialogOpen(false)} />
       </ResponsiveDialog>
 
       <SidebarGroup>
@@ -65,16 +59,7 @@ export default function NavShoppingLists({
         <SidebarGroupContent>
           <SidebarMenu>
             {shoppingLists.map((list) => (
-              <SidebarMenuItem key={list.id}>
-                <SidebarMenuButton
-                  isActive={pathname.includes(list.id)}
-                  asChild
-                >
-                  <Link href={`/shopping-list/${list.id}`}>
-                    <List /> <span>{list.name}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              <ShoppingListItem key={list.id} list={list} />
             ))}
           </SidebarMenu>
         </SidebarGroupContent>

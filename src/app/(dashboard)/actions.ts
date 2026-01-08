@@ -1,16 +1,20 @@
 "use server";
 
 import {
+  ShoppingListForm,
+  shoppingListFormSchema,
+} from "@/app/(dashboard)/schemas";
+import {
   createSchedule,
   deleteSchedule,
   renameSchedule,
 } from "@/data/schedule/mutations";
-import { createShoppingList } from "@/data/shopping-list/mutations";
-import { requireUser } from "@/data/user/verify-user";
 import {
-  ShoppingListCreate,
-  shoppingListCreateSchema,
-} from "@/lib/schemas/shopping-list";
+  createShoppingList,
+  updateShoppingList,
+} from "@/data/shopping-list/mutations";
+import { requireUser } from "@/data/user/verify-user";
+import { ShoppingList } from "@/lib/generated/prisma";
 import { ActionResult, ActionState } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 import z from "zod";
@@ -133,32 +137,53 @@ export async function deleteScheduleAction(
   };
 }
 
-export async function createShoppingListAction(
-  data: ShoppingListCreate,
-): Promise<ActionResult<{ id: string }, { name?: string[] }>> {
+type SaveShoppingListResult = ActionResult<
+  ShoppingList,
+  { name?: string[]; listId?: string[] }
+>;
+
+export async function saveShoppingListAction(
+  data: ShoppingListForm,
+): Promise<SaveShoppingListResult> {
   await requireUser();
 
   // Validate name
-  const validated = shoppingListCreateSchema.safeParse(data);
+  const validated = shoppingListFormSchema.safeParse(data);
 
   // Return errors if validation fails
   if (!validated.success) {
     const errors = z.flattenError(validated.error).fieldErrors;
 
+    if (errors.listId) {
+      return {
+        success: false,
+        message: "Ogiltigt lista-ID. Vänligen kontakta supporten",
+        errors,
+      };
+    }
+
     return {
       success: false,
-      message: "Ogiltigt namn. Vänligen försök igen",
+      message: "Ogiltig inmatning. Vänligen försök igen",
       errors,
     };
   }
 
-  const createResult = await createShoppingList(validated.data.name);
+  const { listId, name } = validated.data;
 
-  // Return error if creation fails
-  if (!createResult.ok) {
+  // Update or create new shopping list
+  const mutationResult = listId
+    ? await updateShoppingList({
+        name,
+        listId,
+      })
+    : await createShoppingList(name);
+
+  // Return error if mutation fails
+  if (!mutationResult.ok) {
     return {
       success: false,
-      message: "Något gick fel när listan skulle skapas. Vänligen försök igen.",
+      message: "Något gick fel när listan skulle sparas. Vänligen försök igen.",
     };
   }
 
@@ -166,7 +191,7 @@ export async function createShoppingListAction(
 
   return {
     success: true,
-    message: `"${data.name}" skapades`,
-    data: { id: createResult.data.id },
+    message: `"${name}" sparades`,
+    data: mutationResult.data,
   };
 }

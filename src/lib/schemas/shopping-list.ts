@@ -1,15 +1,6 @@
 import { Unit } from "@/lib/generated/prisma";
 import z from "zod";
 
-export const shoppingListCreateSchema = z.object({
-  name: z
-    .string("Ange ett giltigt namn")
-    .min(1, "Namnet måste ha minst en bokstav")
-    .max(50, "Namnet får ha max 50 bokstäver"),
-});
-
-export type ShoppingListCreate = z.infer<typeof shoppingListCreateSchema>;
-
 const shoppingListItemResponseSchema = z.object({
   id: z.cuid2(),
   name: z.string(),

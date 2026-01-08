@@ -1,6 +1,10 @@
 "use client";
 
-import { createShoppingListAction } from "@/app/(dashboard)/actions";
+import { saveShoppingListAction } from "@/app/(dashboard)/actions";
+import {
+  ShoppingListForm,
+  shoppingListFormSchema,
+} from "@/app/(dashboard)/schemas";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -10,23 +14,22 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import {
-  ShoppingListCreate,
-  shoppingListCreateSchema,
-} from "@/lib/schemas/shopping-list";
+import { ShoppingList } from "@/lib/generated/prisma";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-type CreateShoppingListFormProps = {
+type SaveShoppingListFormProps = {
+  list?: ShoppingList;
   onClose: () => void;
 };
 
-export default function CreateShoppingListForm({
+export default function SaveShoppingListForm({
+  list,
   onClose,
-}: CreateShoppingListFormProps) {
+}: SaveShoppingListFormProps) {
   const today = new Date();
   const dateString = today.toLocaleDateString("sv-SE", {
     month: "short",
@@ -34,22 +37,25 @@ export default function CreateShoppingListForm({
   });
   const defaultName = `Att handla ${dateString}`;
 
-  const form = useForm<ShoppingListCreate>({
-    resolver: zodResolver(shoppingListCreateSchema),
+  const form = useForm<ShoppingListForm>({
+    resolver: zodResolver(shoppingListFormSchema),
     defaultValues: {
-      name: defaultName,
+      name: list?.name ?? defaultName,
     },
   });
 
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
-  function onSubmit(data: ShoppingListCreate) {
+  function onSubmit(data: ShoppingListForm) {
     // Trim whitespace
     data.name = data.name.trim();
 
     startTransition(async () => {
-      const result = await createShoppingListAction(data);
+      const result = await saveShoppingListAction({
+        name: data.name,
+        listId: list?.id,
+      });
 
       if (!result.success) {
         toast.error(result.message);
@@ -59,8 +65,10 @@ export default function CreateShoppingListForm({
       onClose();
       toast.success(result.message);
 
-      // Navigate to the new shopping list
-      router.push(`/shopping-list/${result.data?.id}`);
+      if (result.data) {
+        // Navigate to the new shopping list
+        router.push(`/shopping-list/${result.data.id}`);
+      }
     });
   }
 
