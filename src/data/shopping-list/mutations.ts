@@ -9,9 +9,9 @@ import { requireUser } from "@/data/user/verify-user";
 export async function createShoppingList(
   name: string,
 ): Promise<Result<ShoppingList, Error>> {
-  try {
-    const householdId = await requireHouseholdId();
+  const householdId = await requireHouseholdId();
 
+  try {
     const data = await prisma.shoppingList.create({
       data: {
         name,
@@ -40,9 +40,9 @@ export async function updateShoppingList({
   listId: string;
   name: string;
 }): Promise<Result<ShoppingList, Error>> {
-  try {
-    const user = await requireUser();
+  const user = await requireUser();
 
+  try {
     const data = await prisma.shoppingList.update({
       data: {
         name,
@@ -75,7 +75,7 @@ export async function updateShoppingList({
 export async function deleteShoppingList(
   listId: string,
 ): Promise<Result<ShoppingList, Error>> {
-  const user = await requireUser(); // TODO Inside try?
+  const user = await requireUser();
 
   try {
     const data = await prisma.shoppingList.delete({

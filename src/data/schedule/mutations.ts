@@ -9,9 +9,9 @@ export async function createSchedule(
   name: string,
   description: string | null,
 ): Promise<Result<void, Error>> {
+  const householdId = await requireHouseholdId();
+  
   try {
-    const householdId = await requireHouseholdId();
-
     await prisma.schedule.create({
       data: {
         name,
