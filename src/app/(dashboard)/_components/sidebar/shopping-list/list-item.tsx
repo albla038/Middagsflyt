@@ -8,17 +8,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   SidebarMenuAction,
+  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { ShoppingList } from "@/lib/generated/prisma";
+import { useShoppingList } from "@/hooks/queries/shopping-list/queries";
+import { ShoppingListWithCount } from "@/lib/types";
 import { Edit, List, MoreHorizontal, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 type ShoppingListItemProps = {
-  list: ShoppingList;
+  list: ShoppingListWithCount;
 };
 
 export default function ShoppingListItem({ list }: ShoppingListItemProps) {
@@ -26,12 +28,14 @@ export default function ShoppingListItem({ list }: ShoppingListItemProps) {
 
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
 
+  const { data } = useShoppingList(list.id);
+  const itemCount = data?.items.length ?? list.itemCount;
+
   return (
     <>
       {/* Edit dialog */}
       <ResponsiveDialog
         open={isEditDialogOpen}
-        // TODO Simplify
         onOpenChange={setEditDialogOpen}
         title="Redigera inköpslista"
         description={`Byt namn på "${list.name}"`}
@@ -78,6 +82,11 @@ export default function ShoppingListItem({ list }: ShoppingListItemProps) {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+
+          <SidebarMenuBadge className="right-7 border border-sidebar-border">
+            {itemCount}
+          </SidebarMenuBadge>
+        
       </SidebarMenuItem>
     </>
   );

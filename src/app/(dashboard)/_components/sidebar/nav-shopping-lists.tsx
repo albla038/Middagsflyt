@@ -15,12 +15,12 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ShoppingList } from "@/lib/generated/prisma";
+import { ShoppingListWithCount } from "@/lib/types";
 import { Plus } from "lucide-react";
 import { use, useState } from "react";
 
 type NavShoppingListsProps = {
-  shoppingListsData: Promise<ShoppingList[]>;
+  shoppingListsData: Promise<ShoppingListWithCount[]>;
 };
 
 export default function NavShoppingLists({

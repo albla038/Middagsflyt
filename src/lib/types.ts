@@ -1,4 +1,9 @@
-import { ProteinType, RecipeType, Unit } from "@/lib/generated/prisma";
+import {
+  ProteinType,
+  RecipeType,
+  ShoppingList,
+  Unit,
+} from "@/lib/generated/prisma";
 import { User } from "better-auth";
 
 export type Result<Data, Err> =
@@ -104,4 +109,8 @@ export type IngredientWithAlias = {
   shoppingUnit: Unit;
   ingredientCategoryId: string;
   ingredientAliases: { name: string }[];
+};
+
+export type ShoppingListWithCount = ShoppingList & {
+  itemCount: number;
 };
