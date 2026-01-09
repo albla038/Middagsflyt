@@ -71,3 +71,36 @@ export async function updateShoppingList({
     };
   }
 }
+
+export async function deleteShoppingList(
+  listId: string,
+): Promise<Result<ShoppingList, Error>> {
+  const user = await requireUser(); // TODO Inside try?
+
+  try {
+    const data = await prisma.shoppingList.delete({
+      where: {
+        // Ensure the schedule belongs to the user's household
+        household: {
+          members: {
+            some: { userId: user.id },
+          },
+        },
+
+        id: listId,
+      },
+    });
+
+    return {
+      ok: true,
+      data,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      error: new Error("Failed to delete shopping list", {
+        cause: error instanceof Error ? error : new Error(String(error)),
+      }),
+    };
+  }
+}

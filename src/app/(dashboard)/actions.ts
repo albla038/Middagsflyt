@@ -1,6 +1,8 @@
 "use server";
 
 import {
+  ShoppingListDelete,
+  shoppingListDeleteSchema,
   ShoppingListForm,
   shoppingListFormSchema,
 } from "@/app/(dashboard)/schemas";
@@ -11,6 +13,7 @@ import {
 } from "@/data/schedule/mutations";
 import {
   createShoppingList,
+  deleteShoppingList,
   updateShoppingList,
 } from "@/data/shopping-list/mutations";
 import { requireUser } from "@/data/user/verify-user";
@@ -193,5 +196,52 @@ export async function saveShoppingListAction(
     success: true,
     message: `"${name}" sparades`,
     data: mutationResult.data,
+  };
+}
+
+type DeleteShoppingListResult = ActionResult<void, { listId?: string[] }>;
+
+export async function deleteShoppingListAction(
+  data: ShoppingListDelete,
+): Promise<DeleteShoppingListResult> {
+  await requireUser();
+
+  // Validate list id
+  const validated = shoppingListDeleteSchema.safeParse(data);
+
+  // Return errors if validation fails
+  if (!validated.success) {
+    const errors = z.flattenError(validated.error).fieldErrors;
+
+    if (errors.listId) {
+      return {
+        success: false,
+        message: "Ogiltigt lista-ID. Vänligen kontakta supporten",
+        errors,
+      };
+    }
+
+    return {
+      success: false,
+      message: "Ogiltig inmatning. Vänligen försök igen",
+      errors,
+    };
+  }
+
+  const { listId } = validated.data;
+
+  const deleteResult = await deleteShoppingList(listId);
+
+  if (!deleteResult.ok) {
+    return {
+      success: false,
+      message:
+        "Något gick fel när listan skulle raderas. Vänligen försök igen.",
+    };
+  }
+
+  return {
+    success: true,
+    message: `${deleteResult.data.name} raderades`,
   };
 }

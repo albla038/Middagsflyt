@@ -9,3 +9,9 @@ export const shoppingListFormSchema = z.object({
 });
 
 export type ShoppingListForm = z.infer<typeof shoppingListFormSchema>;
+
+export const shoppingListDeleteSchema = z.object({
+  listId: z.cuid2(),
+});
+
+export type ShoppingListDelete = z.infer<typeof shoppingListDeleteSchema>;
