@@ -1,3 +1,4 @@
+import DeleteShoppingListAlert from "@/app/(dashboard)/_components/sidebar/shopping-list/delete-alert";
 import SaveShoppingListForm from "@/app/(dashboard)/_components/sidebar/shopping-list/save-form";
 import ResponsiveDialog from "@/components/responsive-dialog";
 import {
@@ -27,6 +28,7 @@ export default function ShoppingListItem({ list }: ShoppingListItemProps) {
   const pathname = usePathname();
 
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
+  const [isDeleteAlertOpen, setDeleteAlertOpen] = useState(false);
 
   const { data } = useShoppingList(list.id);
   const itemCount = data?.items.length ?? list.itemCount;
@@ -45,6 +47,12 @@ export default function ShoppingListItem({ list }: ShoppingListItemProps) {
           onClose={() => setEditDialogOpen(false)}
         />
       </ResponsiveDialog>
+
+      <DeleteShoppingListAlert
+        open={isDeleteAlertOpen}
+        onOpenChange={setDeleteAlertOpen}
+        list={list}
+      />
 
       {/* List item */}
       <SidebarMenuItem>
@@ -73,9 +81,7 @@ export default function ShoppingListItem({ list }: ShoppingListItemProps) {
 
             {/* Delete schedule action */}
             <DropdownMenuItem
-            // onSelect={() =>
-            //   setTimeout(() => , 0)
-            // }
+              onSelect={() => setTimeout(() => setDeleteAlertOpen(true), 0)}
             >
               <Trash2 className="text-destructive" />
               <span>Ta bort lista</span>

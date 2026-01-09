@@ -236,12 +236,14 @@ export async function deleteShoppingListAction(
     return {
       success: false,
       message:
-        "Något gick fel när listan skulle raderas. Vänligen försök igen.",
+        "Något gick fel när listan skulle tas bort. Vänligen försök igen.",
     };
   }
 
+  revalidatePath("/shopping-list");
+
   return {
     success: true,
-    message: `${deleteResult.data.name} raderades`,
+    message: `${deleteResult.data.name} togs bort`,
   };
 }
