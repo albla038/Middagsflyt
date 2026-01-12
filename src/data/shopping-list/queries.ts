@@ -58,10 +58,7 @@ export async function fetchShoppingList(
         },
       },
 
-      select: {
-        id: true,
-        name: true,
-
+      include: {
         items: {
           orderBy: { createdAt: "desc" },
 

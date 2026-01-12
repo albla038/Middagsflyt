@@ -22,10 +22,10 @@ type HeaderProps = {
 
 export default function Header({ children, breadcrumbs }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-10 flex w-full border-b border-border bg-background transition-[width,height] ease-linear">
+    <header className="sticky top-0 z-10 w-full border-b border-border bg-background transition-[width,height] ease-linear">
       <div
         className={cn(
-          "flex grow items-center gap-2 p-2",
+          "flex w-full items-center gap-2 p-2",
           "md:gap-4 md:p-4",
           "group-has-data-[collapsible=icon]/sidebar-wrapper:gap-2 group-has-data-[collapsible=icon]/sidebar-wrapper:p-2",
         )}
@@ -34,43 +34,42 @@ export default function Header({ children, breadcrumbs }: HeaderProps) {
         <span className="mr-2 h-4">
           <Separator orientation="vertical" />
         </span>
-        {breadcrumbs && (
-          <nav aria-label="Breadcrumbs">
-            <Breadcrumb>
-              <BreadcrumbList>
-                {breadcrumbs.map((breadcrumb, index) => (
-                  <div
-                    key={index}
-                    className="flex flex-wrap items-center gap-1.5 sm:gap-2.5"
-                  >
-                    {index < breadcrumbs.length - 1 ? (
-                      <>
-                        <BreadcrumbItem>
-                          <BreadcrumbLink asChild>
-                            <Link href={breadcrumb.href ?? "/"}>
-                              {breadcrumb.label}
-                            </Link>
-                          </BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator>
-                          <Slash />
-                        </BreadcrumbSeparator>
-                      </>
-                    ) : (
-                      <BreadcrumbPage>{breadcrumb.label}</BreadcrumbPage>
-                    )}
-                  </div>
-                ))}
-              </BreadcrumbList>
-            </Breadcrumb>
-          </nav>
-        )}
-      </div>
 
-      {children && (
-        // For action elements of h-8
-        <div className="flex items-center justify-center p-2">{children}</div>
-      )}
+        <div className="flex grow items-center gap-2">
+          {breadcrumbs && (
+            <nav aria-label="Breadcrumbs">
+              <Breadcrumb>
+                <BreadcrumbList>
+                  {breadcrumbs.map((breadcrumb, index) => (
+                    <div
+                      key={index}
+                      className="flex flex-wrap items-center gap-1.5 sm:gap-2.5"
+                    >
+                      {index < breadcrumbs.length - 1 ? (
+                        <>
+                          <BreadcrumbItem>
+                            <BreadcrumbLink asChild>
+                              <Link href={breadcrumb.href ?? "/"}>
+                                {breadcrumb.label}
+                              </Link>
+                            </BreadcrumbLink>
+                          </BreadcrumbItem>
+                          <BreadcrumbSeparator>
+                            <Slash />
+                          </BreadcrumbSeparator>
+                        </>
+                      ) : (
+                        <BreadcrumbPage>{breadcrumb.label}</BreadcrumbPage>
+                      )}
+                    </div>
+                  ))}
+                </BreadcrumbList>
+              </Breadcrumb>
+            </nav>
+          )}
+          {children}
+        </div>
+      </div>
     </header>
   );
 }

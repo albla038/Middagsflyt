@@ -4,7 +4,9 @@ import ResponsiveDialog from "@/components/responsive-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -71,28 +73,40 @@ export default function ShoppingListItem({ list }: ShoppingListItemProps) {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent side="right" align="start">
-            {/* Edit name action */}
-            <DropdownMenuItem
-              onSelect={() => setTimeout(() => setEditDialogOpen(true), 0)}
-            >
-              <Edit />
-              <span>Byt namn</span>
-            </DropdownMenuItem>
+            <DropdownMenuGroup>
+              {/* Edit name action */}
+              <DropdownMenuItem
+                onSelect={() => setTimeout(() => setEditDialogOpen(true), 0)}
+              >
+                <Edit />
+                <span>Byt namn</span>
+              </DropdownMenuItem>
 
-            {/* Delete schedule action */}
-            <DropdownMenuItem
-              onSelect={() => setTimeout(() => setDeleteAlertOpen(true), 0)}
-            >
-              <Trash2 className="text-destructive" />
-              <span>Ta bort lista</span>
-            </DropdownMenuItem>
+              {/* Delete schedule action */}
+              <DropdownMenuItem
+                onSelect={() => setTimeout(() => setDeleteAlertOpen(true), 0)}
+              >
+                <Trash2 className="text-destructive" />
+                <span>Ta bort lista</span>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuGroup>
+              <DropdownMenuItem disabled>
+                Skapad{" "}
+                {list.createdAt.toLocaleString("sv-SE", {
+                  dateStyle: "medium",
+                })}
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
 
-          <SidebarMenuBadge className="right-7 border border-sidebar-border">
-            {itemCount}
-          </SidebarMenuBadge>
-        
+        <SidebarMenuBadge className="right-7 border border-sidebar-border">
+          {itemCount}
+        </SidebarMenuBadge>
       </SidebarMenuItem>
     </>
   );

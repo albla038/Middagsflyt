@@ -9,7 +9,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       <RecipeSelection>
         <div className="flex h-svh w-full">
           <AppSidebar />
-          <div className="h-full w-full">{children}</div>
+          <div className="h-full grow">{children}</div>
         </div>
       </RecipeSelection>
     </SidebarProvider>

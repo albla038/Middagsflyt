@@ -25,6 +25,9 @@ export const shoppingListResponseSchema = z.object({
   id: z.cuid2(),
   name: z.string(),
   items: z.array(shoppingListItemResponseSchema),
+  householdId: z.cuid2(),
+  createdAt: z.iso.datetime().transform((str) => new Date(str)),
+  updatedAt: z.iso.datetime().transform((str) => new Date(str)),
 });
 
 export type ShoppingListResponse = z.infer<typeof shoppingListResponseSchema>;

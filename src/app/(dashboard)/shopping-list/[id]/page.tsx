@@ -1,6 +1,6 @@
 import Header, { BreadcrumbItem } from "@/app/(dashboard)/_components/header";
+import HeaderMenu from "@/app/(dashboard)/shopping-list/[id]/_components/header-menu";
 import ShoppingList from "@/app/(dashboard)/shopping-list/[id]/_components/shopping-list";
-import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { fetchIngredientCategories } from "@/data/ingredient-category/queries";
 import { fetchAllIngredientsWithAlias } from "@/data/ingredient/queries";
@@ -8,7 +8,6 @@ import { fetchShoppingList } from "@/data/shopping-list/queries";
 import { shoppingListQueryOptions } from "@/hooks/queries/shopping-list/options";
 import { getQueryClient } from "@/lib/query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { MoreVertical } from "lucide-react";
 import { notFound } from "next/navigation";
 import z from "zod";
 
@@ -53,12 +52,9 @@ export default async function ShoppingListPage({
       <ScrollArea className="h-full w-full bg-subtle">
         <div className="relative flex h-svh flex-col items-center">
           <Header breadcrumbs={breadcrumbs}>
-            {/* // TODO replace with dropdown menu */}
-            <Button variant="ghost" size="icon" className="size-8">
-              <MoreVertical />
-            </Button>
+            <HeaderMenu listId={id} />
           </Header>
-          <main className="relative h-full w-full max-w-lg">
+          <main className="relative w-full max-w-lg grow">
             <ShoppingList
               listId={id}
               categories={categories}
