@@ -1,17 +1,17 @@
 import AppSidebar from "@/app/(dashboard)/_components/sidebar/app-sidebar";
-import RecipeSelection from "@/app/(dashboard)/schedule/[...id]/selection-provider";
+import SelectionProvider from "@/app/(dashboard)/schedule/[...id]/selection-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ReactNode } from "react";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider>
-      <RecipeSelection>
+      <SelectionProvider>
         <div className="flex h-svh w-full">
           <AppSidebar />
           <div className="h-full grow">{children}</div>
         </div>
-      </RecipeSelection>
+      </SelectionProvider>
     </SidebarProvider>
   );
 }

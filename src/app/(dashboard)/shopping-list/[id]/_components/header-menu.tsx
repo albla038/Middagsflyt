@@ -2,6 +2,7 @@
 
 import DeleteShoppingListAlert from "@/app/(dashboard)/_components/sidebar/shopping-list/delete-alert";
 import SaveShoppingListForm from "@/app/(dashboard)/_components/sidebar/shopping-list/save-form";
+import { useSortSelection } from "@/app/(dashboard)/shopping-list/sort-selection-provider";
 import ResponsiveDialog from "@/components/responsive-dialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,11 +10,15 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Toggle } from "@/components/ui/toggle";
 import { useShoppingList } from "@/hooks/queries/shopping-list/queries";
-import { Edit, MoreVertical, Trash2 } from "lucide-react";
+import { Edit, FolderTree, MoreVertical, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 type HeaderMenuProps = {
@@ -22,6 +27,8 @@ type HeaderMenuProps = {
 
 export default function HeaderMenu({ listId }: HeaderMenuProps) {
   const { data: list } = useShoppingList(listId);
+
+  const { isGroupedByCategory, setGroupedByCategory } = useSortSelection();
 
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
   const [isDeleteAlertOpen, setDeleteAlertOpen] = useState(false);
@@ -51,6 +58,8 @@ export default function HeaderMenu({ listId }: HeaderMenuProps) {
           />
         </>
       )}
+
+      {/* Item count */}
       <div className="flex grow items-center gap-2">
         <span className="text-muted-foreground">•</span>
         <span className="text-sm font-normal text-muted-foreground">
@@ -58,44 +67,78 @@ export default function HeaderMenu({ listId }: HeaderMenuProps) {
           {list?.items.length === 1 ? "vara" : "varor"}
         </span>
       </div>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <MoreVertical />
-          </Button>
-        </DropdownMenuTrigger>
 
-        <DropdownMenuContent>
-          <DropdownMenuGroup>
-            {/* Edit name action */}
-            <DropdownMenuItem
-              onSelect={() => setTimeout(() => setEditDialogOpen(true), 0)}
-            >
-              <Edit />
-              <span>Byt namn</span>
-            </DropdownMenuItem>
+      {/* Toggle sort */}
+      <div className="flex gap-1">
+        <Toggle
+          className="max-[300px]:hidden"
+          pressed={isGroupedByCategory}
+          onPressedChange={(pressed) => {
+            setGroupedByCategory(pressed);
+          }}
+        >
+          <FolderTree />
+        </Toggle>
 
-            {/* Delete schedule action */}
-            <DropdownMenuItem
-              onSelect={() => setTimeout(() => setDeleteAlertOpen(true), 0)}
-            >
-              <Trash2 className="text-destructive" />
-              <span>Ta bort lista</span>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
+        {/* Menu */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <MoreVertical />
+            </Button>
+          </DropdownMenuTrigger>
 
-          <DropdownMenuSeparator />
+          <DropdownMenuContent>
+            <DropdownMenuGroup>
+              {/* Edit name action */}
+              <DropdownMenuItem
+                onSelect={() => setTimeout(() => setEditDialogOpen(true), 0)}
+              >
+                <Edit />
+                <span>Byt namn</span>
+              </DropdownMenuItem>
 
-          <DropdownMenuGroup>
-            <DropdownMenuItem disabled>
-              Skapad{" "}
-              {list?.createdAt.toLocaleString("sv-SE", {
-                dateStyle: "medium",
-              })}
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
+              {/* Delete schedule action */}
+              <DropdownMenuItem
+                onSelect={() => setTimeout(() => setDeleteAlertOpen(true), 0)}
+              >
+                <Trash2 className="text-destructive" />
+                <span>Ta bort lista</span>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>Sortera efter</DropdownMenuLabel>
+              <DropdownMenuRadioGroup
+                value={isGroupedByCategory ? "categories" : "createdAt"}
+                onValueChange={(value) =>
+                  setGroupedByCategory(value === "categories")
+                }
+              >
+                <DropdownMenuRadioItem value="categories">
+                  Kategori
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="createdAt">
+                  Tillagd
+                </DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+            </DropdownMenuGroup>
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuGroup>
+              <DropdownMenuItem disabled>
+                Skapad{" "}
+                {list?.createdAt.toLocaleString("sv-SE", {
+                  dateStyle: "medium",
+                })}
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </>
   );
 }
