@@ -1,13 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  DialogClose,
-  DialogDescription,
-  DialogFooter,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { DrawerDescription, DrawerTitle } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -17,35 +10,28 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useShoppingList } from "@/hooks/queries/shopping-list/queries";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { Unit } from "@/lib/generated/prisma";
-import { Trash2 } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ShoppingListItemEditForm,
   shoppingListItemEditFormSchema,
 } from "@/lib/schemas/shopping-list";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  useDeleteShoppingListItem,
-  useUpdateShoppingListItem,
-} from "@/hooks/queries/shopping-list/mutations";
-import { useEffect } from "react";
+import { useUpdateShoppingListItem } from "@/hooks/queries/shopping-list/mutations";
+import { Activity, useEffect } from "react";
 import { toast } from "sonner";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 
 type EditItemFormProps = {
   listId: string;
   itemId: string | null;
   categories: { id: string; name: string }[];
-  onOpenChange: (open: boolean) => void;
+  onClose: () => void;
 };
 
 const unitList = Object.values(Unit);
@@ -54,7 +40,7 @@ export default function EditItemForm({
   listId,
   itemId,
   categories,
-  onOpenChange,
+  onClose,
 }: EditItemFormProps) {
   // Query hook
   const { data: list, isPending, error } = useShoppingList(listId);
@@ -62,22 +48,18 @@ export default function EditItemForm({
 
   // Mutation hooks
   const { mutate: updateItem } = useUpdateShoppingListItem(listId);
-  const { mutate: deleteItem } = useDeleteShoppingListItem(listId);
 
   const form = useForm<ShoppingListItemEditForm>({
     resolver: zodResolver(shoppingListItemEditFormSchema),
     defaultValues: item,
   });
-  const { formState, reset } = form;
 
   // Sync form values when item is loaded or changes
   useEffect(() => {
     if (item) {
-      reset(item);
+      form.reset(item);
     }
-  }, [item, reset]);
-
-  const isMobile = useIsMobile();
+  }, [item, form.reset]);
 
   if (isPending) {
     return <p>Läser in...</p>; // TODO improve all error and loading states
@@ -93,96 +75,64 @@ export default function EditItemForm({
 
   function onSubmit(data: ShoppingListItemEditForm) {
     // Don't do anything if no changes were made
-    if (!formState.isDirty) {
-      onOpenChange(false);
-      return;
-    }
+    if (!form.formState.isDirty) return;
 
     if (item) {
       updateItem({ itemId: item.id, data });
-      onOpenChange(false);
+      onClose();
     } else {
       toast.error("Något gick fel. Vänligen försök igen.");
     }
   }
 
   return (
-    <Form {...form}>
-      <form className="grid gap-4" onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="flex items-start justify-between">
-          {isMobile ? (
-            <div className="grid gap-2">
-              <DrawerTitle>Redigera vara</DrawerTitle>
-              <DrawerDescription>
-                Redigera eller ta bort varan
-              </DrawerDescription>
-            </div>
-          ) : (
-            <div className="grid gap-2">
-              <DialogTitle>Redigera vara</DialogTitle>
-              <DialogDescription>
-                Redigera eller ta bort varan
-              </DialogDescription>
-            </div>
-          )}
-
-          {/* Delete item action button */}
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="text-destructive hover:text-destructive"
-            onClick={() => {
-              deleteItem(item.id);
-              onOpenChange(false);
-            }}
-          >
-            <Trash2 />
-            <span>Ta bort</span>
-          </Button>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 gap-x-3">
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      <FieldGroup>
+        <div className="grid grid-cols-2 gap-x-3 gap-y-4">
           {/* Name */}
-          <FormField
-            control={form.control}
+          <Controller
             name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Namn</FormLabel>
-                <FormControl>
-                  <Input
-                    type="text"
-                    placeholder="Ange namn"
-                    autoFocus
-                    autoComplete="off"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>Namn</FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  type="text"
+                  placeholder="Ange namn"
+                  autoFocus
+                  autoComplete="off"
+                  aria-invalid={fieldState.invalid}
+                />
+                <Activity mode={fieldState.invalid ? "visible" : "hidden"}>
+                  <FieldError errors={[fieldState.error]} />
+                </Activity>
+              </Field>
             )}
           />
 
           {/* Category */}
-          <FormField
-            control={form.control}
+          <Controller
             name="categoryId"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Kategori</FormLabel>
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>Kategori</FieldLabel>
                 <Select
+                  {...field}
+                  value={field.value ?? ""}
                   onValueChange={(value) =>
                     field.onChange(value === "" ? null : value)
                   }
-                  defaultValue={field.value ?? ""}
                 >
-                  <FormControl>
-                    <SelectTrigger className="w-full truncate">
-                      <SelectValue placeholder="Övrigt" />
-                    </SelectTrigger>
-                  </FormControl>
-
+                  <SelectTrigger
+                    id={field.name}
+                    aria-invalid={fieldState.invalid}
+                    className="w-full truncate"
+                  >
+                    <SelectValue placeholder="Övrigt" />
+                  </SelectTrigger>
                   <SelectContent>
                     {categories.map((category) => (
                       <SelectItem key={category.id} value={category.id}>
@@ -191,55 +141,63 @@ export default function EditItemForm({
                     ))}
                   </SelectContent>
                 </Select>
-              </FormItem>
+                <Activity mode={fieldState.invalid ? "visible" : "hidden"}>
+                  <FieldError errors={[fieldState.error]} />
+                </Activity>
+              </Field>
             )}
           />
 
           {/* Quantity */}
-          <FormField
-            control={form.control}
+          <Controller
             name="quantity"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Mängd</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    step={0.5}
-                    min={0.5}
-                    placeholder="Ange mängd"
-                    autoComplete="off"
-                    {...field}
-                    value={field.value ?? ""}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      field.onChange(value === "" ? null : Number(value));
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>Mängd</FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  type="number"
+                  step={0.5}
+                  min={0.5}
+                  placeholder="Ange mängd"
+                  autoComplete="off"
+                  value={field.value ?? ""}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    field.onChange(value === "" ? null : Number(value));
+                  }}
+                  aria-invalid={fieldState.invalid}
+                />
+                <Activity mode={fieldState.invalid ? "visible" : "hidden"}>
+                  <FieldError errors={[fieldState.error]} />
+                </Activity>
+              </Field>
             )}
           />
 
           {/* Unit */}
-          <FormField
-            control={form.control}
+          <Controller
             name="unit"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Enhet</FormLabel>
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>Enhet</FieldLabel>
                 <Select
+                  {...field}
+                  value={field.value ?? ""}
                   onValueChange={(value) =>
                     field.onChange(value === "" ? null : value)
                   }
-                  defaultValue={field.value ?? ""}
                 >
-                  <FormControl>
-                    <SelectTrigger className="w-full truncate">
-                      <SelectValue placeholder="Välj enhet" />
-                    </SelectTrigger>
-                  </FormControl>
+                  <SelectTrigger
+                    id={field.name}
+                    aria-invalid={fieldState.invalid}
+                    className="w-full truncate"
+                  >
+                    <SelectValue placeholder="Välj enhet" />
+                  </SelectTrigger>
 
                   <SelectContent>
                     {unitList.map((unit) => (
@@ -249,20 +207,23 @@ export default function EditItemForm({
                     ))}
                   </SelectContent>
                 </Select>
-              </FormItem>
+                <Activity mode={fieldState.invalid ? "visible" : "hidden"}>
+                  <FieldError errors={[fieldState.error]} />
+                </Activity>
+              </Field>
             )}
           />
         </div>
 
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button variant="outline">Stäng</Button>
-          </DialogClose>
-          <Button type="submit" disabled={!formState.isDirty}>
+        <Field orientation="responsive-reverse">
+          <Button type="submit" disabled={!form.formState.isDirty}>
             Spara
           </Button>
-        </DialogFooter>
-      </form>
-    </Form>
+          <Button type="button" variant="outline" onClick={onClose}>
+            Avbryt
+          </Button>
+        </Field>
+      </FieldGroup>
+    </form>
   );
 }
