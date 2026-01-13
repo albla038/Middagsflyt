@@ -19,10 +19,12 @@ import { ReactNode } from "react";
 
 type ResponsiveDialogProps = {
   children: ReactNode;
-  title?: string;
-  description?: string;
+  title: string;
+  description: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  showCloseButtonInDialog?: boolean;
+  dialogAction?: ReactNode;
 };
 
 export default function ResponsiveDialog({
@@ -31,6 +33,8 @@ export default function ResponsiveDialog({
   description,
   open,
   onOpenChange,
+  showCloseButtonInDialog = true,
+  dialogAction,
 }: ResponsiveDialogProps) {
   const isMobile = useIsMobile();
 
@@ -38,12 +42,20 @@ export default function ResponsiveDialog({
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerContent>
-          {title && (
+          {dialogAction ? (
+            // Render dialogAction in flex-row layout if provided
+            <div className="flex items-start justify-between p-4 pb-0">
+              <div className="grid gap-0.5">
+                <DrawerTitle>{title}</DrawerTitle>
+                <DrawerDescription>{description}</DrawerDescription>
+              </div>
+
+              {dialogAction}
+            </div>
+          ) : (
             <DrawerHeader>
               <DrawerTitle>{title}</DrawerTitle>
-              {description && (
-                <DrawerDescription>{description}</DrawerDescription>
-              )}
+              <DrawerDescription>{description}</DrawerDescription>
             </DrawerHeader>
           )}
 
@@ -55,13 +67,21 @@ export default function ResponsiveDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent showCloseButton={!!title}>
-        {title && (
+      <DialogContent showCloseButton={showCloseButtonInDialog}>
+        {dialogAction ? (
+          // Render dialogAction in flex-row layout if provided
+          <div className="flex items-start justify-between">
+            <DialogHeader>
+              <DialogTitle>{title}</DialogTitle>
+              <DialogDescription>{description}</DialogDescription>
+            </DialogHeader>
+
+            {dialogAction}
+          </div>
+        ) : (
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
-            {description && (
-              <DialogDescription>{description}</DialogDescription>
-            )}
+            <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
         )}
 
