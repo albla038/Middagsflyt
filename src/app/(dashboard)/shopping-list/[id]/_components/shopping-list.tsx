@@ -1,21 +1,13 @@
 "use client";
 
-import EditItemForm from "@/app/(dashboard)/shopping-list/[id]/_components/edit-item-form";
 import ListInput from "@/app/(dashboard)/shopping-list/[id]/_components/list-input";
 import ListItem from "@/app/(dashboard)/shopping-list/[id]/_components/list-item";
 import { useSortSelection } from "@/app/(dashboard)/shopping-list/sort-selection-provider";
-import ResponsiveDialog from "@/components/responsive-dialog";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import {
-  useDeleteShoppingListItem,
-  useUpdateShoppingListItem,
-} from "@/hooks/queries/shopping-list/mutations";
 import { useShoppingList } from "@/hooks/queries/shopping-list/queries";
 import { IngredientWithAlias } from "@/lib/types";
 import { groupItemsByCategory } from "@/lib/utils";
-import { Trash2 } from "lucide-react";
-import { Activity, useState } from "react";
+import { Activity } from "react";
 
 type ShoppingListProps = {
   listId: string;
@@ -29,11 +21,6 @@ export default function ShoppingList({
   ingredients,
 }: ShoppingListProps) {
   const { data: list, isPending, error } = useShoppingList(listId);
-  const { mutate: updateItem } = useUpdateShoppingListItem(listId);
-  const { mutate: deleteItem } = useDeleteShoppingListItem(listId);
-
-  const [editingItemId, setEditingItemId] = useState<string | null>(null);
-  // consider saving last edited item id with a usePrevious hook
 
   const { isGroupedByCategory } = useSortSelection();
 
@@ -67,11 +54,9 @@ export default function ShoppingList({
                     {items.map((item) => (
                       <li key={item.id}>
                         <ListItem
+                          listId={listId}
                           item={item}
-                          onTogglePurchased={(itemId, isPurchased) => {
-                            updateItem({ itemId, data: { isPurchased } });
-                          }}
-                          onEdit={(itemId) => setEditingItemId(itemId)}
+                          categories={categories}
                         />
                       </li>
                     ))}
@@ -88,11 +73,9 @@ export default function ShoppingList({
                 {groupedItems.get("Handlat")?.map((item) => (
                   <li key={item.id}>
                     <ListItem
+                      listId={listId}
                       item={item}
-                      onTogglePurchased={(itemId, isPurchased) => {
-                        updateItem({ itemId, data: { isPurchased } });
-                      }}
-                      onEdit={(itemId) => setEditingItemId(itemId)}
+                      categories={categories}
                     />
                   </li>
                 ))}
@@ -109,11 +92,9 @@ export default function ShoppingList({
                   !item.isPurchased && (
                     <li key={item.id}>
                       <ListItem
+                        listId={listId}
                         item={item}
-                        onTogglePurchased={(itemId, isPurchased) => {
-                          updateItem({ itemId, data: { isPurchased } });
-                        }}
-                        onEdit={(itemId) => setEditingItemId(itemId)}
+                        categories={categories}
                       />
                     </li>
                   ),
@@ -132,11 +113,9 @@ export default function ShoppingList({
                     item.isPurchased && (
                       <li key={item.id}>
                         <ListItem
+                          listId={listId}
                           item={item}
-                          onTogglePurchased={(itemId, isPurchased) => {
-                            updateItem({ itemId, data: { isPurchased } });
-                          }}
-                          onEdit={(itemId) => setEditingItemId(itemId)}
+                          categories={categories}
                         />
                       </li>
                     ),
@@ -147,43 +126,6 @@ export default function ShoppingList({
         </ul>
       )}
       <ListInput listId={listId} ingredients={ingredients} />
-
-      <ResponsiveDialog
-        open={!!editingItemId}
-        onOpenChange={(open) => {
-          if (!open) {
-            setEditingItemId(null);
-          }
-        }}
-        title="Redigera vara"
-        description="Redigera eller ta bort varan"
-        showCloseButtonInDialog={false}
-        dialogAction={
-          // Delete item action button
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="text-destructive hover:text-destructive"
-            onClick={() => {
-              deleteItem(editingItemId!);
-              setEditingItemId(null);
-            }}
-          >
-            <Trash2 />
-            <span>Ta bort</span>
-          </Button>
-        }
-      >
-        {editingItemId && (
-          <EditItemForm
-            listId={listId}
-            itemId={editingItemId}
-            categories={categories}
-            onClose={() => setEditingItemId(null)}
-          />
-        )}
-      </ResponsiveDialog>
     </div>
   );
 }

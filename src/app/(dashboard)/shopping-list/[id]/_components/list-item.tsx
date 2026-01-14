@@ -1,62 +1,105 @@
 "use client";
 
+import ResponsiveDialog from "@/components/responsive-dialog";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  useDeleteShoppingListItem,
+  useUpdateShoppingListItem,
+} from "@/hooks/queries/shopping-list/mutations";
 import { ShoppingListItemResponse } from "@/lib/schemas/shopping-list";
 import { cn } from "@/lib/utils";
-import { GripVertical } from "lucide-react";
+import { GripVertical, Trash2 } from "lucide-react";
+import { useState } from "react";
+import EditItemForm from "./edit-item-form";
 
 type ListItemProps = {
+  listId: string;
   item: ShoppingListItemResponse;
-  onTogglePurchased: (itemId: string, isPurchased: boolean) => void;
-  onEdit: (itemId: string) => void;
+  categories: { id: string; name: string }[];
 };
 
-export default function ListItem({
-  item,
-  onTogglePurchased,
-  onEdit,
-}: ListItemProps) {
-  const { id, name, quantity, unit, isPurchased } = item;
+export default function ListItem({ listId, item, categories }: ListItemProps) {
+  // Edit dialog state
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Shopping list item mutations
+  const { mutate: updateItem } = useUpdateShoppingListItem(listId);
+  const { mutate: deleteItem } = useDeleteShoppingListItem(listId);
 
   return (
-    <div
-      className={cn(
-        "flex cursor-pointer items-center gap-2",
-        "has-data-[state=checked]:text-muted-foreground",
-      )}
-    >
-      <Checkbox
-        className="cursor-pointer"
-        checked={isPurchased}
-        onCheckedChange={(checked) => {
-          if (typeof checked === "boolean") onTogglePurchased(id, checked);
-        }}
-      />
-
+    <>
       <div
-        className="flex grow items-center justify-start gap-1"
-        onClick={() => onEdit(id)}
-      >
-        {quantity && (
-          <>
-            <span className="text-muted-foreground">{quantity}</span>
-            {unit && unit !== "ST" && (
-              <span className="text-muted-foreground">
-                {unit.toLocaleLowerCase()}
-              </span>
-            )}
-          </>
+        className={cn(
+          "flex cursor-pointer items-center gap-2",
+          "has-data-[state=checked]:text-muted-foreground",
         )}
+      >
+        <Checkbox
+          className="cursor-pointer"
+          checked={item.isPurchased}
+          onCheckedChange={(checked) => {
+            if (typeof checked === "boolean")
+              updateItem({ itemId: item.id, data: { isPurchased: checked } });
+          }}
+        />
 
-        <span className="line-clamp-1 truncate">{name}</span>
+        <div
+          className="flex grow items-center justify-start gap-1"
+          onClick={() => setIsEditing(true)}
+        >
+          {item.quantity && (
+            <>
+              <span className="text-muted-foreground">{item.quantity}</span>
+              {item.unit && item.unit !== "ST" && (
+                <span className="text-muted-foreground">
+                  {item.unit.toLocaleLowerCase()}
+                </span>
+              )}
+            </>
+          )}
+
+          <span className="line-clamp-1 truncate">{item.name}</span>
+        </div>
+
+        <div className="flex items-center gap-2 *:size-4">
+          {/* // TODO If scheduled indicator */}
+          {/* {<CalendarClock />} */}
+
+          <GripVertical className="cursor-move text-muted-foreground/50" />
+        </div>
       </div>
 
-      <div className="flex items-center gap-2 *:size-4">
-        {/* // TODO If scheduled indicator */}
-        {/* {<CalendarClock />} */}
-
-        <GripVertical className="cursor-move text-muted-foreground/50" />
-      </div>
-    </div>
+      <ResponsiveDialog
+        open={isEditing}
+        onOpenChange={(open) => setIsEditing(open)}
+        title="Redigera vara"
+        description="Redigera eller ta bort varan"
+        showCloseButtonInDialog={false}
+        dialogAction={
+          // Delete item action button
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="text-destructive hover:text-destructive"
+            onClick={() => {
+              deleteItem(item.id);
+              setIsEditing(false);
+            }}
+          >
+            <Trash2 />
+            <span>Ta bort</span>
+          </Button>
+        }
+      >
+        <EditItemForm
+          listId={listId}
+          itemId={item.id}
+          categories={categories}
+          onClose={() => setIsEditing(false)}
+        />
+      </ResponsiveDialog>
+    </>
   );
 }
