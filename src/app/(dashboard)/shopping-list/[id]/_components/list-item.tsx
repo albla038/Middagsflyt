@@ -95,7 +95,7 @@ export default function ListItem({ listId, item, categories }: ListItemProps) {
       >
         <EditItemForm
           listId={listId}
-          itemId={item.id}
+          item={item}
           categories={categories}
           onClose={() => setIsEditing(false)}
         />

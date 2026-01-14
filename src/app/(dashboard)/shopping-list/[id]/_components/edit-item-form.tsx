@@ -9,17 +9,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useShoppingList } from "@/hooks/queries/shopping-list/queries";
 import { Unit } from "@/lib/generated/prisma";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ShoppingListItemEditForm,
   shoppingListItemEditFormSchema,
+  ShoppingListItemResponse,
 } from "@/lib/schemas/shopping-list";
 import { useUpdateShoppingListItem } from "@/hooks/queries/shopping-list/mutations";
 import { Activity, useEffect } from "react";
-import { toast } from "sonner";
 import {
   Field,
   FieldError,
@@ -29,7 +28,7 @@ import {
 
 type EditItemFormProps = {
   listId: string;
-  itemId: string | null;
+  item: ShoppingListItemResponse;
   categories: { id: string; name: string }[];
   onClose: () => void;
 };
@@ -38,15 +37,11 @@ const unitList = Object.values(Unit);
 
 export default function EditItemForm({
   listId,
-  itemId,
+  item,
   categories,
   onClose,
 }: EditItemFormProps) {
-  // Query hook
-  const { data: list, isPending, error } = useShoppingList(listId);
-  const item = list?.items.find((item) => item.id === itemId);
-
-  // Mutation hooks
+  // Shopping list item mutation
   const { mutate: updateItem } = useUpdateShoppingListItem(listId);
 
   const form = useForm<ShoppingListItemEditForm>({
@@ -54,35 +49,12 @@ export default function EditItemForm({
     defaultValues: item,
   });
 
-  // Sync form values when item is loaded or changes
-  useEffect(() => {
-    if (item) {
-      form.reset(item);
-    }
-  }, [item, form.reset]);
-
-  if (isPending) {
-    return <p>Läser in...</p>; // TODO improve all error and loading states
-  }
-
-  if (error) {
-    return <p className="text-destructive">{error.message}</p>; // TODO improve
-  }
-
-  if (!item) {
-    return <p>Kunde inte hitta varan...</p>; // TODO improve
-  }
-
   function onSubmit(data: ShoppingListItemEditForm) {
     // Don't do anything if no changes were made
     if (!form.formState.isDirty) return;
 
-    if (item) {
-      updateItem({ itemId: item.id, data });
-      onClose();
-    } else {
-      toast.error("Något gick fel. Vänligen försök igen.");
-    }
+    updateItem({ itemId: item.id, data });
+    onClose();
   }
 
   return (
