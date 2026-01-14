@@ -18,7 +18,6 @@ import {
   ShoppingListItemResponse,
 } from "@/lib/schemas/shopping-list";
 import { useUpdateShoppingListItem } from "@/hooks/queries/shopping-list/mutations";
-import { Activity, useEffect } from "react";
 import {
   Field,
   FieldError,
@@ -77,9 +76,7 @@ export default function EditItemForm({
                   autoComplete="off"
                   aria-invalid={fieldState.invalid}
                 />
-                <Activity mode={fieldState.invalid ? "visible" : "hidden"}>
-                  <FieldError errors={[fieldState.error]} />
-                </Activity>
+                <FieldError errors={[fieldState.error]} />
               </Field>
             )}
           />
@@ -113,9 +110,7 @@ export default function EditItemForm({
                     ))}
                   </SelectContent>
                 </Select>
-                <Activity mode={fieldState.invalid ? "visible" : "hidden"}>
-                  <FieldError errors={[fieldState.error]} />
-                </Activity>
+                <FieldError errors={[fieldState.error]} />
               </Field>
             )}
           />
@@ -142,9 +137,7 @@ export default function EditItemForm({
                   }}
                   aria-invalid={fieldState.invalid}
                 />
-                <Activity mode={fieldState.invalid ? "visible" : "hidden"}>
-                  <FieldError errors={[fieldState.error]} />
-                </Activity>
+                <FieldError errors={[fieldState.error]} />
               </Field>
             )}
           />
@@ -179,9 +172,7 @@ export default function EditItemForm({
                     ))}
                   </SelectContent>
                 </Select>
-                <Activity mode={fieldState.invalid ? "visible" : "hidden"}>
-                  <FieldError errors={[fieldState.error]} />
-                </Activity>
+                <FieldError errors={[fieldState.error]} />
               </Field>
             )}
           />
