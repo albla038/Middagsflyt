@@ -54,7 +54,7 @@ export default async function ShoppingListPage({
           <Header breadcrumbs={breadcrumbs}>
             <HeaderMenu listId={id} />
           </Header>
-          <main className="relative w-full max-w-lg grow">
+          <main className="relative w-full max-w-screen grow sm:max-w-lg">
             <ShoppingList
               listId={id}
               categories={categories}

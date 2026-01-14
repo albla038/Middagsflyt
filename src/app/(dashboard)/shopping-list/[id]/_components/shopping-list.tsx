@@ -151,7 +151,7 @@ function ListGroup({ title, children, className }: ListGroupProps) {
   return (
     <li className={cn("flex flex-col gap-3 rounded-md p-3", className)}>
       {title && <Label>{title.toUpperCase()}</Label>}
-      <ul className="grid gap-2">{children}</ul>
+      <ul className="flex flex-col gap-2">{children}</ul>
     </li>
   );
 }

@@ -45,7 +45,7 @@ export default function ListItem({ listId, item, categories }: ListItemProps) {
         />
 
         <div
-          className="flex grow items-center justify-start gap-1"
+          className="flex min-w-0 grow items-center justify-start gap-1"
           onClick={() => setIsEditing(true)}
         >
           {item.quantity && (
@@ -59,7 +59,7 @@ export default function ListItem({ listId, item, categories }: ListItemProps) {
             </>
           )}
 
-          <span className="line-clamp-1 truncate">{item.name}</span>
+          <span className="truncate">{item.name}</span>
         </div>
 
         <div className="flex items-center gap-2 *:size-4">
