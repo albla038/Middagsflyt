@@ -50,11 +50,11 @@ export default async function ShoppingListPage({
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <ScrollArea className="h-full w-full bg-subtle">
-        <div className="relative flex h-svh flex-col items-center">
+        <div className="flex h-svh flex-col items-center">
           <Header breadcrumbs={breadcrumbs}>
             <HeaderMenu listId={id} />
           </Header>
-          <main className="relative w-full max-w-screen grow sm:max-w-lg">
+          <main className="w-full max-w-screen grow sm:max-w-lg">
             <ShoppingList
               listId={id}
               categories={categories}

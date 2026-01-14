@@ -34,7 +34,13 @@ export default function ShoppingList({
   }
 
   return (
-    <div className="flex h-full flex-col justify-between">
+    <div
+      className={cn(
+        "flex h-full flex-col-reverse justify-between",
+        "sm:flex-col sm:justify-start",
+      )}
+    >
+      <ListInput listId={listId} ingredients={ingredients} />
       <ul className="flex flex-col gap-2 p-2">
         {isGroupedByCategory ? (
           <GroupedList
@@ -50,7 +56,6 @@ export default function ShoppingList({
           />
         )}
       </ul>
-      <ListInput listId={listId} ingredients={ingredients} />
     </div>
   );
 }
@@ -72,7 +77,7 @@ function FlatList({ listId, items, categories }: FlatListProps) {
     <>
       {/* Unpurchased items */}
       {unpurchasedItems.length > 0 && (
-        <ListGroup className="bg-background">
+        <ListGroup className="bg-background" title="Att handla">
           {unpurchasedItems.map((item) => (
             <li key={item.id}>
               <ListItem listId={listId} item={item} categories={categories} />

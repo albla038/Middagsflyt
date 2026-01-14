@@ -114,10 +114,14 @@ export default function ListInput({ listId, ingredients }: ListInputProps) {
         }
       }}
       className={cn(
-        "sticky bottom-0 z-20 grid gap-2 border-t border-border bg-background p-3 pb-1",
-        "sm:border-none sm:bg-transparent sm:px-2 sm:pb-6",
+        "sticky bottom-0 z-10 flex flex-col gap-2 border-t border-border bg-background p-3 pb-0",
+        "sm:top-26 sm:mt-8 sm:h-[86px] sm:border-none sm:bg-transparent sm:p-0 sm:pb-3",
       )}
     >
+      <div className="absolute -top-9 hidden w-full sm:block">
+        <div className="h-20 bg-subtle" />
+        <div className="h-12 bg-linear-to-b from-subtle to-transparent" />
+      </div>
       <form
         className="relative"
         onSubmit={(e) => {
@@ -140,7 +144,7 @@ export default function ListInput({ listId, ingredients }: ListInputProps) {
             type="button"
             variant="ghost"
             size="icon"
-            className="right- absolute top-1/2 right-1 size-7 -translate-y-1/2 text-muted-foreground"
+            className="absolute top-1/2 right-1 size-7 -translate-y-1/2 text-muted-foreground"
             onClick={() => setValue("")}
           >
             <X className="size-4" />

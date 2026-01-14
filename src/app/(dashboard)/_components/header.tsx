@@ -22,7 +22,7 @@ type HeaderProps = {
 
 export default function Header({ children, breadcrumbs }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-10 w-full border-b border-border bg-background transition-[width,height] ease-linear">
+    <header className="sticky top-0 z-20 w-full border-b border-border bg-background transition-[width,height] ease-linear">
       <div
         className={cn(
           "flex w-full items-center gap-2 p-2",
