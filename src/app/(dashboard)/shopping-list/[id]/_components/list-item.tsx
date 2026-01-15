@@ -29,10 +29,11 @@ export default function ListItem({ listId, item, categories }: ListItemProps) {
 
   return (
     <>
-      <div
+      <li
         className={cn(
           "flex cursor-pointer items-center gap-2",
           "has-data-[state=checked]:text-muted-foreground",
+          "animate-in duration-200 fade-in-0 zoom-in-95",
         )}
       >
         <Checkbox
@@ -68,7 +69,7 @@ export default function ListItem({ listId, item, categories }: ListItemProps) {
 
           <GripVertical className="cursor-move text-muted-foreground/50" />
         </div>
-      </div>
+      </li>
 
       <ResponsiveDialog
         open={isEditing}

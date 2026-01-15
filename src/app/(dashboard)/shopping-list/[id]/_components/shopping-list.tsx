@@ -79,9 +79,12 @@ function FlatList({ listId, items, categories }: FlatListProps) {
       {unpurchasedItems.length > 0 && (
         <ListGroup className="bg-background" title="Att handla">
           {unpurchasedItems.map((item) => (
-            <li key={item.id}>
-              <ListItem listId={listId} item={item} categories={categories} />
-            </li>
+            <ListItem
+              key={item.id}
+              listId={listId}
+              item={item}
+              categories={categories}
+            />
           ))}
         </ListGroup>
       )}
@@ -90,9 +93,12 @@ function FlatList({ listId, items, categories }: FlatListProps) {
       {purchasedItems.length > 0 && (
         <ListGroup title="Handlat">
           {purchasedItems.map((item) => (
-            <li key={item.id}>
-              <ListItem listId={listId} item={item} categories={categories} />
-            </li>
+            <ListItem
+              key={item.id}
+              listId={listId}
+              item={item}
+              categories={categories}
+            />
           ))}
         </ListGroup>
       )}
@@ -125,9 +131,12 @@ function GroupedList({ listId, items, categories }: GroupedListProps) {
       {unpurchasedGroups.map(([name, items]) => (
         <ListGroup className="bg-background" title={name} key={name}>
           {items.map((item) => (
-            <li key={item.id}>
-              <ListItem listId={listId} item={item} categories={categories} />
-            </li>
+            <ListItem
+              key={item.id}
+              listId={listId}
+              item={item}
+              categories={categories}
+            />
           ))}
         </ListGroup>
       ))}
@@ -136,9 +145,12 @@ function GroupedList({ listId, items, categories }: GroupedListProps) {
       {purchasedItems.length > 0 && (
         <ListGroup title="Handlat">
           {purchasedItems.map((item) => (
-            <li key={item.id}>
-              <ListItem listId={listId} item={item} categories={categories} />
-            </li>
+            <ListItem
+              key={item.id}
+              listId={listId}
+              item={item}
+              categories={categories}
+            />
           ))}
         </ListGroup>
       )}
@@ -154,7 +166,13 @@ type ListGroupProps = {
 
 function ListGroup({ title, children, className }: ListGroupProps) {
   return (
-    <li className={cn("flex flex-col gap-3 rounded-md p-3", className)}>
+    <li
+      className={cn(
+        "flex flex-col gap-3 rounded-md p-3",
+        "animate-in duration-500 fade-in",
+        className,
+      )}
+    >
       {title && <Label>{title.toUpperCase()}</Label>}
       <ul className="flex flex-col gap-2">{children}</ul>
     </li>
