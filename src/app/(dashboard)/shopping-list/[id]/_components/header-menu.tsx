@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Toggle } from "@/components/ui/toggle";
-import { useShoppingList } from "@/hooks/queries/shopping-list/queries";
+import { useShoppingList } from "@/queries/shopping-list/use-shopping-list";
 import { Edit, FolderTree, MoreVertical, Trash2 } from "lucide-react";
 import { useState } from "react";
 

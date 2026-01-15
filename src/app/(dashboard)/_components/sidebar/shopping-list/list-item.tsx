@@ -15,7 +15,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useShoppingList } from "@/hooks/queries/shopping-list/queries";
+import { useShoppingList } from "@/queries/shopping-list/use-shopping-list";
 import { ShoppingListWithCount } from "@/lib/types";
 import { Edit, List, MoreHorizontal, Trash2 } from "lucide-react";
 import Link from "next/link";

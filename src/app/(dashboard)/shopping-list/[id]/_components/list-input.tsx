@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { useCreateShoppingListItem } from "@/hooks/queries/shopping-list/mutations";
+import { useCreateShoppingListItem } from "@/queries/shopping-list/use-create-shopping-list-item";
 import { cn } from "@/lib/utils";
 import { ListOrdered, Plus, X } from "lucide-react";
 import { useMemo, useState } from "react";

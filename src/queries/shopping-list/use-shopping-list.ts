@@ -1,8 +1,10 @@
+import { useQuery } from "@tanstack/react-query";
 import { responseSchema } from "@/lib/schemas/response";
 import {
   ShoppingListResponse,
   shoppingListResponseSchema,
 } from "@/lib/schemas/shopping-list";
+import { shoppingListQueryOptions } from "@/queries/shopping-list/options";
 
 export async function fetchShoppingList(
   listId: string,
@@ -52,4 +54,8 @@ export async function fetchShoppingList(
   }
 
   return validated.data;
+}
+
+export function useShoppingList(listId: string) {
+  return useQuery(shoppingListQueryOptions(listId));
 }

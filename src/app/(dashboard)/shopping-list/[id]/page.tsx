@@ -5,7 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { fetchIngredientCategories } from "@/data/ingredient-category/queries";
 import { fetchAllIngredientsWithAlias } from "@/data/ingredient/queries";
 import { fetchShoppingList } from "@/data/shopping-list/queries";
-import { shoppingListQueryOptions } from "@/hooks/queries/shopping-list/options";
+import { shoppingListQueryOptions } from "@/queries/shopping-list/options";
 import { getQueryClient } from "@/lib/query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { notFound } from "next/navigation";

@@ -4,9 +4,9 @@ import ResponsiveDialog from "@/components/responsive-dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-  useDeleteShoppingListItem,
   useUpdateShoppingListItem,
-} from "@/hooks/queries/shopping-list/mutations";
+} from "@/queries/shopping-list/use-update-shopping-list-item";
+import { useDeleteShoppingListItem } from "@/queries/shopping-list/use-delete-shopping-list-item";
 import { ShoppingListItemResponse } from "@/lib/schemas/shopping-list";
 import { cn } from "@/lib/utils";
 import { GripVertical, Trash2 } from "lucide-react";

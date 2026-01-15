@@ -4,7 +4,7 @@ import ListInput from "@/app/(dashboard)/shopping-list/[id]/_components/list-inp
 import ListItem from "@/app/(dashboard)/shopping-list/[id]/_components/list-item";
 import { useSortSelection } from "@/app/(dashboard)/shopping-list/sort-selection-provider";
 import { Label } from "@/components/ui/label";
-import { useShoppingList } from "@/hooks/queries/shopping-list/queries";
+import { useShoppingList } from "@/queries/shopping-list/use-shopping-list";
 import { ShoppingListItemResponse } from "@/lib/schemas/shopping-list";
 import { IngredientWithAlias } from "@/lib/types";
 import { cn, groupItemsByCategory } from "@/lib/utils";

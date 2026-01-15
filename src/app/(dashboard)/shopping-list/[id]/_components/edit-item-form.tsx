@@ -17,7 +17,7 @@ import {
   shoppingListItemEditFormSchema,
   ShoppingListItemResponse,
 } from "@/lib/schemas/shopping-list";
-import { useUpdateShoppingListItem } from "@/hooks/queries/shopping-list/mutations";
+import { useUpdateShoppingListItem } from "@/queries/shopping-list/use-update-shopping-list-item";
 import {
   Field,
   FieldError,
