@@ -345,7 +345,7 @@ model ShoppingListItem {
   name             String
   quantity         Float?
   unit             Unit?
-  displayOrder     Float?
+  displayOrder     Float
   isPurchased      Boolean @default(false)
   isManuallyEdited Boolean @default(false)
 

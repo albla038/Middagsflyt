@@ -70,6 +70,16 @@ export function useCreateShoppingListItem(listId: string) {
       // Snapshot the previous state
       const prevShoppingList = queryClient.getQueryData(queryKey);
 
+      // Calculate displayOrder for the new item
+      let newDisplayOrder = 1000;
+      if (prevShoppingList && prevShoppingList.items.length > 0) {
+        // Find the highest existing order value in the cache
+        const maxOrder = Math.max(
+          ...prevShoppingList.items.map((i) => i.displayOrder),
+        );
+        newDisplayOrder = maxOrder + 1000;
+      }
+
       // Add to the new state optimistically
       queryClient.setQueryData(queryKey, (old) => {
         if (!old) return old;
@@ -85,6 +95,7 @@ export function useCreateShoppingListItem(listId: string) {
               isManuallyEdited: true,
               createdAt: now,
               updatedAt: now,
+              displayOrder: newDisplayOrder,
             },
             ...old.items,
           ],

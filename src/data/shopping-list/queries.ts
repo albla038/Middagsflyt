@@ -60,7 +60,7 @@ export async function fetchShoppingList(
 
       include: {
         items: {
-          orderBy: { createdAt: "desc" },
+          orderBy: { displayOrder: "desc" },
 
           // TODO Add relations
           // include: {},

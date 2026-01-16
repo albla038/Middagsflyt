@@ -20,50 +20,61 @@ export async function createShoppingListItem({
   const user = await requireUser();
 
   try {
-    // Assure the shopping list exists and belongs to the user's household
-    const list = await prisma.shoppingList.findUnique({
-      where: {
-        id: listId,
-
-        household: {
-          members: {
-            some: { userId: user.id },
+    return await prisma.$transaction(async (tx) => {
+      // Assure the shopping list exists and belongs to the user's household
+      const list = await tx.shoppingList.findUnique({
+        where: {
+          id: listId,
+          household: {
+            members: {
+              some: { userId: user.id },
+            },
           },
         },
-      },
-      select: {
-        id: true,
-      },
-    });
 
-    if (!list) {
-      return {
-        ok: false,
-        error: new Error(
-          "Du har inte behörighet att lägga till varor i denna lista.",
-        ),
-      };
-    }
-
-    const result = await prisma.shoppingListItem.create({
-      data: {
-        id: data.id,
-        name: data.name,
-        quantity: data.quantity,
-        unit: data.unit,
-        displayOrder: data.displayOrder,
-        isManuallyEdited: true,
-
-        shoppingList: {
-          connect: { id: listId },
+        select: {
+          // Fetch the items relation, but only the last one
+          items: {
+            orderBy: { displayOrder: "desc" },
+            take: 1,
+            select: { displayOrder: true },
+          },
         },
-        category: {
-          connect: data.categoryId ? { id: data.categoryId } : undefined,
-        },
-      },
-    });
+      });
 
-    return { ok: true, data: result };
+      if (!list) {
+        return {
+          ok: false,
+          error: new Error(
+            "Du har inte behörighet att lägga till varor i denna lista.",
+          ),
+        };
+      }
+
+      // Get largest displayOrder value if possible
+      const lastItem = list.items.at(0);
+      const newDisplayOrder = (lastItem?.displayOrder ?? 0) + 1000;
+
+      const result = await tx.shoppingListItem.create({
+        data: {
+          id: data.id,
+          name: data.name,
+          quantity: data.quantity,
+          unit: data.unit,
+          displayOrder: newDisplayOrder,
+          isManuallyEdited: true,
+
+          shoppingList: {
+            connect: { id: listId },
+          },
+          category: {
+            connect: data.categoryId ? { id: data.categoryId } : undefined,
+          },
+        },
+      });
+
+      return { ok: true, data: result };
+    });
   } catch (error) {
     return {
       ok: false,

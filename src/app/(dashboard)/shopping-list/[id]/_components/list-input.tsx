@@ -85,7 +85,6 @@ export default function ListInput({ listId, ingredients }: ListInputProps) {
         unit,
         categoryId,
         quantity: null,
-        displayOrder: null,
       });
       setValue("");
     }
@@ -187,7 +186,6 @@ export default function ListInput({ listId, ingredients }: ListInputProps) {
                         name: displayNameSingular,
                         quantity: null,
                         unit: shoppingUnit,
-                        displayOrder: null,
                         categoryId: ingredientCategoryId,
                       });
                       setValue("");

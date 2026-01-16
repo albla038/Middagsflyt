@@ -6,7 +6,7 @@ const shoppingListItemResponseSchema = z.object({
   name: z.string(),
   quantity: z.number().nullable(),
   unit: z.enum(Unit).nullable(),
-  displayOrder: z.number().nullable(),
+  displayOrder: z.number(),
   isPurchased: z.boolean(),
   isManuallyEdited: z.boolean(),
 
@@ -37,7 +37,6 @@ export const shoppingListItemCreateSchema = z.object({
   name: z.string().min(1, "Varans namn måste ha minst en bokstav"),
   quantity: z.number().nullable(),
   unit: z.enum(Unit).nullable(),
-  displayOrder: z.number().nullable(),
 
   categoryId: z.cuid2().nullable(),
   // TODO Add more relations
@@ -55,7 +54,7 @@ export const shoppingListItemUpdateSchema = z.object({
     .optional(),
   quantity: z.number().positive("Ange en positiv mängd").nullable().optional(),
   unit: z.enum(Unit).nullable().optional(),
-  displayOrder: z.number().nullable().optional(),
+  displayOrder: z.number().optional(),
   isPurchased: z.boolean().optional(),
 
   categoryId: z.cuid2().nullable().optional(),
