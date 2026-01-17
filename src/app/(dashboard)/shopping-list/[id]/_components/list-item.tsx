@@ -3,23 +3,29 @@
 import ResponsiveDialog from "@/components/responsive-dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  useUpdateShoppingListItem,
-} from "@/queries/shopping-list/use-update-shopping-list-item";
+import { useUpdateShoppingListItem } from "@/queries/shopping-list/use-update-shopping-list-item";
 import { useDeleteShoppingListItem } from "@/queries/shopping-list/use-delete-shopping-list-item";
 import { ShoppingListItemResponse } from "@/lib/schemas/shopping-list";
 import { cn } from "@/lib/utils";
 import { GripVertical, Trash2 } from "lucide-react";
 import { useState } from "react";
 import EditItemForm from "./edit-item-form";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 type ListItemProps = {
   listId: string;
   item: ShoppingListItemResponse;
   categories: { id: string; name: string }[];
+  draggable?: boolean;
 };
 
-export default function ListItem({ listId, item, categories }: ListItemProps) {
+export default function ListItem({
+  listId,
+  item,
+  categories,
+  draggable,
+}: ListItemProps) {
   // Edit dialog state
   const [isEditing, setIsEditing] = useState(false);
 
@@ -27,13 +33,26 @@ export default function ListItem({ listId, item, categories }: ListItemProps) {
   const { mutate: updateItem } = useUpdateShoppingListItem(listId);
   const { mutate: deleteItem } = useDeleteShoppingListItem(listId);
 
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({
+      id: item.id,
+      disabled: !draggable,
+    });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
   return (
     <>
       <li
+        ref={setNodeRef}
+        style={style}
         className={cn(
           "flex cursor-pointer items-center gap-2",
           "has-data-[state=checked]:text-muted-foreground",
-          "animate-in duration-200 fade-in-0 zoom-in-95",
+          // "animate-in duration-200 fade-in-0 zoom-in-95",
         )}
       >
         <Checkbox
@@ -63,11 +82,17 @@ export default function ListItem({ listId, item, categories }: ListItemProps) {
           <span className="truncate">{item.name}</span>
         </div>
 
-        <div className="flex items-center gap-2 *:size-4">
+        <div className="flex items-center gap-2">
           {/* // TODO If scheduled indicator */}
           {/* {<CalendarClock />} */}
 
-          <GripVertical className="cursor-move text-muted-foreground/50" />
+          {draggable && (
+            <GripVertical
+              className="cursor-move touch-none p-1 text-muted-foreground/50"
+              // {...attributes}
+              {...listeners}
+            />
+          )}
         </div>
       </li>
 

@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { zodErrorResponseSchema } from "@/lib/schemas/response";
 
-async function updateShoppingListItem({
+export async function updateShoppingListItem({
   listId,
   itemId,
   data,

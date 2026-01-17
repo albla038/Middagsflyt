@@ -215,3 +215,37 @@ export function groupItemsByCategory(
 
   return groupedItems;
 }
+
+/**
+ * Calculate new display order for an item that has been moved to a new index in the list.
+ *
+ * This function assumes that the items are sorted in descending order based on displayOrder.
+ *
+ * @param index - The new index of the item.
+ * @param items - The current list of items.
+ * @returns The new display order value.
+ */
+export function calculateNewDisplayOrder(
+  index: number,
+  items: ShoppingListItemResponse[],
+) {
+  const prevItem = items[index - 1];
+  const nextItem = items[index + 1];
+
+  // Updated items is between two items
+  if (prevItem && nextItem) {
+    return (prevItem.displayOrder + nextItem.displayOrder) / 2;
+  }
+
+  // Updated item is at the end of the list
+  if (prevItem && !nextItem) {
+    return prevItem.displayOrder / 2;
+  }
+
+  // Updated item is at the start of the list
+  if (!prevItem && nextItem) {
+    return nextItem.displayOrder + 1000;
+  }
+
+  return 1000;
+}
