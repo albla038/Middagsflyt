@@ -10,21 +10,25 @@ import { cn } from "@/lib/utils";
 import { GripVertical, Trash2 } from "lucide-react";
 import { useState } from "react";
 import EditItemForm from "./edit-item-form";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { DraggableAttributes } from "@dnd-kit/core";
+import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 
 type ListItemProps = {
   listId: string;
   item: ShoppingListItemResponse;
   categories: { id: string; name: string }[];
-  draggable?: boolean;
+  isDraggable?: boolean;
+  attributes?: DraggableAttributes;
+  listeners?: SyntheticListenerMap | undefined;
 };
 
 export default function ListItem({
   listId,
   item,
   categories,
-  draggable,
+  isDraggable = false,
+  attributes,
+  listeners,
 }: ListItemProps) {
   // Edit dialog state
   const [isEditing, setIsEditing] = useState(false);
@@ -33,26 +37,12 @@ export default function ListItem({
   const { mutate: updateItem } = useUpdateShoppingListItem(listId);
   const { mutate: deleteItem } = useDeleteShoppingListItem(listId);
 
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({
-      id: item.id,
-      disabled: !draggable,
-    });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
   return (
     <>
-      <li
-        ref={setNodeRef}
-        style={style}
+      <div
         className={cn(
-          "flex cursor-pointer items-center gap-2",
+          "flex cursor-pointer items-center gap-2 border-y border-transparent px-2",
           "has-data-[state=checked]:text-muted-foreground",
-          // "animate-in duration-200 fade-in-0 zoom-in-95",
         )}
       >
         <Checkbox
@@ -65,7 +55,7 @@ export default function ListItem({
         />
 
         <div
-          className="flex min-w-0 grow items-center justify-start gap-1"
+          className="flex min-w-0 grow items-center justify-start gap-1 py-1"
           onClick={() => setIsEditing(true)}
         >
           {item.quantity && (
@@ -86,15 +76,18 @@ export default function ListItem({
           {/* // TODO If scheduled indicator */}
           {/* {<CalendarClock />} */}
 
-          {draggable && (
+          {isDraggable && (
             <GripVertical
-              className="cursor-move touch-none p-1 text-muted-foreground/50"
-              // {...attributes}
+              className={cn(
+                "cursor-move touch-none p-1 text-muted-foreground/50 outline-none",
+                "focus-visible:rounded-[4px] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+              )}
+              {...attributes}
               {...listeners}
             />
           )}
         </div>
-      </li>
+      </div>
 
       <ResponsiveDialog
         open={isEditing}

@@ -3,7 +3,6 @@
 import ListInput from "@/app/(dashboard)/shopping-list/[id]/_components/list-input";
 import ListItem from "@/app/(dashboard)/shopping-list/[id]/_components/list-item";
 import { useSortSelection } from "@/app/(dashboard)/shopping-list/sort-selection-provider";
-import { Label } from "@/components/ui/label";
 import { useShoppingList } from "@/queries/shopping-list/use-shopping-list";
 import { ShoppingListItemResponse } from "@/lib/schemas/shopping-list";
 import { IngredientWithAlias } from "@/lib/types";
@@ -18,6 +17,8 @@ import {
   DndContext,
   DragEndEvent,
   DragOverEvent,
+  DragOverlay,
+  DragStartEvent,
   KeyboardSensor,
   PointerSensor,
   useSensor,
@@ -32,6 +33,11 @@ import {
 import { shoppingListQueryOptions } from "@/queries/shopping-list/options";
 import { getQueryClient } from "@/lib/query-client";
 import { useReorderShoppingListItem } from "@/queries/shopping-list/use-reorder-shopping-list-item";
+import {
+  restrictToVerticalAxis,
+  restrictToWindowEdges,
+} from "@dnd-kit/modifiers";
+import SortableListItem from "@/app/(dashboard)/shopping-list/[id]/_components/sortable-list-item";
 
 const queryClient = getQueryClient();
 
@@ -55,6 +61,10 @@ export default function ShoppingList({
   const [items, setItems] = useState<ShoppingListItemResponse[]>(
     data?.items || [],
   );
+
+  // Currently active dragged item id
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const activeItem = activeId ? items.find((i) => i.id === activeId) : null;
 
   // List sorting selection context
   const { isGroupedByCategory } = useSortSelection();
@@ -154,6 +164,8 @@ export default function ShoppingList({
         },
         updatedList,
       });
+
+      setActiveId(null);
     },
     [items, data, reorderItem],
   );
@@ -174,12 +186,14 @@ export default function ShoppingList({
   }
 
   // Cancel background refetches when dragging starts
-  async function handleDragStart() {
+  async function handleDragStart(event: DragStartEvent) {
+    setActiveId(String(event.active.id));
     await queryClient.cancelQueries({ queryKey });
   }
 
   // Refetch/revert cache if dragging is cancelled
   function handleDragCancel() {
+    setActiveId(null);
     queryClient.invalidateQueries({ queryKey });
   }
 
@@ -198,6 +212,7 @@ export default function ShoppingList({
         onDragCancel={handleDragCancel}
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
+        modifiers={[restrictToVerticalAxis]}
       >
         <ul className="flex flex-col gap-2 p-2">
           {isGroupedByCategory ? (
@@ -210,6 +225,21 @@ export default function ShoppingList({
             <FlatList listId={listId} items={items} categories={categories} />
           )}
         </ul>
+
+        <DragOverlay
+          className="rounded-sm border border-border bg-background shadow-xs"
+          zIndex={50}
+          modifiers={[restrictToVerticalAxis, restrictToWindowEdges]}
+        >
+          {activeItem && (
+            <ListItem
+              listId={listId}
+              item={activeItem}
+              categories={categories}
+              isDraggable
+            />
+          )}
+        </DragOverlay>
       </DndContext>
     </div>
   );
@@ -238,12 +268,12 @@ function FlatList({ listId, items, categories }: FlatListProps) {
         >
           <ListGroup className="bg-background" title="Att handla">
             {unpurchasedItems.map((item) => (
-              <ListItem
+              <SortableListItem
                 key={item.id}
                 listId={listId}
                 item={item}
                 categories={categories}
-                draggable
+                isDraggable
               />
             ))}
           </ListGroup>
@@ -254,7 +284,7 @@ function FlatList({ listId, items, categories }: FlatListProps) {
       {purchasedItems.length > 0 && (
         <ListGroup title="Handlat">
           {purchasedItems.map((item) => (
-            <ListItem
+            <SortableListItem
               key={item.id}
               listId={listId}
               item={item}
@@ -297,12 +327,12 @@ function GroupedList({ listId, items, categories }: GroupedListProps) {
         >
           <ListGroup className="bg-background" title={name}>
             {groupItems.map((item) => (
-              <ListItem
+              <SortableListItem
                 key={item.id}
                 listId={listId}
                 item={item}
                 categories={categories}
-                draggable
+                isDraggable
               />
             ))}
           </ListGroup>
@@ -313,7 +343,7 @@ function GroupedList({ listId, items, categories }: GroupedListProps) {
       {purchasedItems.length > 0 && (
         <ListGroup title="Handlat">
           {purchasedItems.map((item) => (
-            <ListItem
+            <SortableListItem
               key={item.id}
               listId={listId}
               item={item}
@@ -336,13 +366,17 @@ function ListGroup({ title, children, className }: ListGroupProps) {
   return (
     <li
       className={cn(
-        "flex flex-col gap-3 rounded-md p-3",
+        "flex flex-col rounded-md p-2",
         "animate-in duration-500 fade-in",
         className,
       )}
     >
-      {title && <Label>{title.toUpperCase()}</Label>}
-      <ul className="flex flex-col gap-2">{children}</ul>
+      {title && (
+        <span className="p-2 text-sm leading-none font-medium">
+          {title.toUpperCase()}
+        </span>
+      )}
+      <ul>{children}</ul>
     </li>
   );
 }
