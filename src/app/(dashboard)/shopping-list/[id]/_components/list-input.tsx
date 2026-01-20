@@ -129,6 +129,7 @@ export default function ListInput({ listId, ingredients }: ListInputProps) {
         }}
       >
         <Input
+          id="list-item-input"
           type="text"
           placeholder={placeholder}
           value={value}
