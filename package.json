@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint ."
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -64,7 +64,6 @@
     "zod": "^4.3.4"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4.1.11",
     "@tanstack/eslint-plugin-query": "^5.83.1",
     "@types/node": "^20",
