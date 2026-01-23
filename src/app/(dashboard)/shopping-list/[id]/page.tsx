@@ -47,21 +47,21 @@ export default async function ShoppingListPage({
   ]);
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <ScrollArea className="h-full w-full bg-subtle">
-        <div className="flex h-svh flex-col items-center">
-          <Header breadcrumbs={breadcrumbs}>
-            <HeaderMenu listId={id} initialItemCount={list.items.length} />
-          </Header>
-          <main className="w-full max-w-screen grow sm:max-w-lg">
+    <ScrollArea className="h-full w-full bg-subtle">
+      <div className="flex h-svh flex-col items-center">
+        <Header breadcrumbs={breadcrumbs}>
+          <HeaderMenu listId={id} initialItemCount={list.items.length} />
+        </Header>
+        <main className="w-full max-w-screen grow sm:max-w-lg">
+          <HydrationBoundary state={dehydrate(queryClient)}>
             <ShoppingList
               listId={id}
               categories={categories}
               ingredients={ingredients}
             />
-          </main>
-        </div>
-      </ScrollArea>
-    </HydrationBoundary>
+          </HydrationBoundary>
+        </main>
+      </div>
+    </ScrollArea>
   );
 }
