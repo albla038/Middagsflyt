@@ -23,15 +23,21 @@ import { useState } from "react";
 
 type HeaderMenuProps = {
   listId: string;
+  initialItemCount: number;
 };
 
-export default function HeaderMenu({ listId }: HeaderMenuProps) {
+export default function HeaderMenu({
+  listId,
+  initialItemCount,
+}: HeaderMenuProps) {
   const { data: list } = useShoppingList(listId);
 
   const { isGroupedByCategory, setGroupedByCategory } = useSortSelection();
 
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
   const [isDeleteAlertOpen, setDeleteAlertOpen] = useState(false);
+
+  const itemCount = list?.items.length ?? initialItemCount;
 
   return (
     <>
@@ -54,7 +60,7 @@ export default function HeaderMenu({ listId }: HeaderMenuProps) {
           <DeleteShoppingListAlert
             open={isDeleteAlertOpen}
             onOpenChange={setDeleteAlertOpen}
-            list={{ ...list, itemCount: list.items.length }}
+            list={{ ...list, itemCount }}
           />
         </>
       )}
@@ -63,8 +69,7 @@ export default function HeaderMenu({ listId }: HeaderMenuProps) {
       <div className="flex grow items-center gap-2">
         <span className="text-muted-foreground">•</span>
         <span className="text-sm font-normal text-muted-foreground">
-          {list?.items.length ?? 0}{" "}
-          {list?.items.length === 1 ? "vara" : "varor"}
+          {itemCount} {itemCount === 1 ? "vara" : "varor"}
         </span>
       </div>
 

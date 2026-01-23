@@ -41,7 +41,6 @@ export default async function ShoppingListPage({
     },
   ];
 
-  // const categories = await fetchIngredientCategories();
   const [categories, ingredients] = await Promise.all([
     fetchIngredientCategories(),
     fetchAllIngredientsWithAlias(),
@@ -52,7 +51,7 @@ export default async function ShoppingListPage({
       <ScrollArea className="h-full w-full bg-subtle">
         <div className="flex h-svh flex-col items-center">
           <Header breadcrumbs={breadcrumbs}>
-            <HeaderMenu listId={id} />
+            <HeaderMenu listId={id} initialItemCount={list.items.length} />
           </Header>
           <main className="w-full max-w-screen grow sm:max-w-lg">
             <ShoppingList
