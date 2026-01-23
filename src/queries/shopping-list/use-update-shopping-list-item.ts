@@ -3,55 +3,7 @@ import { getQueryClient } from "@/lib/query-client";
 import { ShoppingListItemUpdate } from "@/lib/schemas/shopping-list";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { zodErrorResponseSchema } from "@/lib/schemas/response";
-
-export async function updateShoppingListItem({
-  listId,
-  itemId,
-  data,
-}: {
-  listId: string;
-  itemId: string;
-  data: ShoppingListItemUpdate;
-}) {
-  let response: Response;
-  try {
-    response = await fetch(`/api/shopping-lists/${listId}/items/${itemId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-  } catch (error) {
-    throw new Error(
-      "Ett nätverksfel inträffade när varan skulle uppdateras. Vänligen försök igen.",
-      {
-        cause: error instanceof Error ? error : new Error(String(error)),
-      },
-    );
-  }
-
-  let resData: unknown;
-  try {
-    resData = await response.json();
-  } catch {
-    throw new Error(
-      "Kunde inte tolka svaret från servern. Vänligen försök igen.",
-    );
-  }
-
-  if (!response.ok) {
-    const validatedErrorRes = zodErrorResponseSchema.safeParse(resData);
-    if (validatedErrorRes.success) {
-      throw new Error(validatedErrorRes.data.message, {
-        cause: validatedErrorRes.data.errors,
-      });
-    } else {
-      throw new Error(`HTTP-fel ${response.status}: ${response.statusText}`);
-    }
-  }
-}
+import { updateShoppingListItem } from "@/queries/shopping-list/api";
 
 const queryClient = getQueryClient();
 

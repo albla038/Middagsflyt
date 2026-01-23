@@ -3,8 +3,8 @@ import {
   ShoppingListItemResponse,
   ShoppingListItemUpdate,
 } from "@/lib/schemas/shopping-list";
+import { updateShoppingListItem } from "@/queries/shopping-list/api";
 import { shoppingListQueryOptions } from "@/queries/shopping-list/options";
-import { updateShoppingListItem } from "@/queries/shopping-list/use-update-shopping-list-item";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -17,6 +17,7 @@ export function useReorderShoppingListItem(listId: string) {
     mutationFn: ({
       itemId,
       data,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
       updatedList,
     }: {
       itemId: string;
