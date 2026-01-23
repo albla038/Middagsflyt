@@ -20,13 +20,13 @@ import { Plus } from "lucide-react";
 import { use, useState } from "react";
 
 type NavShoppingListsProps = {
-  shoppingListsData: Promise<ShoppingListWithCount[]>;
+  shoppingListsPromise: Promise<ShoppingListWithCount[]>;
 };
 
 export default function NavShoppingLists({
-  shoppingListsData,
+  shoppingListsPromise,
 }: NavShoppingListsProps) {
-  const shoppingLists = use(shoppingListsData);
+  const shoppingLists = use(shoppingListsPromise);
 
   const [isCreateDialogOpen, setCreateDialogOpen] = useState(false);
 

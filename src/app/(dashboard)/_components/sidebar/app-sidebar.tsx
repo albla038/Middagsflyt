@@ -27,8 +27,8 @@ import { requireUser } from "@/data/user/verify-user";
 export default async function AppSidebar() {
   const user = await requireUser();
 
-  const scheduleData = fetchAllSchedules();
-  const shoppingListsData = fetchAllShoppingLists();
+  const schedulesPromise = fetchAllSchedules();
+  const shoppingListsPromise = fetchAllShoppingLists();
 
   return (
     <Sidebar collapsible="icon">
@@ -51,7 +51,7 @@ export default async function AppSidebar() {
         <SidebarContent>
           {/* Schedule menu */}
           <Suspense>
-            <NavSchedule scheduleData={scheduleData} />
+            <NavSchedule schedulesPromise={schedulesPromise} />
           </Suspense>
 
           {/* Recipes menu */}
@@ -64,7 +64,7 @@ export default async function AppSidebar() {
 
           {/* Shopping lists menu */}
           <Suspense>
-            <NavShoppingLists shoppingListsData={shoppingListsData} />
+            <NavShoppingLists shoppingListsPromise={shoppingListsPromise} />
           </Suspense>
         </SidebarContent>
       </ScrollArea>

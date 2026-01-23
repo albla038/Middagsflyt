@@ -52,10 +52,10 @@ import { getISOWeek, getISOWeekYear, parse } from "date-fns";
 const pagePath = "/schedule";
 
 type NavScheduleProps = {
-  scheduleData: Promise<Schedule[]>;
+  schedulesPromise: Promise<Schedule[]>;
 };
 
-export default function NavSchedule({ scheduleData }: NavScheduleProps) {
+export default function NavSchedule({ schedulesPromise }: NavScheduleProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -72,7 +72,7 @@ export default function NavSchedule({ scheduleData }: NavScheduleProps) {
     mode: "CLOSED",
   });
 
-  const schedules = use(scheduleData);
+  const schedules = use(schedulesPromise);
 
   let year: number | undefined;
   let week: number | undefined;
