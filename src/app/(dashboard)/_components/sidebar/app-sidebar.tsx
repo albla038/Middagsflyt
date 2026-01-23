@@ -22,8 +22,11 @@ import Link from "next/link";
 import { fetchAllSchedules } from "@/data/schedule/queries";
 import { Suspense } from "react";
 import { fetchAllShoppingLists } from "@/data/shopping-list/queries";
+import { requireUser } from "@/data/user/verify-user";
 
-export default function AppSidebar() {
+export default async function AppSidebar() {
+  const user = await requireUser();
+
   const scheduleData = fetchAllSchedules();
   const shoppingListsData = fetchAllShoppingLists();
 
@@ -67,7 +70,7 @@ export default function AppSidebar() {
       </ScrollArea>
 
       <SidebarFooter>
-        <NavUser />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   );

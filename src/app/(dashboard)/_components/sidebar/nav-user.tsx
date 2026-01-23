@@ -13,17 +13,20 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Skeleton } from "@/components/ui/skeleton";
 import UserAvatar from "@/components/user-avatar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { authClient } from "@/lib/auth-client";
+import { User } from "better-auth";
 import { EllipsisVertical, Loader2, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { toast } from "sonner";
 
-export default function NavUser() {
-  const { data: session, isPending } = authClient.useSession();
+type NavUserProps = {
+  user: User;
+};
+
+export default function NavUser({ user }: NavUserProps) {
   const [logOutPending, startLogOutTransition] = useTransition();
   const router = useRouter();
   const isMobile = useIsMobile();
@@ -46,24 +49,6 @@ export default function NavUser() {
         },
       });
     });
-  }
-
-  const user = session?.user;
-
-  if (isPending || !user) {
-    return (
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <SidebarMenuButton size="lg">
-            <Skeleton className="size-8 rounded-full" />
-            <div className="grid gap-0.5">
-              <Skeleton className="h-3.5 w-32" />
-              <Skeleton className="h-3 w-40" />
-            </div>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    );
   }
 
   return (
