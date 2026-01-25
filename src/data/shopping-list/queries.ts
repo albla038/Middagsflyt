@@ -21,7 +21,9 @@ export async function fetchAllShoppingLists(): Promise<
       },
 
       include: {
-        _count: true,
+        _count: {
+          select: { items: true },
+        },
       },
     });
 
@@ -34,6 +36,47 @@ export async function fetchAllShoppingLists(): Promise<
   } catch (error) {
     throw new Error(
       "Något gick fel när inköpslistorna skulle hämtas. Vänligen försök igen.",
+      {
+        cause: error instanceof Error ? error : Error(String(error)),
+      },
+    );
+  }
+}
+
+export async function fetchShoppingListMetrics(
+  listId: string,
+): Promise<ShoppingListWithCount | null> {
+  const user = await requireUser();
+
+  try {
+    const list = await prisma.shoppingList.findUnique({
+      where: {
+        id: listId,
+
+        household: {
+          members: {
+            some: { userId: user.id },
+          },
+        },
+      },
+
+      include: {
+        _count: {
+          select: { items: true },
+        },
+      },
+    });
+
+    if (!list) {
+      return null;
+    }
+
+    // Transform the _count field to itemCount
+    const { _count, ...rest } = list;
+    return { ...rest, itemCount: _count.items };
+  } catch (error) {
+    throw new Error(
+      "Något gick fel när inköpslistan skulle hämtas. Vänligen försök igen.",
       {
         cause: error instanceof Error ? error : Error(String(error)),
       },

@@ -173,6 +173,7 @@ export default function ShoppingList({
   // Sync local state with cache
   useEffect(() => {
     if (data?.items) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setItems(data.items);
     }
   }, [data]);
