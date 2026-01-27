@@ -9,6 +9,8 @@ import {
   ShoppingListItemUpdate,
 } from "@/lib/schemas/shopping-list";
 
+// TODO: Replace swedish error messages with english
+
 // Create function to be used ONLY in route handler for user requests
 export async function createShoppingListItem({
   listId,
@@ -177,6 +179,46 @@ export async function deleteShoppingListItem({
         "Något gick fel när varan skulle raderas. Vänligen försök igen.",
         { cause: error instanceof Error ? error : Error(String(error)) },
       ),
+    };
+  }
+}
+
+export async function deleteShoppingListItems({
+  listId,
+  itemIds,
+}: {
+  listId: string;
+  itemIds: string[];
+}): Promise<Result<void, Error>> {
+  const user = await requireUser();
+
+  try {
+    await prisma.shoppingListItem.deleteMany({
+      where: {
+        shoppingList: {
+          id: listId,
+          // Ensure the shopping list belongs to the user's household
+          household: {
+            members: {
+              some: { userId: user.id },
+            },
+          },
+        },
+
+        id: { in: itemIds },
+      },
+    });
+
+    return {
+      ok: true,
+      data: undefined,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      error: new Error("Failed to delete shopping list items.", {
+        cause: error instanceof Error ? error : new Error(String(error)),
+      }),
     };
   }
 }

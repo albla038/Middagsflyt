@@ -38,6 +38,9 @@ import {
   restrictToWindowEdges,
 } from "@dnd-kit/modifiers";
 import SortableListItem from "@/app/(dashboard)/shopping-list/[id]/_components/sortable-list-item";
+import { Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useDeleteShoppingListItems } from "@/queries/shopping-list/use-delete-shopping-list-items";
 
 const queryClient = getQueryClient();
 
@@ -255,6 +258,8 @@ type FlatListProps = {
 };
 
 function FlatList({ listId, items, categories }: FlatListProps) {
+  const { mutate: deleteItemIds } = useDeleteShoppingListItems(listId);
+
   // Separate purchased items from unpurchased items
   const unpurchasedItems = items.filter((item) => !item.isPurchased);
   const purchasedItems = items.filter((item) => item.isPurchased);
@@ -283,7 +288,22 @@ function FlatList({ listId, items, categories }: FlatListProps) {
 
       {/* Purchased items */}
       {purchasedItems.length > 0 && (
-        <ListGroup title="Handlat">
+        <PurchasedListGroup
+          title="Handlat"
+          actionButton={
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-destructive hover:text-destructive"
+              onClick={() => {
+                const itemsIds = purchasedItems.map((item) => item.id);
+                deleteItemIds(itemsIds);
+              }}
+            >
+              <Trash2 /> Rensa
+            </Button>
+          }
+        >
           {purchasedItems.map((item) => (
             <SortableListItem
               key={item.id}
@@ -292,7 +312,7 @@ function FlatList({ listId, items, categories }: FlatListProps) {
               categories={categories}
             />
           ))}
-        </ListGroup>
+        </PurchasedListGroup>
       )}
     </>
   );
@@ -305,6 +325,8 @@ type GroupedListProps = {
 };
 
 function GroupedList({ listId, items, categories }: GroupedListProps) {
+  const { mutate: deleteItemIds } = useDeleteShoppingListItems(listId);
+
   // Group items by category for grouped display
   const groupedItems = useMemo(
     () => groupItemsByCategory(items, categories),
@@ -342,7 +364,22 @@ function GroupedList({ listId, items, categories }: GroupedListProps) {
 
       {/* Purchased items */}
       {purchasedItems.length > 0 && (
-        <ListGroup title="Handlat">
+        <PurchasedListGroup
+          title="Handlat"
+          actionButton={
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-destructive hover:text-destructive"
+              onClick={() => {
+                const itemsIds = purchasedItems.map((item) => item.id);
+                deleteItemIds(itemsIds);
+              }}
+            >
+              <Trash2 /> Rensa
+            </Button>
+          }
+        >
           {purchasedItems.map((item) => (
             <SortableListItem
               key={item.id}
@@ -351,7 +388,7 @@ function GroupedList({ listId, items, categories }: GroupedListProps) {
               categories={categories}
             />
           ))}
-        </ListGroup>
+        </PurchasedListGroup>
       )}
     </>
   );
@@ -377,6 +414,43 @@ function ListGroup({ title, children, className }: ListGroupProps) {
           {title.toUpperCase()}
         </span>
       )}
+
+      <ul>{children}</ul>
+    </li>
+  );
+}
+
+type PurchasedListGroupProps = {
+  title?: string;
+  actionButton: ReactNode;
+  children?: ReactNode;
+  className?: string;
+};
+
+function PurchasedListGroup({
+  title,
+  actionButton,
+  children,
+  className,
+}: PurchasedListGroupProps) {
+  return (
+    <li
+      className={cn(
+        "flex flex-col rounded-md p-2",
+        "animate-in duration-500 fade-in",
+        className,
+      )}
+    >
+      <div className="flex items-end justify-between">
+        {title && (
+          <span className="p-2 text-sm leading-none font-medium">
+            {title.toUpperCase()}
+          </span>
+        )}
+
+        {actionButton}
+      </div>
+
       <ul>{children}</ul>
     </li>
   );
