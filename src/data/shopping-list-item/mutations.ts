@@ -6,6 +6,7 @@ import prisma from "@/lib/db";
 import { Prisma, ShoppingListItem } from "@/lib/generated/prisma";
 import {
   ShoppingListItemCreate,
+  ShoppingListItemsDelete,
   ShoppingListItemUpdate,
 } from "@/lib/schemas/shopping-list";
 

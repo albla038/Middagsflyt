@@ -6,34 +6,47 @@ import { ActionResult } from "@/lib/types";
 import {
   ShoppingListItemsDelete,
   shoppingListItemsDeleteSchema,
-} from "@/queries/shopping-list/schemas";
+} from "@/lib/schemas/shopping-list";
 import z from "zod";
 
-type DeleteItemsResult = ActionResult<
-  void,
-  { listId?: string[]; itemsIds?: string[] }
->;
+// Local schemas
+const idSchema = z.cuid2();
 
-export async function deleteShoppingListItemsAction(
-  data: ShoppingListItemsDelete,
-): Promise<DeleteItemsResult> {
+const itemIdsSchema = z.array(z.cuid2());
+
+export async function deleteShoppingListItemsAction({
+  listId,
+  itemIds,
+}: {
+  listId: string;
+  itemIds: z.infer<typeof itemIdsSchema>;
+}): Promise<ActionResult<void, void>> {
   await requireUser();
 
-  // Validate input data
-  const validated = shoppingListItemsDeleteSchema.safeParse(data);
-
-  // Return errors if validation fails
-  if (!validated.success) {
-    const errors = z.flattenError(validated.error).fieldErrors;
-
+  // Validate list ID
+  const validatedListId = idSchema.safeParse(listId);
+  if (!validatedListId.success) {
     return {
       success: false,
-      message: "Ogiltiga ID:n. Vänligen kontakta supporten",
-      errors,
+      message: "Ogiltigt list-ID. Vänligen kontakta supporten",
     };
   }
 
-  const deleteResult = await deleteShoppingListItems(validated.data);
+  // Validate input data
+  const validated = itemIdsSchema.safeParse(itemIds);
+
+  // Return errors if validation fails
+  if (!validated.success) {
+    return {
+      success: false,
+      message: "Ogiltiga ID:n. Vänligen kontakta supporten",
+    };
+  }
+
+  const deleteResult = await deleteShoppingListItems({
+    listId: validatedListId.data,
+    itemIds: validated.data,
+  });
 
   // Return error if deletion fails
   if (!deleteResult.ok) {
