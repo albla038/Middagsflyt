@@ -6,7 +6,7 @@ import prisma from "@/lib/db";
 import { Prisma, ShoppingListItem } from "@/lib/generated/prisma";
 import {
   ShoppingListItemCreate,
-  ShoppingListItemsDelete,
+  ShoppingListItemsRestore,
   ShoppingListItemUpdate,
 } from "@/lib/schemas/shopping-list";
 
@@ -218,6 +218,62 @@ export async function deleteShoppingListItems({
     return {
       ok: false,
       error: new Error("Failed to delete shopping list items.", {
+        cause: error instanceof Error ? error : new Error(String(error)),
+      }),
+    };
+  }
+}
+
+export async function restoreShoppingListItems({
+  listId,
+  data,
+}: {
+  listId: string;
+  data: ShoppingListItemsRestore;
+}): Promise<Result<void, Error>> {
+  const user = await requireUser();
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      // Verify the shopping list exists and belongs to the user's household
+      const list = await tx.shoppingList.findFirst({
+        where: {
+          id: listId,
+          household: {
+            members: {
+              some: { userId: user.id },
+            },
+          },
+        },
+      });
+
+      if (!list) {
+        return {
+          ok: false,
+          // TODO: Check error message propagation
+          error: new Error(
+            "The shopping list does not exist or you do not have permission to restore items.",
+          ),
+        };
+      }
+
+      // Restore items
+      await tx.shoppingListItem.createMany({
+        data: data.map((item) => ({
+          ...item,
+          shoppingListId: listId,
+        })),
+      });
+    });
+
+    return {
+      ok: true,
+      data: undefined,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      error: new Error("Failed to restore shopping list items.", {
         cause: error instanceof Error ? error : new Error(String(error)),
       }),
     };

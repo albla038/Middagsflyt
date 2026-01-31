@@ -65,13 +65,29 @@ export type ShoppingListItemUpdate = z.infer<
   typeof shoppingListItemUpdateSchema
 >;
 
-export const shoppingListItemsDeleteSchema = z.object({
-  listId: z.cuid2(),
-  itemIds: z.array(z.cuid2()),
+const shoppingListItemRestoreSchema = z.object({
+  id: z.cuid2(),
+  name: z.string(),
+  quantity: z.number().nullable(),
+  unit: z.enum(Unit).nullable(),
+  displayOrder: z.number(),
+  isPurchased: z.boolean(),
+  isManuallyEdited: z.boolean(),
+
+  createdAt: z.date(),
+  updatedAt: z.date(),
+
+  categoryId: z.cuid2().nullable(),
+
+  // TODO Add more relations
 });
 
-export type ShoppingListItemsDelete = z.infer<
-  typeof shoppingListItemsDeleteSchema
+export const shoppingListItemsRestoreSchema = z.array(
+  shoppingListItemRestoreSchema,
+);
+
+export type ShoppingListItemsRestore = z.infer<
+  typeof shoppingListItemsRestoreSchema
 >;
 
 export const shoppingListItemEditFormSchema = z.object({
