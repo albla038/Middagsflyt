@@ -57,15 +57,15 @@ export default function EditItemForm({
   }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)}>
-      <FieldGroup>
-        <div className="grid grid-cols-2 gap-x-3 gap-y-4">
+    <form onSubmit={form.handleSubmit(onSubmit)} className="mt-2">
+      <FieldGroup className="gap-4">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2">
           {/* Name */}
           <Controller
             name="name"
             control={form.control}
             render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
+              <Field data-invalid={fieldState.invalid} className="h-[87.25px]">
                 <FieldLabel htmlFor={field.name}>Namn</FieldLabel>
                 <Input
                   {...field}
@@ -76,7 +76,10 @@ export default function EditItemForm({
                   autoComplete="off"
                   aria-invalid={fieldState.invalid}
                 />
-                <FieldError errors={[fieldState.error]} />
+                <FieldError
+                  errors={[fieldState.error]}
+                  className="-mt-2 text-xs"
+                />
               </Field>
             )}
           />
@@ -86,7 +89,7 @@ export default function EditItemForm({
             name="categoryId"
             control={form.control}
             render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
+              <Field data-invalid={fieldState.invalid} className="h-[87.25px]">
                 <FieldLabel htmlFor={field.name}>Kategori</FieldLabel>
                 <Select
                   {...field}
@@ -110,7 +113,10 @@ export default function EditItemForm({
                     ))}
                   </SelectContent>
                 </Select>
-                <FieldError errors={[fieldState.error]} />
+                <FieldError
+                  errors={[fieldState.error]}
+                  className="-mt-2 text-xs"
+                />
               </Field>
             )}
           />
@@ -120,14 +126,13 @@ export default function EditItemForm({
             name="quantity"
             control={form.control}
             render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
+              <Field data-invalid={fieldState.invalid} className="h-[87.25px]">
                 <FieldLabel htmlFor={field.name}>Mängd</FieldLabel>
                 <Input
                   {...field}
                   id={field.name}
                   type="number"
                   step={0.5}
-                  min={0.5}
                   placeholder="Ange mängd"
                   autoComplete="off"
                   value={field.value ?? ""}
@@ -137,7 +142,10 @@ export default function EditItemForm({
                   }}
                   aria-invalid={fieldState.invalid}
                 />
-                <FieldError errors={[fieldState.error]} />
+                <FieldError
+                  errors={[fieldState.error]}
+                  className="-mt-2 text-xs"
+                />
               </Field>
             )}
           />
@@ -147,7 +155,7 @@ export default function EditItemForm({
             name="unit"
             control={form.control}
             render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
+              <Field data-invalid={fieldState.invalid} className="h-[87.25px]">
                 <FieldLabel htmlFor={field.name}>Enhet</FieldLabel>
                 <Select
                   {...field}
@@ -172,7 +180,10 @@ export default function EditItemForm({
                     ))}
                   </SelectContent>
                 </Select>
-                <FieldError errors={[fieldState.error]} />
+                <FieldError
+                  errors={[fieldState.error]}
+                  className="-mt-2 text-xs"
+                />
               </Field>
             )}
           />

@@ -93,8 +93,8 @@ export type ShoppingListItemsRestore = z.infer<
 export const shoppingListItemEditFormSchema = z.object({
   name: z
     .string("Ange ett giltigt namn")
-    .min(1, "Namnet måste ha minst en bokstav")
-    .max(50, "Namnet får ha max 50 bokstäver"),
+    .min(1, "Ange minst en bokstav")
+    .max(50, "Ange max 50 bokstäver"),
   quantity: z.number().positive("Ange en positiv mängd").nullable(),
   unit: z.enum(Unit).nullable(),
 
