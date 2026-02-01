@@ -134,6 +134,7 @@ export default function ListInput({ listId, ingredients }: ListInputProps) {
           placeholder={placeholder}
           value={value}
           onChange={(e) => setValue(e.target.value)}
+          autoComplete="off"
           className="bg-background px-9"
         />
 
