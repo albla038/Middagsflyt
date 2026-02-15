@@ -16,6 +16,8 @@ import {
   ScheduledRecipeDisplayContent,
 } from "@/lib/types";
 import { ShoppingListItemResponse } from "@/lib/schemas/shopping-list";
+import z from "zod";
+import { Unit } from "@/lib/generated/prisma";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -248,4 +250,67 @@ export function calculateNewDisplayOrder(
   }
 
   return 1000;
+}
+
+const unitSchema = z.enum(Unit);
+// Handle both dot and comma as decimal separators, and ensure the value is a positive number
+const quantitySchema = z.preprocess(
+  (val) => String(val).replace(",", "."),
+  z.coerce.number().positive(),
+);
+
+export function parseIngredientInputString(
+  value: string,
+): Pick<ShoppingListItemResponse, "name" | "quantity" | "unit"> {
+  if (!value.trim()) {
+    return {
+      name: "",
+      quantity: null,
+      unit: null,
+    };
+  }
+
+  const tokens = value.trim().split(/\s+/);
+
+  // Search for index of quantity token
+  const quantityTokenIndex = tokens.findIndex(
+    (value) => quantitySchema.safeParse(value).success,
+  );
+
+  // If no quantity token, return name only
+  if (quantityTokenIndex === -1) {
+    return {
+      name: value.trim(),
+      quantity: null,
+      unit: null,
+    };
+  }
+
+  // Remove and get quantity token from array
+  const [quantityToken] = tokens.splice(quantityTokenIndex, 1);
+  const quantity = quantitySchema.parse(quantityToken);
+
+  // Search for index of unit token
+  const unitTokenIndex = tokens.findIndex(
+    (value) => unitSchema.safeParse(value.toUpperCase()).success,
+  );
+
+  // If no unit token, return name and "ST" as default unit
+  if (unitTokenIndex === -1) {
+    return {
+      name: tokens.join(" "),
+      quantity,
+      unit: "ST",
+    };
+  }
+
+  // Remove and get unit token from array
+  const [unitToken] = tokens.splice(unitTokenIndex, 1);
+  const unit = unitSchema.parse(unitToken.toUpperCase());
+
+  return {
+    name: tokens.join(" "),
+    quantity,
+    unit,
+  };
 }

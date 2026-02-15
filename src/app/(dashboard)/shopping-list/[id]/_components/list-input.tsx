@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useCreateShoppingListItem } from "@/queries/shopping-list/use-create-shopping-list-item";
-import { cn } from "@/lib/utils";
+import { cn, parseIngredientInputString } from "@/lib/utils";
 import { ListOrdered, Plus, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { createId } from "@paralleldrive/cuid2";
@@ -38,7 +38,7 @@ type ListInputProps = {
 };
 
 export default function ListInput({ listId, ingredients }: ListInputProps) {
-  const [value, setValue] = useState("");
+  const [input, setInput] = useState("");
   const [isInputFocused, setIsInputFocused] = useState(false);
   const placeholder = isInputFocused ? "Sök" : "Lägg till vara";
 
@@ -60,48 +60,39 @@ export default function ListInput({ listId, ingredients }: ListInputProps) {
     [ingredients],
   );
 
+  // Parse the input value to extract name, quantity, and unit
+  const parsedInput = useMemo(() => parseIngredientInputString(input), [input]);
+
   const filteredIngredients = fuse
-    .search(value)
-    .filter(({ item }) => !isExactMatch(item, value))
+    .search(parsedInput.name)
+    .filter(({ item }) => !isExactMatch(item, parsedInput.name))
     .map(({ item }) => item);
 
   function handleSubmit() {
-    const trimmedValue = value.trim();
+    const trimmedValue = input.trim();
 
-    if (trimmedValue) {
-      const existingIngredient = ingredients.find((ingredient) =>
-        isExactMatch(ingredient, trimmedValue),
-      );
+    // Return early if the trimmed value is empty
+    if (!trimmedValue) return;
 
-      const unit = existingIngredient?.shoppingUnit || null;
-      const categoryId = existingIngredient?.ingredientCategoryId || null;
+    const existingIngredient = ingredients.find((ingredient) =>
+      isExactMatch(ingredient, parsedInput.name),
+    );
 
-      const capitalizedValue =
-        trimmedValue.charAt(0).toUpperCase() + trimmedValue.slice(1);
+    const unit = parsedInput.unit ?? existingIngredient?.shoppingUnit ?? null;
+    const categoryId = existingIngredient?.ingredientCategoryId ?? null;
 
-      createItem({
-        id: createId(),
-        name: capitalizedValue,
-        unit,
-        categoryId,
-        quantity: null,
-      });
-      setValue("");
-    }
+    const capitalizedName =
+      parsedInput.name.charAt(0).toUpperCase() + parsedInput.name.slice(1);
+
+    createItem({
+      id: createId(),
+      name: capitalizedName,
+      unit,
+      categoryId,
+      quantity: parsedInput.quantity,
+    });
+    setInput("");
   }
-
-  // const inputTokens = value.split(/\s+/);
-  // const rawInputQuantity = inputTokens.at(0);
-  // const inputQuantity =
-  //   rawInputQuantity && !Number.isNaN(Number.parseInt(rawInputQuantity))
-  //     ? Number.parseInt(rawInputQuantity)
-  //     : undefined;
-
-  // const inputUnit = inputQuantity ? inputTokens.at(1) : undefined;
-  // const inputIsPlural = inputQuantity ? inputQuantity > 1 : false;
-
-  // console.log("quantity: ", inputQuantity);
-  // console.log("unit: ", inputUnit);
 
   return (
     <div
@@ -132,21 +123,21 @@ export default function ListInput({ listId, ingredients }: ListInputProps) {
           id="list-item-input"
           type="text"
           placeholder={placeholder}
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
           autoComplete="off"
           className="bg-background px-9"
         />
 
         <Plus className="absolute top-1/2 left-3 size-4 -translate-y-1/2" />
 
-        {value && (
+        {input && (
           <Button
             type="button"
             variant="ghost"
             size="icon"
             className="absolute top-1/2 right-1 size-7 -translate-y-1/2 text-muted-foreground"
-            onClick={() => setValue("")}
+            onClick={() => setInput("")}
           >
             <X className="size-4" />
           </Button>
@@ -156,10 +147,10 @@ export default function ListInput({ listId, ingredients }: ListInputProps) {
       <ScrollArea className="w-full overflow-x-hidden">
         {placeholder === "Sök" && (
           <ul className="flex items-center gap-2 pb-2">
-            {value ? (
+            {input ? (
               <li className="flex items-center justify-center">
                 <Badge variant="primary-secondary" onClick={handleSubmit}>
-                  &quot;{value}&quot;
+                  &quot;{input}&quot;
                 </Badge>
               </li>
             ) : (
@@ -190,11 +181,12 @@ export default function ListInput({ listId, ingredients }: ListInputProps) {
                         unit: shoppingUnit,
                         categoryId: ingredientCategoryId,
                       });
-                      setValue("");
+                      setInput("");
                     }}
                   >
-                    {/* {inputIsPlural ? displayNamePlural : displayNameSingular} */}
-                    {displayNameSingular}
+                    {parsedInput.name.length > displayNameSingular.length
+                      ? displayNamePlural
+                      : displayNameSingular}
                   </Badge>
                 </li>
               ),
