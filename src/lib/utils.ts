@@ -18,6 +18,7 @@ import {
 import { ShoppingListItemResponse } from "@/lib/schemas/shopping-list";
 import z from "zod";
 import { Unit } from "@/lib/generated/prisma";
+import { UNIT_ALIASES } from "@/lib/constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -252,16 +253,37 @@ export function calculateNewDisplayOrder(
   return 1000;
 }
 
-const unitSchema = z.enum(Unit);
+const unitSchema = z.preprocess((val) => {
+  if (typeof val !== "string") return val;
+
+  // Trim, remove dots & convert to uppercase for matching
+  const key = val.trim().toUpperCase().replace(".", "");
+
+  if (key in UNIT_ALIASES) {
+    return UNIT_ALIASES[key];
+  }
+
+  return key;
+}, z.enum(Unit));
+
 // Handle both dot and comma as decimal separators, and ensure the value is a positive number
 const quantitySchema = z.preprocess(
-  (val) => String(val).replace(",", "."),
+  (val) => (typeof val !== "string" ? val : val.replace(",", ".")),
   z.coerce.number().positive(),
 );
 
-export function parseIngredientInputString(
-  value: string,
-): Pick<ShoppingListItemResponse, "name" | "quantity" | "unit"> {
+/**
+ * Parses an ingredient input string to extract the ingredient name, quantity, and unit. The input string can be in any order, such as "1 kg mjöl", "mjölk 1 liter", or "1,5kg äpplen". The function handles various formats and returns an object with the parsed name, quantity, and unit.
+ *
+ * @param value - The input string to parse
+ * @returns An object containing the parsed name, quantity, and unit. If quantity or unit are not found, they will be null.
+ */
+
+export function parseIngredientInputString(value: string): {
+  name: string;
+  quantity: number | null;
+  unit: Unit | null;
+} {
   if (!value.trim()) {
     return {
       name: "",
@@ -270,7 +292,15 @@ export function parseIngredientInputString(
     };
   }
 
-  const tokens = value.trim().split(/\s+/);
+  // Pre-process: Insert space between number and letter (both directions)
+  // 1. "1kg" -> "1 kg"
+  // 2. "tomater400" -> "tomater 400"
+  const cleanedValue = value
+    .trim()
+    .replace(/(\d)(\p{L})/gu, "$1 $2")
+    .replace(/(\p{L})(\d)/gu, "$1 $2");
+
+  const tokens = cleanedValue.split(/\s+/);
 
   // Search for index of quantity token
   const quantityTokenIndex = tokens.findIndex(
