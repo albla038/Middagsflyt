@@ -2,14 +2,12 @@
   "name": "middagsflyt",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint ."
-  },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -19,7 +17,8 @@
     "@google/genai": "^1.5.1",
     "@hookform/resolvers": "^5.2.2",
     "@paralleldrive/cuid2": "^2.2.2",
-    "@prisma/client": "^6.11.1",
+    "@prisma/adapter-better-sqlite3": "^7.4.2",
+    "@prisma/client": "^7.4.2",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
     "@radix-ui/react-avatar": "^1.1.11",
@@ -44,6 +43,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "dotenv": "^17.3.1",
     "fuse.js": "^7.1.0",
     "iso8601-duration": "^2.1.2",
     "jsonrepair": "^3.12.0",
@@ -73,7 +73,7 @@
     "eslint-config-next": "^0.2.4",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.12",
-    "prisma": "^6.11.1",
+    "prisma": "^7.4.2",
     "tailwindcss": "^4.1.11",
     "tsx": "^4.20.3",
     "tw-animate-css": "^1.3.4",
