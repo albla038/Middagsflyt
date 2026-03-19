@@ -296,7 +296,7 @@ model ScheduledRecipe {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  shoppingListItems ScheduledRecipeSource[]
+  shoppingListItems ShoppingListItem[]
 
   @@index([date])
   @@index([scheduleId])
@@ -359,27 +359,14 @@ model ShoppingListItem {
   category   IngredientCategory? @relation(fields: [categoryId], references: [id])
   categoryId String?
 
-  sources ScheduledRecipeSource[]
+  scheduledRecipe   ScheduledRecipe? @relation(fields: [scheduledRecipeId], references: [id], onDelete: Cascade)
+  scheduledRecipeId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([shoppingListId])
   @@map("shopping_list_items")
-}
-
-model ScheduledRecipeSource {
-  shoppingListItem   ShoppingListItem @relation(fields: [shoppingListItemId], references: [id], onDelete: Cascade)
-  shoppingListItemId String
-
-  scheduledRecipe   ScheduledRecipe @relation(fields: [scheduledRecipeId], references: [id], onDelete: Cascade)
-  scheduledRecipeId String
-
-  quantity Float
-  unit     Unit
-
-  @@id([shoppingListItemId, scheduledRecipeId])
-  @@map("shopping_list_item_sources")
 }
 
 model User {
