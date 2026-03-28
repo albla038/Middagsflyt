@@ -2,8 +2,7 @@ import "server-only";
 
 import { requireUser } from "@/data/user/verify-user";
 import prisma from "@/lib/db";
-import { ShoppingListResponse } from "@/lib/schemas/shopping-list";
-import { ShoppingListWithCount } from "@/lib/types";
+import { ShoppingListResponse, ShoppingListWithCount } from "@/lib/schemas/shopping-list";
 
 export async function fetchAllShoppingLists(): Promise<
   ShoppingListWithCount[]

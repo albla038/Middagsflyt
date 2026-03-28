@@ -1,6 +1,17 @@
 import { Unit } from "@/lib/generated/prisma";
 import z from "zod";
 
+export const shoppingListWithCountSchema = z.object({
+  id: z.cuid2(),
+  name: z.string(),
+  itemCount: z.number(),
+
+  createdAt: z.iso.datetime().transform((str) => new Date(str)),
+  updatedAt: z.iso.datetime().transform((str) => new Date(str)),
+});
+
+export type ShoppingListWithCount = z.infer<typeof shoppingListWithCountSchema>;
+
 const shoppingListItemResponseSchema = z.object({
   id: z.cuid2(),
   name: z.string(),
