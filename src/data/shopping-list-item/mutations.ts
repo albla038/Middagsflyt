@@ -9,6 +9,8 @@ import {
   ShoppingListItemsRestore,
   ShoppingListItemUpdate,
 } from "@/lib/schemas/shopping-list";
+import { AddIngredientToShoppingListInput } from "@/lib/schemas/recipe-ingredient";
+import { MutationResult } from "@/lib/types/api";
 
 // TODO: Replace swedish error messages with english
 
@@ -277,5 +279,63 @@ export async function restoreShoppingListItems({
         cause: error instanceof Error ? error : new Error(String(error)),
       }),
     };
+  }
+}
+
+export async function createShoppingListItemsFromIngredients({
+  listId,
+  data,
+}: {
+  listId: string;
+  data: AddIngredientToShoppingListInput[];
+}): Promise<MutationResult> {
+  const user = await requireUser();
+
+  try {
+    return await prisma.$transaction(async (tx): Promise<MutationResult> => {
+      const list = await tx.shoppingList.findUnique({
+        // Assure the shopping list exists and belongs to the user's household
+        where: {
+          id: listId,
+          household: {
+            members: {
+              some: { userId: user.id },
+            },
+          },
+        },
+
+        select: {
+          // Fetch the items relation, but only the last one
+          items: {
+            orderBy: { displayOrder: "desc" },
+            take: 1,
+            select: { displayOrder: true },
+          },
+        },
+      });
+
+      // Return early if the user doesn't have access to the shopping list
+      if (!list) {
+        return { ok: false, errorCode: "FORBIDDEN" };
+      }
+
+      // Position new items above existing items by calculating displayOrder based on the current smallest displayOrder
+      const lastItem = list.items.at(0);
+      const baseDisplayOrder = lastItem?.displayOrder ?? 0;
+      const numberOfNewItems = data.length;
+
+      const ingredients = await tx.shoppingListItem.createMany({
+        data: data.map((ing, idx) => ({
+          ...ing,
+          displayOrder: baseDisplayOrder + 1000 * (numberOfNewItems - idx),
+          shoppingListId: listId,
+        })),
+      });
+
+      return { ok: true, data: undefined };
+    });
+  } catch (error) {
+    // TODO: Add more fine-grained error handling from Prisma error types
+    return { ok: false, errorCode: "INTERNAL_ERROR" };
   }
 }

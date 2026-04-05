@@ -38,6 +38,7 @@ export async function fetchRecipeIngredientsForShoppingList(
                       name: true,
                       displayNameSingular: true,
                       displayNamePlural: true,
+                      ingredientCategoryId: true,
                     },
                   },
                 },
@@ -87,6 +88,7 @@ export async function fetchRecipeIngredientsForShoppingList(
                           name: true,
                           displayNameSingular: true,
                           displayNamePlural: true,
+                          ingredientCategoryId: true,
                         },
                       },
                     },
@@ -125,6 +127,7 @@ export async function fetchRecipeIngredientsForShoppingList(
           name: recipeIng.ingredient.name,
           displayNameSingular: recipeIng.ingredient.displayNameSingular,
           displayNamePlural: recipeIng.ingredient.displayNamePlural,
+          categoryId: recipeIng.ingredient.ingredientCategoryId,
         })),
       };
     });
@@ -150,6 +153,7 @@ export async function fetchRecipeIngredientsForShoppingList(
             name: recipeIng.ingredient.name,
             displayNameSingular: recipeIng.ingredient.displayNameSingular,
             displayNamePlural: recipeIng.ingredient.displayNamePlural,
+            categoryId: recipeIng.ingredient.ingredientCategoryId,
           }),
         ),
       };

@@ -24,7 +24,6 @@ const zodSchema = createSchema({
 });
 
 export const apiClient = createFetch({
-  baseURL: process.env.NEXT_PUBLIC_APP_BASE_URL || "http://localhost:3000",
   schema: zodSchema,
   throw: true,
 });
