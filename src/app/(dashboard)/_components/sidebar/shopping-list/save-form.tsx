@@ -91,7 +91,7 @@ export default function SaveShoppingListForm({
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
 
-            <Field orientation="responsive">
+            <Field orientation="responsive-reverse">
               <Button type="submit" disabled={isPending}>
                 {isPending ? (
                   <>
