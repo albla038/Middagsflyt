@@ -11,6 +11,7 @@ import {
 } from "@/lib/schemas/shopping-list";
 import { AddIngredientToShoppingListInput } from "@/lib/schemas/recipe-ingredient";
 import { MutationResult } from "@/lib/types/api";
+import { prismaErrorToMutationErrorCode } from "@/lib/prisma-error-mapper";
 
 // TODO: Replace swedish error messages with english
 
@@ -294,17 +295,18 @@ export async function createShoppingListItemsFromIngredients({
   try {
     return await prisma.$transaction(async (tx): Promise<MutationResult> => {
       const list = await tx.shoppingList.findUnique({
-        // Assure the shopping list exists and belongs to the user's household
-        where: {
-          id: listId,
-          household: {
-            members: {
-              some: { userId: user.id },
-            },
-          },
-        },
+        where: { id: listId },
 
         select: {
+          household: {
+            select: {
+              members: {
+                where: { userId: user.id },
+                select: { userId: true },
+              },
+            },
+          },
+
           // Fetch the items relation, but only the last one
           items: {
             orderBy: { displayOrder: "desc" },
@@ -314,8 +316,12 @@ export async function createShoppingListItemsFromIngredients({
         },
       });
 
-      // Return early if the user doesn't have access to the shopping list
+      // Return early if the list doesn't exist
       if (!list) {
+        return { ok: false, errorCode: "NOT_FOUND" };
+      }
+      // OR, if the list does not belong to the user's household
+      if (list.household.members.length === 0) {
         return { ok: false, errorCode: "FORBIDDEN" };
       }
 
@@ -324,7 +330,7 @@ export async function createShoppingListItemsFromIngredients({
       const baseDisplayOrder = lastItem?.displayOrder ?? 0;
       const numberOfNewItems = data.length;
 
-      const ingredients = await tx.shoppingListItem.createMany({
+      await tx.shoppingListItem.createMany({
         data: data.map((ing, idx) => ({
           ...ing,
           displayOrder: baseDisplayOrder + 1000 * (numberOfNewItems - idx),
@@ -335,7 +341,6 @@ export async function createShoppingListItemsFromIngredients({
       return { ok: true, data: undefined };
     });
   } catch (error) {
-    // TODO: Add more fine-grained error handling from Prisma error types
-    return { ok: false, errorCode: "INTERNAL_ERROR" };
+    return { ok: false, errorCode: prismaErrorToMutationErrorCode(error) };
   }
 }
