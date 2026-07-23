@@ -32,7 +32,7 @@ export function prismaErrorToMutationErrorCode(
   // 2. Handle Prisma validation errors (e.g., missing required fields, wrong types)
   if (error instanceof Prisma.PrismaClientValidationError) {
     console.error("Prisma validation error:", error);
-    return "VALIDATION_FAILED";
+    return "INTERNAL_ERROR";
   }
 
   // 3. Handle Prisma initialization/connection errors
