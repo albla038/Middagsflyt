@@ -12,7 +12,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Spinner } from "@/components/ui/spinner";
-import { ShoppingListWithCount } from "@/lib/types";
+import { ShoppingListWithCount } from "@/lib/schemas/shopping-list";
 import { useParams, useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { toast } from "sonner";

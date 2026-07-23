@@ -15,7 +15,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ShoppingListWithCount } from "@/lib/types";
+import { ShoppingListWithCount } from "@/lib/schemas/shopping-list";
 import { Plus } from "lucide-react";
 import { use, useState } from "react";
 

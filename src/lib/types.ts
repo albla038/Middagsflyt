@@ -110,7 +110,3 @@ export type IngredientWithAlias = {
   ingredientCategoryId: string;
   ingredientAliases: { name: string }[];
 };
-
-export type ShoppingListWithCount = ShoppingList & {
-  itemCount: number;
-};

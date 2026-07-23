@@ -4,6 +4,7 @@ import z from "zod";
 export const shoppingListWithCountSchema = z.object({
   id: z.cuid2(),
   name: z.string(),
+  householdId: z.cuid2(),
   itemCount: z.number(),
 
   createdAt: z.iso.datetime().transform((str) => new Date(str)),
