@@ -13,10 +13,13 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Spinner } from "@/components/ui/spinner";
 import { getActionErrorMessage } from "@/lib/error-messages";
+import { getQueryClient } from "@/lib/query-client";
 import { AddIngredientToShoppingListInput } from "@/lib/schemas/recipe-ingredient";
 import { cn } from "@/lib/utils";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
+
+const queryClient = getQueryClient();
 
 type AddToShoppingListDialogProps = {
   open: boolean;
@@ -188,6 +191,8 @@ export default function AddToShoppingListDialog({
       toast.success(
         `${selectedIngredientsCount} varor lades till i ${shoppingLists?.find((list) => list.id === targetListId)?.name ?? "inköpslistan"}`,
       );
+
+      queryClient.invalidateQueries({ queryKey: ["all-shopping-lists"] });
 
       // Close dialog
       onOpenChange(false);
