@@ -41,7 +41,7 @@ export default function ResponsiveDialog({
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent>
+        <DrawerContent className="max-h-[90vh]">
           {dialogAction ? (
             // Render dialogAction in flex-row layout if provided
             <div className="flex items-start justify-between p-4 pb-0">
