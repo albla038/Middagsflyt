@@ -1,3 +1,6 @@
+"use client";
+
+import AddToShoppingListDialog from "@/components/add-to-shopping-list/dialog";
 import OrderByToggle from "@/components/recipe-list/order-by-toggle";
 import RecipeListCard from "@/components/recipe-list/recipe-list-card";
 import SearchBar from "@/components/recipe-list/search-bar";
@@ -8,7 +11,7 @@ import { RecipeDisplayContent } from "@/lib/schemas/recipe";
 import { MyRecipesDisplay } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Grid2X2, ListFilter, Rows3 } from "lucide-react";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 
 type RecipeListProps = {
   recipes: RecipeDisplayContent[];
@@ -23,70 +26,95 @@ export default function RecipeList({
   searchQuery = "",
   displayType,
 }: RecipeListProps) {
+  const [addToListDialogOpen, setAddToListDialogOpen] = useState(false);
+  const [addToListRecipeId, setAddToListRecipeId] = useState<string | null>(
+    null,
+  );
+
   return (
-    <div className="grid gap-4">
-      <div className="flex items-center justify-between gap-2">
-        <Suspense>
-          <SearchBar
-            placeholder="Sök recept..."
-            // className="w-[calc((1/3*100%)-0.5rem)]"
-            className="w-sm"
-          />
-        </Suspense>
-        <div className="flex items-center gap-2">
+    <>
+      <div className="grid gap-4">
+        <div className="flex items-center justify-between gap-2">
           <Suspense>
-            <OrderByToggle />
+            <SearchBar
+              placeholder="Sök recept..."
+              // className="w-[calc((1/3*100%)-0.5rem)]"
+              className="w-sm"
+            />
           </Suspense>
+          <div className="flex items-center gap-2">
+            <Suspense>
+              <OrderByToggle />
+            </Suspense>
 
-          <Button variant="outline" disabled>
-            <ListFilter />
-            <span>Filtrera</span>
-          </Button>
+            <Button variant="outline" disabled>
+              <ListFilter />
+              <span>Filtrera</span>
+            </Button>
 
-          <Suspense>
-            <SortSelect />
-          </Suspense>
+            <Suspense>
+              <SortSelect />
+            </Suspense>
 
-          <Tabs defaultValue="grid">
-            <TabsList>
-              <TabsTrigger value="list" disabled>
-                {/* // TODO enable when list view is implemented */}
-                <Rows3 />
-              </TabsTrigger>
-              <TabsTrigger value="grid">
-                <Grid2X2 />
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+            <Tabs defaultValue="grid">
+              <TabsList>
+                <TabsTrigger value="list" disabled>
+                  {/* // TODO enable when list view is implemented */}
+                  <Rows3 />
+                </TabsTrigger>
+                <TabsTrigger value="grid">
+                  <Grid2X2 />
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
         </div>
+
+        {recipes.length === 0 ? (
+          searchQuery ? (
+            <p>
+              Inga recept hittades för{" "}
+              <strong>&quot;{searchQuery}&quot;</strong>.
+            </p>
+          ) : (
+            <p>Inga recept hittades.</p>
+          )
+        ) : (
+          <ul
+            className={cn(
+              "grid gap-5",
+              "min-[40rem]:grid-cols-2 min-[64rem]:grid-cols-3",
+            )}
+          >
+            {recipes.map((recipe) => (
+              <li key={recipe.id} className="list-none">
+                <RecipeListCard
+                  recipe={recipe}
+                  basePath={basePath}
+                  displayType={displayType}
+                  onClickSchedule={(recipeId) => {
+                    // TODO Open schedule dialog
+                  }}
+                  onClickAddToList={(recipeId) => {
+                    setAddToListRecipeId(recipeId);
+                    setAddToListDialogOpen(true);
+                  }}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
-      {recipes.length === 0 ? (
-        searchQuery ? (
-          <p>
-            Inga recept hittades för <strong>&quot;{searchQuery}&quot;</strong>.
-          </p>
-        ) : (
-          <p>Inga recept hittades.</p>
-        )
-      ) : (
-        <ul
-          className={cn(
-            "grid gap-5",
-            "min-[40rem]:grid-cols-2 min-[64rem]:grid-cols-3",
-          )}
-        >
-          {recipes.map((recipe) => (
-            <li key={recipe.id} className="list-none">
-              <RecipeListCard
-                recipe={recipe}
-                basePath={basePath}
-                displayType={displayType}
-              />
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+      <AddToShoppingListDialog
+        key={addToListRecipeId || "empty"}
+        open={addToListDialogOpen}
+        onOpenChange={setAddToListDialogOpen}
+        ingredientSources={{
+          type: "recipe",
+          ids: addToListRecipeId ? [addToListRecipeId] : [],
+        }}
+      />
+    </>
   );
 }

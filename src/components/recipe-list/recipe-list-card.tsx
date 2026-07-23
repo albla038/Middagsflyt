@@ -31,29 +31,18 @@ type RecipeListCardProps = {
   recipe: RecipeDisplayContent;
   basePath: "/saved-recipes" | "/library";
   displayType?: MyRecipesDisplay;
+  onClickSchedule: (recipeId: string) => void;
+  onClickAddToList: (recipeId: string) => void;
 };
 
 export default function RecipeListCard({
   recipe,
   basePath,
   displayType,
+  onClickSchedule,
+  onClickAddToList,
 }: RecipeListCardProps) {
   const [isLoading, setIsLoading] = useState(true);
-
-  const {
-    id,
-    name,
-    slug,
-    recipeYield,
-    imageUrl,
-    recipeType,
-    proteinType,
-    totalTimeSeconds,
-    isCreatedByUser,
-    isImported,
-    isSaved,
-    scheduledDates,
-  } = recipe;
 
   return (
     <article className="h-full">
@@ -63,13 +52,13 @@ export default function RecipeListCard({
           "transition-all duration-300 hover:border-border hover:bg-subtle", // TODO Image res glitches when scaling
         )}
       >
-        <Link href={`${basePath}/${slug}`}>
+        <Link href={`${basePath}/${recipe.slug}`}>
           <div className="relative aspect-[4/3] overflow-hidden rounded-b-xl bg-accent">
-            {imageUrl ? (
+            {recipe.imageUrl ? (
               <>
                 {isLoading && <Skeleton className="size-full rounded-xl" />}
                 <Image
-                  src={imageUrl}
+                  src={recipe.imageUrl}
                   alt="Receptbild"
                   width={1000}
                   height={750}
@@ -88,9 +77,9 @@ export default function RecipeListCard({
             )}
 
             {/* // Show scheduled date if the recipe is scheduled in the future */}
-            {scheduledDates && (
+            {recipe.scheduledDates && (
               <div className="absolute top-2 left-2">
-                {scheduledDates.map((date) => (
+                {recipe.scheduledDates.map((date) => (
                   <li key={date.toISOString()}>
                     <Badge variant="secondary" className="w-full">
                       <CalendarClock />
@@ -106,41 +95,47 @@ export default function RecipeListCard({
             )}
 
             <ActionButtons
-              isSaved={isSaved}
-              id={id}
-              slug={slug}
+              isSaved={recipe.isSaved}
+              id={recipe.id}
+              slug={recipe.slug}
               displayType={displayType}
+              onClickSchedule={() => onClickSchedule(recipe.id)}
+              onClickAddToList={() => onClickAddToList(recipe.id)}
             />
           </div>
 
           <CardContent className="grid gap-2 px-4 pt-3 pb-4">
             <div className="flex flex-wrap items-center gap-2">
-              {proteinType && (
+              {recipe.proteinType && (
                 <Badge variant="secondary">
-                  {proteinType.charAt(0) + proteinType.slice(1).toLowerCase()}
+                  {recipe.proteinType.charAt(0) +
+                    recipe.proteinType.slice(1).toLowerCase()}
                 </Badge>
               )}
               <Badge variant="outline">
-                {recipeType.charAt(0) + recipeType.slice(1).toLowerCase()}
+                {recipe.recipeType.charAt(0) +
+                  recipe.recipeType.slice(1).toLowerCase()}
               </Badge>
-              {isImported && isCreatedByUser ? (
+              {recipe.isImported && recipe.isCreatedByUser ? (
                 <Badge variant="outline">Importerad av dig</Badge>
               ) : (
-                isCreatedByUser && (
+                recipe.isCreatedByUser && (
                   <Badge variant="outline">Skapad av dig</Badge>
                 )
               )}
             </div>
             <div className="grid gap-1">
-              <H3 className="">{name}</H3>
+              <H3 className="">{recipe.name}</H3>
               <div className="flex flex-wrap items-center gap-2">
-                {totalTimeSeconds && (
+                {recipe.totalTimeSeconds && (
                   <StatValueSmall icon={ClockFading} desc="min">
-                    {totalTimeSeconds / 60}
+                    {recipe.totalTimeSeconds / 60}
                   </StatValueSmall>
                 )}
-                {recipeYield && (
-                  <StatValueSmall icon={Utensils}>{recipeYield}</StatValueSmall>
+                {recipe.recipeYield && (
+                  <StatValueSmall icon={Utensils}>
+                    {recipe.recipeYield}
+                  </StatValueSmall>
                 )}
               </div>
             </div>
@@ -156,11 +151,15 @@ function ActionButtons({
   isSaved,
   id,
   slug,
+  onClickSchedule,
+  onClickAddToList,
 }: {
   displayType?: MyRecipesDisplay;
   isSaved: boolean;
   id: string;
   slug: string;
+  onClickSchedule: () => void;
+  onClickAddToList: () => void;
 }) {
   return (
     <div className="group absolute top-2 right-2 flex flex-col items-center gap-1">
@@ -192,6 +191,7 @@ function ActionButtons({
           "group-hover:opacity-100",
         )}
       >
+        {/* Schedule recipe action */}
         <Tooltip delayDuration={200}>
           <TooltipTrigger asChild>
             <Button
@@ -201,6 +201,8 @@ function ActionButtons({
               onClick={(event) => {
                 event.preventDefault();
                 event.stopPropagation();
+
+                onClickSchedule();
               }}
             >
               <CalendarPlus />
@@ -211,15 +213,17 @@ function ActionButtons({
           </TooltipContent>
         </Tooltip>
 
+        {/* Add to shopping list action */}
         <Tooltip delayDuration={200}>
           <TooltipTrigger asChild>
             <Button
               size="icon"
               variant="outline"
-              // TODO add onclick
               onClick={(event) => {
                 event.preventDefault();
                 event.stopPropagation();
+
+                onClickAddToList();
               }}
             >
               <ListPlus />
