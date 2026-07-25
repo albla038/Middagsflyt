@@ -15,11 +15,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { ShoppingList } from "@/lib/generated/prisma";
+import { getQueryClient } from "@/lib/query-client";
+import { shoppingListsQueryOptions } from "@/queries/shopping-list/options";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
+
+const queryClient = getQueryClient();
 
 type SaveShoppingListFormProps = {
   list?: ShoppingList;
@@ -45,7 +48,6 @@ export default function SaveShoppingListForm({
   });
 
   const [isPending, startTransition] = useTransition();
-  const router = useRouter();
 
   function onSubmit(data: ShoppingListForm) {
     // Trim whitespace
@@ -62,13 +64,12 @@ export default function SaveShoppingListForm({
         return;
       }
 
+      queryClient.invalidateQueries({
+        queryKey: shoppingListsQueryOptions().queryKey,
+      });
+
       onClose();
       toast.success(result.message);
-
-      if (result.data) {
-        // Navigate to the new shopping list
-        router.push(`/shopping-list/${result.data.id}`);
-      }
     });
   }
 

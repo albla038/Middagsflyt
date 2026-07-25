@@ -12,10 +12,14 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Spinner } from "@/components/ui/spinner";
+import { getQueryClient } from "@/lib/query-client";
 import { ShoppingListWithCount } from "@/lib/schemas/shopping-list";
+import { shoppingListsQueryOptions } from "@/queries/shopping-list/options";
 import { useParams, useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { toast } from "sonner";
+
+const queryClient = getQueryClient();
 
 type DeleteShoppingListAlertProps = {
   list: ShoppingListWithCount;
@@ -39,7 +43,12 @@ export default function DeleteShoppingListAlert({
 
       if (!result.success) {
         toast.error(result.message);
+        return;
       }
+
+      queryClient.invalidateQueries({
+        queryKey: shoppingListsQueryOptions().queryKey,
+      });
 
       onOpenChange(false);
       toast.success(result.message);
