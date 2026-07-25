@@ -1,6 +1,6 @@
-import IngredientGroup from "@/components/add-to-shopping-list/ingredient-group";
-import IngredientItem from "@/components/add-to-shopping-list/ingredient-item";
-import { UIRecipeIngredientsSource } from "@/components/add-to-shopping-list/types";
+import IngredientGroup from "@/app/(dashboard)/_components/add-to-shopping-list-dialog/ingredient-group";
+import IngredientItem from "@/app/(dashboard)/_components/add-to-shopping-list-dialog/ingredient-item";
+import { UIRecipeIngredientsSource } from "@/app/(dashboard)/_components/add-to-shopping-list-dialog/types";
 
 type IngredientSelectionProps = {
   recipes: UIRecipeIngredientsSource[];

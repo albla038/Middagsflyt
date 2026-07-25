@@ -1,10 +1,10 @@
 "use client";
 
-import { addIngredientsToShoppingList } from "@/components/add-to-shopping-list/actions";
-import IngredientSelection from "@/components/add-to-shopping-list/ingredient-selection";
-import IngredientSkeleton from "@/components/add-to-shopping-list/skeletons/ingredient";
-import TargetListSkeleton from "@/components/add-to-shopping-list/skeletons/target-list";
-import TargetListSelection from "@/components/add-to-shopping-list/target-list-selection";
+import { addIngredientsToShoppingList } from "@/app/(dashboard)/_components/add-to-shopping-list-dialog/actions";
+import IngredientSelection from "@/app/(dashboard)/_components/add-to-shopping-list-dialog/ingredient-selection";
+import IngredientSkeleton from "@/app/(dashboard)/_components/add-to-shopping-list-dialog/skeletons/ingredient";
+import TargetListSkeleton from "@/app/(dashboard)/_components/add-to-shopping-list-dialog/skeletons/target-list";
+import TargetListSelection from "@/app/(dashboard)/_components/add-to-shopping-list-dialog/target-list-selection";
 import ResponsiveDialog from "@/components/responsive-dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
