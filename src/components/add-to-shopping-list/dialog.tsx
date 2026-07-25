@@ -2,12 +2,9 @@
 
 import { addIngredientsToShoppingList } from "@/components/add-to-shopping-list/actions";
 import IngredientSelection from "@/components/add-to-shopping-list/ingredient-selection";
-import useAllShoppingLists from "@/components/add-to-shopping-list/queries/use-all-shopping-lists";
-import { useRecipeIngredients } from "@/components/add-to-shopping-list/queries/use-recipe-ingredients";
 import IngredientSkeleton from "@/components/add-to-shopping-list/skeletons/ingredient";
 import TargetListSkeleton from "@/components/add-to-shopping-list/skeletons/target-list";
 import TargetListSelection from "@/components/add-to-shopping-list/target-list-selection";
-import { IngredientSources } from "@/components/add-to-shopping-list/types";
 import ResponsiveDialog from "@/components/responsive-dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -15,7 +12,11 @@ import { Spinner } from "@/components/ui/spinner";
 import { getActionErrorMessage } from "@/lib/error-messages";
 import { getQueryClient } from "@/lib/query-client";
 import { AddIngredientToShoppingListInput } from "@/lib/schemas/recipe-ingredient";
+import { IngredientSources } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { recipeIngredientsQueryOptions } from "@/queries/recipes/ingredients/options";
+import { shoppingListsQueryOptions } from "@/queries/shopping-list/options";
+import { useQuery } from "@tanstack/react-query";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 
@@ -36,13 +37,16 @@ export default function AddToShoppingListDialog({
 
   // QUERIES
   // Fetch ingredients for all recipes and scheduled recipes
-  const { data: recipeIngredientsSources } = useRecipeIngredients(
-    ingredientSources,
-    open,
-  );
+  const { data: recipeIngredientsSources } = useQuery({
+    ...recipeIngredientsQueryOptions(ingredientSources),
+    enabled: open && ingredientSources.ids.length > 0, // Only fetch when dialog is open and there are IDs to fetch
+  });
 
   // Fetch possible shopping list targets
-  const { data: shoppingLists } = useAllShoppingLists(open);
+  const { data: shoppingLists } = useQuery({
+    ...shoppingListsQueryOptions(),
+    enabled: open, // Only fetch when dialog is open
+  });
 
   // STATE
   const [step, setStep] = useState<1 | 2>(1);
@@ -192,7 +196,9 @@ export default function AddToShoppingListDialog({
         `${selectedIngredientsCount} varor lades till i ${shoppingLists?.find((list) => list.id === targetListId)?.name ?? "inköpslistan"}`,
       );
 
-      queryClient.invalidateQueries({ queryKey: ["all-shopping-lists"] });
+      queryClient.invalidateQueries({
+        queryKey: shoppingListsQueryOptions().queryKey,
+      });
 
       // Close dialog
       onOpenChange(false);

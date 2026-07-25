@@ -110,3 +110,13 @@ export type IngredientWithAlias = {
   ingredientCategoryId: string;
   ingredientAliases: { name: string }[];
 };
+
+export type IngredientSources =
+  | {
+      type: "scheduled";
+      ids: string[]; // List of scheduled recipe IDs
+    }
+  | {
+      type: "recipe";
+      ids: string[]; // List of recipe IDs
+    };

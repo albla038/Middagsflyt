@@ -3,6 +3,7 @@ import { shoppingListWithCountSchema } from "@/lib/schemas/shopping-list";
 import { createFetch, createSchema } from "@better-fetch/fetch";
 import { z } from "zod";
 
+// Split domain-specific schemas into a separate files when necessary
 const zodSchema = createSchema({
   "/api/recipes/ingredients": {
     query: z
