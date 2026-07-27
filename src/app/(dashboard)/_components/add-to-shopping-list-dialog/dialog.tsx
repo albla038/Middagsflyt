@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { recipeIngredientsQueryOptions } from "@/queries/recipes/ingredients/options";
 import { shoppingListsQueryOptions } from "@/queries/shopping-list/options";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 
@@ -34,6 +35,7 @@ export default function AddToShoppingListDialog({
   ingredientSources,
 }: AddToShoppingListDialogProps) {
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   // QUERIES
   // Fetch ingredients for all recipes and scheduled recipes
@@ -192,8 +194,14 @@ export default function AddToShoppingListDialog({
         return;
       }
 
-      toast.success(
+      toast(
         `${selectedIngredientsCount} varor lades till i ${shoppingLists?.find((list) => list.id === targetListId)?.name ?? "inköpslistan"}`,
+        {
+          action: {
+            label: "Till inköpslista",
+            onClick: () => router.push(`/shopping-list/${targetListId}`),
+          },
+        },
       );
 
       queryClient.invalidateQueries({

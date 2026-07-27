@@ -3,23 +3,23 @@ import "server-only";
 import { requireHouseholdId } from "@/data/household/queries";
 import prisma from "@/lib/db";
 import { requireUser } from "@/data/user/verify-user";
-import { MutationResult } from "@/lib/types/api";
+import { MutationResult, MutationResultData } from "@/lib/types/api";
 import { prismaErrorToMutationErrorCode } from "@/lib/prisma-error-mapper";
 
 export async function createShoppingList(
   name: string,
-): Promise<MutationResult> {
+): Promise<MutationResultData<{ listId: string }>> {
   const householdId = await requireHouseholdId();
 
   try {
-    await prisma.shoppingList.create({
+    const list = await prisma.shoppingList.create({
       data: {
         name,
         householdId,
       },
     });
 
-    return { ok: true };
+    return { ok: true, data: { listId: list.id } };
   } catch (error) {
     const errorCode = prismaErrorToMutationErrorCode(error);
 
@@ -33,7 +33,7 @@ export async function updateShoppingList({
 }: {
   listId: string;
   name: string;
-}): Promise<MutationResult> {
+}): Promise<MutationResultData<{ listId: string }>> {
   const user = await requireUser();
 
   try {
@@ -53,7 +53,7 @@ export async function updateShoppingList({
       },
     });
 
-    return { ok: true };
+    return { ok: true, data: { listId } };
   } catch (error) {
     const errorCode = prismaErrorToMutationErrorCode(error);
 

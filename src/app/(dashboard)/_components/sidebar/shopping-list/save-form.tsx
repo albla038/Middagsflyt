@@ -19,6 +19,7 @@ import { ShoppingList } from "@/lib/generated/prisma";
 import { getQueryClient } from "@/lib/query-client";
 import { shoppingListsQueryOptions } from "@/queries/shopping-list/options";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -50,6 +51,8 @@ export default function SaveShoppingListForm({
 
   const [isPending, startTransition] = useTransition();
 
+  const router = useRouter();
+
   function onSubmit(data: ShoppingListForm) {
     // Trim whitespace
     data.name = data.name.trim();
@@ -71,7 +74,14 @@ export default function SaveShoppingListForm({
       });
 
       onClose();
-      toast.success(`"${data.name}" sparades`);
+
+      toast(`"${data.name}" sparades`, {
+        action: {
+          label: "Till inköpslista",
+          onClick: () => router.push(`/shopping-list/${response.data.listId}`),
+        },
+        richColors: true,
+      });
     });
   }
 

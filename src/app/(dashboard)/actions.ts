@@ -18,7 +18,7 @@ import {
 } from "@/data/shopping-list/mutations";
 import { requireUser } from "@/data/user/verify-user";
 import { ActionState } from "@/lib/types";
-import { ActionResponse } from "@/lib/types/api";
+import { ActionResponse, ActionResponseData } from "@/lib/types/api";
 import { revalidatePath } from "next/cache";
 import z from "zod";
 
@@ -142,7 +142,7 @@ export async function deleteScheduleAction(
 
 export async function saveShoppingListAction(
   data: ShoppingListForm,
-): Promise<ActionResponse> {
+): Promise<ActionResponseData<{ listId: string }>> {
   await requireUser();
 
   // Validate name
@@ -176,7 +176,7 @@ export async function saveShoppingListAction(
 
   revalidatePath("/shopping-list");
 
-  return { success: true };
+  return { success: true, data: { listId: mutationResult.data.listId } };
 }
 
 export async function deleteShoppingListAction(
