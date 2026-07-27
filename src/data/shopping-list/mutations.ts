@@ -2,34 +2,28 @@ import "server-only";
 
 import { requireHouseholdId } from "@/data/household/queries";
 import prisma from "@/lib/db";
-import { Result } from "@/lib/types";
-import { ShoppingList } from "@/lib/generated/prisma";
 import { requireUser } from "@/data/user/verify-user";
+import { MutationResult } from "@/lib/types/api";
+import { prismaErrorToMutationErrorCode } from "@/lib/prisma-error-mapper";
 
 export async function createShoppingList(
   name: string,
-): Promise<Result<ShoppingList, Error>> {
+): Promise<MutationResult> {
   const householdId = await requireHouseholdId();
 
   try {
-    const data = await prisma.shoppingList.create({
+    await prisma.shoppingList.create({
       data: {
         name,
         householdId,
       },
     });
 
-    return {
-      ok: true,
-      data,
-    };
+    return { ok: true };
   } catch (error) {
-    return {
-      ok: false,
-      error: new Error("Failed to create shopping list", {
-        cause: error instanceof Error ? error : new Error(String(error)),
-      }),
-    };
+    const errorCode = prismaErrorToMutationErrorCode(error);
+
+    return { ok: false, errorCode };
   }
 }
 
@@ -39,17 +33,18 @@ export async function updateShoppingList({
 }: {
   listId: string;
   name: string;
-}): Promise<Result<ShoppingList, Error>> {
+}): Promise<MutationResult> {
   const user = await requireUser();
 
   try {
-    const data = await prisma.shoppingList.update({
+    await prisma.shoppingList.update({
       data: {
         name,
       },
       where: {
         id: listId,
 
+        // Ensure the list belongs to the user's household
         household: {
           members: {
             some: { userId: user.id },
@@ -58,49 +53,37 @@ export async function updateShoppingList({
       },
     });
 
-    return {
-      ok: true,
-      data,
-    };
+    return { ok: true };
   } catch (error) {
-    return {
-      ok: false,
-      error: new Error("Failed to update shopping list", {
-        cause: error instanceof Error ? error : new Error(String(error)),
-      }),
-    };
+    const errorCode = prismaErrorToMutationErrorCode(error);
+
+    return { ok: false, errorCode };
   }
 }
 
 export async function deleteShoppingList(
   listId: string,
-): Promise<Result<ShoppingList, Error>> {
+): Promise<MutationResult> {
   const user = await requireUser();
 
   try {
-    const data = await prisma.shoppingList.delete({
+    await prisma.shoppingList.delete({
       where: {
-        // Ensure the schedule belongs to the user's household
+        id: listId,
+
+        // Ensure the list belongs to the user's household
         household: {
           members: {
             some: { userId: user.id },
           },
         },
-
-        id: listId,
       },
     });
 
-    return {
-      ok: true,
-      data,
-    };
+    return { ok: true };
   } catch (error) {
-    return {
-      ok: false,
-      error: new Error("Failed to delete shopping list", {
-        cause: error instanceof Error ? error : new Error(String(error)),
-      }),
-    };
+    const errorCode = prismaErrorToMutationErrorCode(error);
+
+    return { ok: false, errorCode };
   }
 }
