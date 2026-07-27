@@ -45,5 +45,5 @@ export async function addIngredientsToShoppingList(
   // Revalidate path?
   revalidatePath(`/shopping-list/${listId}`);
 
-  return { success: true, data: undefined };
+  return { success: true };
 }

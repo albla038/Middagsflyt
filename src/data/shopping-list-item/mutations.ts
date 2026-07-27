@@ -338,7 +338,7 @@ export async function createShoppingListItemsFromIngredients({
         })),
       });
 
-      return { ok: true, data: undefined };
+      return { ok: true };
     });
   } catch (error) {
     return { ok: false, errorCode: prismaErrorToMutationErrorCode(error) };
