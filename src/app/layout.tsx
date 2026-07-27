@@ -46,7 +46,6 @@ export default function RootLayout({
               <LoaderCircle className="size-4 animate-spin text-foreground" />
             ),
           }}
-          richColors
           position="top-center"
         />
       </body>
