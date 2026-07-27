@@ -17,8 +17,8 @@ import {
   updateShoppingList,
 } from "@/data/shopping-list/mutations";
 import { requireUser } from "@/data/user/verify-user";
-import { ShoppingList } from "@/lib/generated/prisma";
-import { ActionResult, ActionState } from "@/lib/types";
+import { ActionState } from "@/lib/types";
+import { ActionResponse } from "@/lib/types/api";
 import { revalidatePath } from "next/cache";
 import z from "zod";
 
@@ -140,35 +140,19 @@ export async function deleteScheduleAction(
   };
 }
 
-type SaveShoppingListResult = ActionResult<
-  ShoppingList,
-  { name?: string[]; listId?: string[] }
->;
-
 export async function saveShoppingListAction(
   data: ShoppingListForm,
-): Promise<SaveShoppingListResult> {
+): Promise<ActionResponse> {
   await requireUser();
 
   // Validate name
   const validated = shoppingListFormSchema.safeParse(data);
 
-  // Return errors if validation fails
+  // Return error code if validation fails
   if (!validated.success) {
-    const errors = z.flattenError(validated.error).fieldErrors;
-
-    if (errors.listId) {
-      return {
-        success: false,
-        message: "Ogiltigt lista-ID. Vänligen kontakta supporten",
-        errors,
-      };
-    }
-
     return {
       success: false,
-      message: "Ogiltig inmatning. Vänligen försök igen",
-      errors,
+      errorCode: "VALIDATION_FAILED",
     };
   }
 
@@ -182,49 +166,32 @@ export async function saveShoppingListAction(
       })
     : await createShoppingList(name);
 
-  // Return error if mutation fails
+  // Return error code if mutation fails
   if (!mutationResult.ok) {
     return {
       success: false,
-      message: "Något gick fel när listan skulle sparas. Vänligen försök igen.",
+      errorCode: mutationResult.errorCode,
     };
   }
 
   revalidatePath("/shopping-list");
 
-  return {
-    success: true,
-    message: `"${name}" sparades`,
-    data: mutationResult.data,
-  };
+  return { success: true };
 }
-
-type DeleteShoppingListResult = ActionResult<void, { listId?: string[] }>;
 
 export async function deleteShoppingListAction(
   data: ShoppingListDelete,
-): Promise<DeleteShoppingListResult> {
+): Promise<ActionResponse> {
   await requireUser();
 
   // Validate list id
   const validated = shoppingListDeleteSchema.safeParse(data);
 
-  // Return errors if validation fails
+  // Return error code if validation fails
   if (!validated.success) {
-    const errors = z.flattenError(validated.error).fieldErrors;
-
-    if (errors.listId) {
-      return {
-        success: false,
-        message: "Ogiltigt lista-ID. Vänligen kontakta supporten",
-        errors,
-      };
-    }
-
     return {
       success: false,
-      message: "Ogiltig inmatning. Vänligen försök igen",
-      errors,
+      errorCode: "VALIDATION_FAILED",
     };
   }
 
@@ -232,18 +199,15 @@ export async function deleteShoppingListAction(
 
   const deleteResult = await deleteShoppingList(listId);
 
+  // Return error code if deletion fails
   if (!deleteResult.ok) {
     return {
       success: false,
-      message:
-        "Något gick fel när listan skulle tas bort. Vänligen försök igen.",
+      errorCode: deleteResult.errorCode,
     };
   }
 
   revalidatePath("/shopping-list");
 
-  return {
-    success: true,
-    message: `${deleteResult.data.name} togs bort`,
-  };
+  return { success: true };
 }
