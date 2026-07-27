@@ -47,6 +47,7 @@ export default function RootLayout({
             ),
           }}
           richColors
+          position="top-center"
         />
       </body>
     </html>
