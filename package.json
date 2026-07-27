@@ -71,8 +71,8 @@
     "@types/node": "^20",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
-    "eslint": "10.8.0",
-    "eslint-config-next": "16.2.12",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.2.12",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.12",
     "prisma": "^7.4.2",
@@ -80,9 +80,5 @@
     "tsx": "^4.20.3",
     "tw-animate-css": "^1.3.4",
     "typescript": "^5"
-  },
-  "overrides": {
-    "@types/react": "19.2.17",
-    "@types/react-dom": "19.2.3"
   }
 }
