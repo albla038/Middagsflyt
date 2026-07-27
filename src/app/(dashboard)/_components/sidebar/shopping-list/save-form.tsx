@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import { getActionErrorMessage } from "@/lib/error-messages";
 import { ShoppingList } from "@/lib/generated/prisma";
 import { getQueryClient } from "@/lib/query-client";
 import { shoppingListsQueryOptions } from "@/queries/shopping-list/options";
@@ -54,13 +55,14 @@ export default function SaveShoppingListForm({
     data.name = data.name.trim();
 
     startTransition(async () => {
-      const result = await saveShoppingListAction({
+      const response = await saveShoppingListAction({
         name: data.name,
         listId: list?.id,
       });
 
-      if (!result.success) {
-        toast.error(result.message);
+      if (!response.success) {
+        const errorMessage = getActionErrorMessage(response.errorCode);
+        toast.error(errorMessage);
         return;
       }
 
@@ -69,7 +71,7 @@ export default function SaveShoppingListForm({
       });
 
       onClose();
-      toast.success(result.message);
+      toast.success(`"${data.name}" sparades`);
     });
   }
 

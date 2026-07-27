@@ -12,6 +12,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Spinner } from "@/components/ui/spinner";
+import { getActionErrorMessage } from "@/lib/error-messages";
 import { getQueryClient } from "@/lib/query-client";
 import { ShoppingListWithCount } from "@/lib/schemas/shopping-list";
 import { shoppingListsQueryOptions } from "@/queries/shopping-list/options";
@@ -42,7 +43,8 @@ export default function DeleteShoppingListAlert({
       const result = await deleteShoppingListAction({ listId: list.id });
 
       if (!result.success) {
-        toast.error(result.message);
+        const errorMessage = getActionErrorMessage(result.errorCode);
+        toast.error(errorMessage);
         return;
       }
 
@@ -51,7 +53,7 @@ export default function DeleteShoppingListAlert({
       });
 
       onOpenChange(false);
-      toast.success(result.message);
+      toast.success(`"${list.name}" togs bort`);
 
       if (params.id === list.id) {
         router.replace("/saved-recipes");
@@ -63,7 +65,9 @@ export default function DeleteShoppingListAlert({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Vill du ta bort "{list.name}"?</AlertDialogTitle>
+          <AlertDialogTitle>
+            Vill du ta bort &quot;{list.name}&quot;?
+          </AlertDialogTitle>
           <AlertDialogDescription className="grid gap-2">
             Inköpslistan innehåller {list.itemCount}{" "}
             {list.itemCount === 1 ? "vara" : "varor"}. Denna åtgärd kan inte
