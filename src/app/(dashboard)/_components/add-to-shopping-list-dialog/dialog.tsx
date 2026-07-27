@@ -236,7 +236,7 @@ export default function AddToShoppingListDialog({
       <div className="flex h-[60svh] flex-col md:h-[75svh]">
         {/* Main content */}
         <ScrollArea className="-mr-3 grow overflow-y-auto pr-3">
-          {stepContent}
+          <div className="pb-4">{stepContent}</div>
         </ScrollArea>
 
         {/* Dialog actions */}
