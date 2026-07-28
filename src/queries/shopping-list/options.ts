@@ -2,16 +2,18 @@ import { apiClient } from "@/queries/api-client";
 import { fetchShoppingList } from "@/queries/shopping-list/api";
 import { queryOptions } from "@tanstack/react-query";
 
+export const SHOPPING_LISTS_QUERY_KEY = ["shopping-lists"] as const;
+
 export function shoppingListsQueryOptions() {
   return queryOptions({
-    queryKey: ["shopping-lists", "summary"],
+    queryKey: [...SHOPPING_LISTS_QUERY_KEY, "summary"],
     queryFn: () => apiClient("/api/shopping-lists"),
   });
 }
 
 export function shoppingListQueryOptions(listId: string) {
   return queryOptions({
-    queryKey: ["shopping-lists", listId],
+    queryKey: [...SHOPPING_LISTS_QUERY_KEY, listId],
     queryFn: () => fetchShoppingList(listId),
     enabled: !!listId,
   });
