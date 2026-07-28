@@ -1,21 +1,60 @@
 "use server";
 
 import {
+  createShoppingListItem,
   deleteShoppingListItems,
   restoreShoppingListItems,
 } from "@/data/shopping-list-item/mutations";
 import { requireUser } from "@/data/user/verify-user";
 import { ActionResult } from "@/lib/types";
 import {
+  ShoppingListItemCreate,
+  shoppingListItemCreateSchema,
   ShoppingListItemsRestore,
   shoppingListItemsRestoreSchema,
 } from "@/lib/schemas/shopping-list";
 import z from "zod";
+import { revalidatePath } from "next/cache";
+import { ActionResponse } from "@/lib/types/api";
 
 // Local schemas
 const idSchema = z.cuid2();
 
 const itemIdsSchema = z.array(z.cuid2());
+
+export async function createShoppingListItemAction({
+  listId,
+  data,
+}: {
+  listId: string;
+  data: ShoppingListItemCreate;
+}): Promise<ActionResponse> {
+  await requireUser();
+
+  // Validate data
+  const validatedListId = idSchema.safeParse(listId);
+  const validated = shoppingListItemCreateSchema.safeParse(data);
+
+  // Return error code if validation fails
+  if (!validated.success || !validatedListId.success) {
+    return { success: false, errorCode: "VALIDATION_FAILED" };
+  }
+
+  // Create the shopping list item
+  const mutationResult = await createShoppingListItem({
+    listId: validatedListId.data,
+    data: validated.data,
+  });
+
+  // Return error code if mutation fails
+  if (!mutationResult.ok) {
+    return { success: false, errorCode: mutationResult.errorCode };
+  }
+
+  revalidatePath(`/shopping-list/${listId}`);
+
+  return { success: true };
+}
 
 export async function deleteShoppingListItemsAction({
   listId,
@@ -59,6 +98,8 @@ export async function deleteShoppingListItemsAction({
         "Något gick fel när varorna skulle tas bort. Vänligen försök igen.",
     };
   }
+
+  revalidatePath(`/shopping-list/${listId}`);
 
   return {
     success: true,
@@ -113,6 +154,8 @@ export async function restoreShoppingListItemsAction({
       message: "Något gick fel när varorna skulle återställas.",
     };
   }
+
+  revalidatePath(`/shopping-list/${listId}`);
 
   return {
     success: true,

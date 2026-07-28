@@ -15,30 +15,31 @@ import { prismaErrorToMutationErrorCode } from "@/lib/prisma-error-mapper";
 
 // TODO: Replace swedish error messages with english
 
-// Create function to be used ONLY in route handler for user requests
 export async function createShoppingListItem({
   listId,
   data,
 }: {
   listId: string;
   data: ShoppingListItemCreate;
-}): Promise<Result<ShoppingListItem, Error>> {
+}): Promise<MutationResult> {
   const user = await requireUser();
 
   try {
     return await prisma.$transaction(async (tx) => {
-      // Assure the shopping list exists and belongs to the user's household
       const list = await tx.shoppingList.findUnique({
-        where: {
-          id: listId,
-          household: {
-            members: {
-              some: { userId: user.id },
-            },
-          },
-        },
+        where: { id: listId },
 
         select: {
+          // Assure the shopping list exists and belongs to the user's household
+          household: {
+            select: {
+              members: {
+                where: { userId: user.id },
+                select: { userId: true },
+              },
+            },
+          },
+
           // Fetch the items relation, but only the last one
           items: {
             orderBy: { displayOrder: "desc" },
@@ -48,20 +49,20 @@ export async function createShoppingListItem({
         },
       });
 
+      // Return early if the list doesn't exist
       if (!list) {
-        return {
-          ok: false,
-          error: new Error(
-            "Du har inte behörighet att lägga till varor i denna lista.",
-          ),
-        };
+        return { ok: false, errorCode: "NOT_FOUND" };
+      }
+      // OR, if the list does not belong to the user's household
+      if (list.household.members.length === 0) {
+        return { ok: false, errorCode: "FORBIDDEN" };
       }
 
       // Get largest displayOrder value if possible
       const lastItem = list.items.at(0);
       const newDisplayOrder = (lastItem?.displayOrder ?? 0) + 1000;
 
-      const result = await tx.shoppingListItem.create({
+      await tx.shoppingListItem.create({
         data: {
           id: data.id,
           name: data.name,
@@ -79,15 +80,12 @@ export async function createShoppingListItem({
         },
       });
 
-      return { ok: true, data: result };
+      return { ok: true };
     });
   } catch (error) {
     return {
       ok: false,
-      error: new Error(
-        "Något gick fel när ny varan skulle skapas. Vänligen försök igen.",
-        { cause: error instanceof Error ? error : Error(String(error)) },
-      ),
+      errorCode: prismaErrorToMutationErrorCode(error),
     };
   }
 }
@@ -341,6 +339,9 @@ export async function createShoppingListItemsFromIngredients({
       return { ok: true };
     });
   } catch (error) {
-    return { ok: false, errorCode: prismaErrorToMutationErrorCode(error) };
+    return {
+      ok: false,
+      errorCode: prismaErrorToMutationErrorCode(error),
+    };
   }
 }

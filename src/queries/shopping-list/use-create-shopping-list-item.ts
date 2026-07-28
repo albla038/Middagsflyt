@@ -2,8 +2,9 @@ import { getQueryClient } from "@/lib/query-client";
 import { ShoppingListItemCreate } from "@/lib/schemas/shopping-list";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { shoppingListQueryOptions } from "./options";
-import { createShoppingListItem } from "@/queries/shopping-list/api";
+import { SHOPPING_LISTS_QUERY_KEY, shoppingListQueryOptions } from "./options";
+import { createShoppingListItemAction } from "@/queries/shopping-list/actions";
+import { getActionErrorMessage } from "@/lib/error-messages";
 
 const queryClient = getQueryClient();
 
@@ -12,11 +13,18 @@ export function useCreateShoppingListItem(listId: string) {
   const queryKey = shoppingListQueryOptions(listId).queryKey;
 
   return useMutation({
-    mutationFn: (newItem: ShoppingListItemCreate) =>
-      createShoppingListItem({
+    mutationFn: async (newItem: ShoppingListItemCreate) => {
+      const response = await createShoppingListItemAction({
         listId,
         data: newItem,
-      }),
+      });
+
+      // Throw an error if the action fails
+      if (!response.success) {
+        const errorMessage = getActionErrorMessage(response.errorCode);
+        throw new Error(errorMessage);
+      }
+    },
 
     onMutate: async (newItem) => {
       await queryClient.cancelQueries({ queryKey });
@@ -68,7 +76,7 @@ export function useCreateShoppingListItem(listId: string) {
 
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey,
+        queryKey: SHOPPING_LISTS_QUERY_KEY,
       });
     },
   });
