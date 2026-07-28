@@ -4,6 +4,7 @@ import {
   createShoppingListItem,
   deleteShoppingListItems,
   restoreShoppingListItems,
+  updateShoppingListItem,
 } from "@/data/shopping-list-item/mutations";
 import { requireUser } from "@/data/user/verify-user";
 import { ActionResult } from "@/lib/types";
@@ -12,6 +13,8 @@ import {
   shoppingListItemCreateSchema,
   ShoppingListItemsRestore,
   shoppingListItemsRestoreSchema,
+  ShoppingListItemUpdate,
+  shoppingListItemUpdateSchema,
 } from "@/lib/schemas/shopping-list";
 import z from "zod";
 import { revalidatePath } from "next/cache";
@@ -19,7 +22,7 @@ import { ActionResponse } from "@/lib/types/api";
 
 // Local schemas
 const idSchema = z.cuid2();
-
+const idsSchema = z.object({ listId: z.cuid2(), itemId: z.cuid2() });
 const itemIdsSchema = z.array(z.cuid2());
 
 export async function createShoppingListItemAction({
@@ -43,6 +46,43 @@ export async function createShoppingListItemAction({
   // Create the shopping list item
   const mutationResult = await createShoppingListItem({
     listId: validatedListId.data,
+    data: validated.data,
+  });
+
+  // Return error code if mutation fails
+  if (!mutationResult.ok) {
+    return { success: false, errorCode: mutationResult.errorCode };
+  }
+
+  revalidatePath(`/shopping-list/${listId}`);
+
+  return { success: true };
+}
+
+export async function updateShoppingListItemAction({
+  listId,
+  itemId,
+  data,
+}: {
+  listId: string;
+  itemId: string;
+  data: ShoppingListItemUpdate;
+}): Promise<ActionResponse> {
+  await requireUser();
+
+  // Validate data
+  const validatedIds = idsSchema.safeParse({ listId, itemId });
+  const validated = shoppingListItemUpdateSchema.safeParse(data);
+
+  // Return error code if validation fails
+  if (!validatedIds.success || !validated.success) {
+    return { success: false, errorCode: "VALIDATION_FAILED" };
+  }
+
+  // Update the shopping list item
+  const mutationResult = await updateShoppingListItem({
+    listId: validatedIds.data.listId,
+    itemId: validatedIds.data.itemId,
     data: validated.data,
   });
 

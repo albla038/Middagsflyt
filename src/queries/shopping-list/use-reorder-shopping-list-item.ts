@@ -1,10 +1,14 @@
+import { getActionErrorMessage } from "@/lib/error-messages";
 import { getQueryClient } from "@/lib/query-client";
 import {
   ShoppingListItemResponse,
   ShoppingListItemUpdate,
 } from "@/lib/schemas/shopping-list";
-import { updateShoppingListItem } from "@/queries/shopping-list/api";
-import { shoppingListQueryOptions } from "@/queries/shopping-list/options";
+import { updateShoppingListItemAction } from "@/queries/shopping-list/actions";
+import {
+  SHOPPING_LISTS_QUERY_KEY,
+  shoppingListQueryOptions,
+} from "@/queries/shopping-list/options";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -14,16 +18,30 @@ export function useReorderShoppingListItem(listId: string) {
   const queryKey = shoppingListQueryOptions(listId).queryKey;
 
   return useMutation({
-    mutationFn: ({
+    mutationFn: async ({
       itemId,
       data,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       updatedList,
     }: {
       itemId: string;
       data: ShoppingListItemUpdate;
       updatedList: ShoppingListItemResponse[];
-    }) => updateShoppingListItem({ listId, itemId, data }),
+    }) => {
+      const response = await updateShoppingListItemAction({
+        listId,
+        itemId,
+        data,
+      });
+
+      // Throw an error if the action fails
+      if (!response.success) {
+        const errorMessage = getActionErrorMessage(response.errorCode, {
+          NOT_FOUND: "Varan kunde inte hittas. Den kan ha tagits bort.",
+        });
+        throw new Error(errorMessage);
+      }
+    },
 
     onMutate: async ({ updatedList }) => {
       // Cancel any outgoing refetches
@@ -53,7 +71,7 @@ export function useReorderShoppingListItem(listId: string) {
 
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey,
+        queryKey: SHOPPING_LISTS_QUERY_KEY,
       });
     },
   });

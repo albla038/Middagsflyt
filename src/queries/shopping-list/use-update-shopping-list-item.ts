@@ -1,9 +1,13 @@
-import { shoppingListQueryOptions } from "@/queries/shopping-list/options";
+import {
+  SHOPPING_LISTS_QUERY_KEY,
+  shoppingListQueryOptions,
+} from "@/queries/shopping-list/options";
 import { getQueryClient } from "@/lib/query-client";
 import { ShoppingListItemUpdate } from "@/lib/schemas/shopping-list";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { updateShoppingListItem } from "@/queries/shopping-list/api";
+import { updateShoppingListItemAction } from "@/queries/shopping-list/actions";
+import { getActionErrorMessage } from "@/lib/error-messages";
 
 const queryClient = getQueryClient();
 
@@ -12,13 +16,27 @@ export function useUpdateShoppingListItem(listId: string) {
   const queryKey = shoppingListQueryOptions(listId).queryKey;
 
   return useMutation({
-    mutationFn: ({
+    mutationFn: async ({
       itemId,
       data,
     }: {
       itemId: string;
       data: ShoppingListItemUpdate;
-    }) => updateShoppingListItem({ listId, itemId, data }),
+    }) => {
+      const response = await updateShoppingListItemAction({
+        listId,
+        itemId,
+        data,
+      });
+
+      // Throw an error if the action fails
+      if (!response.success) {
+        const errorMessage = getActionErrorMessage(response.errorCode, {
+          NOT_FOUND: "Varan kunde inte hittas. Den kan ha tagits bort.",
+        });
+        throw new Error(errorMessage);
+      }
+    },
 
     onMutate: async (updatedItem) => {
       await queryClient.cancelQueries({ queryKey });
@@ -52,7 +70,7 @@ export function useUpdateShoppingListItem(listId: string) {
 
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey,
+        queryKey: SHOPPING_LISTS_QUERY_KEY,
       });
     },
   });

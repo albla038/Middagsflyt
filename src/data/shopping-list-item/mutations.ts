@@ -90,7 +90,6 @@ export async function createShoppingListItem({
   }
 }
 
-// Update function to be used ONLY in route handler for user requests
 export async function updateShoppingListItem({
   listId,
   itemId,
@@ -99,11 +98,11 @@ export async function updateShoppingListItem({
   listId: string;
   itemId: string;
   data: ShoppingListItemUpdate;
-}): Promise<Result<ShoppingListItem, Error>> {
+}): Promise<MutationResult> {
   const user = await requireUser();
 
   try {
-    const result = await prisma.shoppingListItem.update({
+    await prisma.shoppingListItem.update({
       where: {
         id: itemId,
 
@@ -124,14 +123,11 @@ export async function updateShoppingListItem({
       },
     });
 
-    return { ok: true, data: result };
+    return { ok: true };
   } catch (error) {
     return {
       ok: false,
-      error: new Error(
-        "Något gick fel när varan skulle uppdateras. Vänligen försök igen.",
-        { cause: error instanceof Error ? error : Error(String(error)) },
-      ),
+      errorCode: prismaErrorToMutationErrorCode(error),
     };
   }
 }
