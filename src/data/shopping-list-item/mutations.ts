@@ -9,7 +9,7 @@ import {
 } from "@/lib/schemas/shopping-list";
 import { AddIngredientToShoppingListInput } from "@/lib/schemas/recipe-ingredient";
 import { MutationResult } from "@/lib/types/api";
-import { prismaErrorToMutationErrorCode } from "@/lib/prisma-error-mapper";
+import { prismaErrorToErrorCode } from "@/lib/prisma-error-mapper";
 
 export async function createShoppingListItem({
   listId,
@@ -81,7 +81,7 @@ export async function createShoppingListItem({
   } catch (error) {
     return {
       ok: false,
-      errorCode: prismaErrorToMutationErrorCode(error),
+      errorCode: prismaErrorToErrorCode(error),
     };
   }
 }
@@ -123,7 +123,7 @@ export async function updateShoppingListItem({
   } catch (error) {
     return {
       ok: false,
-      errorCode: prismaErrorToMutationErrorCode(error),
+      errorCode: prismaErrorToErrorCode(error),
     };
   }
 }
@@ -157,7 +157,7 @@ export async function deleteShoppingListItem({
   } catch (error) {
     return {
       ok: false,
-      errorCode: prismaErrorToMutationErrorCode(error),
+      errorCode: prismaErrorToErrorCode(error),
     };
   }
 }
@@ -192,7 +192,7 @@ export async function deleteShoppingListItems({
   } catch (error) {
     return {
       ok: false,
-      errorCode: prismaErrorToMutationErrorCode(error),
+      errorCode: prismaErrorToErrorCode(error),
     };
   }
 }
@@ -246,7 +246,7 @@ export async function restoreShoppingListItems({
   } catch (error) {
     return {
       ok: false,
-      errorCode: prismaErrorToMutationErrorCode(error),
+      errorCode: prismaErrorToErrorCode(error),
     };
   }
 }
@@ -311,7 +311,7 @@ export async function createShoppingListItemsFromIngredients({
   } catch (error) {
     return {
       ok: false,
-      errorCode: prismaErrorToMutationErrorCode(error),
+      errorCode: prismaErrorToErrorCode(error),
     };
   }
 }

@@ -4,7 +4,7 @@ import { requireHouseholdId } from "@/data/household/queries";
 import prisma from "@/lib/db";
 import { requireUser } from "@/data/user/verify-user";
 import { MutationResult, MutationResultData } from "@/lib/types/api";
-import { prismaErrorToMutationErrorCode } from "@/lib/prisma-error-mapper";
+import { prismaErrorToErrorCode } from "@/lib/prisma-error-mapper";
 
 export async function createShoppingList(
   name: string,
@@ -21,7 +21,7 @@ export async function createShoppingList(
 
     return { ok: true, data: { listId: list.id } };
   } catch (error) {
-    const errorCode = prismaErrorToMutationErrorCode(error);
+    const errorCode = prismaErrorToErrorCode(error);
 
     return { ok: false, errorCode };
   }
@@ -55,7 +55,7 @@ export async function updateShoppingList({
 
     return { ok: true, data: { listId } };
   } catch (error) {
-    const errorCode = prismaErrorToMutationErrorCode(error);
+    const errorCode = prismaErrorToErrorCode(error);
 
     return { ok: false, errorCode };
   }
@@ -82,7 +82,7 @@ export async function deleteShoppingList(
 
     return { ok: true };
   } catch (error) {
-    const errorCode = prismaErrorToMutationErrorCode(error);
+    const errorCode = prismaErrorToErrorCode(error);
 
     return { ok: false, errorCode };
   }
