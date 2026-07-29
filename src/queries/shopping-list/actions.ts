@@ -2,6 +2,7 @@
 
 import {
   createShoppingListItem,
+  deleteShoppingListItem,
   deleteShoppingListItems,
   restoreShoppingListItems,
   updateShoppingListItem,
@@ -89,6 +90,36 @@ export async function updateShoppingListItemAction({
   // Return error code if mutation fails
   if (!mutationResult.ok) {
     return { success: false, errorCode: mutationResult.errorCode };
+  }
+
+  revalidatePath(`/shopping-list/${listId}`);
+
+  return { success: true };
+}
+
+export async function deleteShoppingListItemAction({
+  listId,
+  itemId,
+}: {
+  listId: string;
+  itemId: string;
+}): Promise<ActionResponse> {
+  await requireUser();
+
+  // Validate data
+  const validated = idsSchema.safeParse({ listId, itemId });
+
+  // Return error code if validation fails
+  if (!validated.success) {
+    return { success: false, errorCode: "VALIDATION_FAILED" };
+  }
+
+  // Delete the shopping list item
+  const deletionResult = await deleteShoppingListItem(validated.data);
+
+  // Return error code if deletion fails
+  if (!deletionResult.ok) {
+    return { success: false, errorCode: deletionResult.errorCode };
   }
 
   revalidatePath(`/shopping-list/${listId}`);

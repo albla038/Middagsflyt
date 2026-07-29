@@ -3,7 +3,6 @@ import {
   ShoppingListResponse,
   shoppingListResponseSchema,
 } from "@/lib/schemas/shopping-list";
-import { zodErrorResponseSchema } from "@/lib/schemas/response";
 
 export async function fetchShoppingList(
   listId: string,
@@ -53,46 +52,4 @@ export async function fetchShoppingList(
   }
 
   return validated.data;
-}
-
-export async function deleteShoppingListItem({
-  listId,
-  itemId,
-}: {
-  listId: string;
-  itemId: string;
-}) {
-  let response: Response;
-  try {
-    response = await fetch(`/api/shopping-lists/${listId}/items/${itemId}`, {
-      method: "DELETE",
-    });
-  } catch (error) {
-    throw new Error(
-      "Ett nätverksfel inträffade när varan skulle tas bort. Vänligen försök igen.",
-      {
-        cause: error instanceof Error ? error : new Error(String(error)),
-      },
-    );
-  }
-
-  let resData: unknown;
-  try {
-    resData = await response.json();
-  } catch {
-    throw new Error(
-      "Kunde inte tolka svaret från servern. Vänligen försök igen.",
-    );
-  }
-
-  if (!response.ok) {
-    const validatedErrorRes = zodErrorResponseSchema.safeParse(resData);
-    if (validatedErrorRes.success) {
-      throw new Error(validatedErrorRes.data.message, {
-        cause: validatedErrorRes.data.errors,
-      });
-    } else {
-      throw new Error(`HTTP-fel ${response.status}: ${response.statusText}`);
-    }
-  }
 }

@@ -1,6 +1,10 @@
+import { getActionErrorMessage } from "@/lib/error-messages";
 import { getQueryClient } from "@/lib/query-client";
-import { deleteShoppingListItem } from "@/queries/shopping-list/api";
-import { shoppingListQueryOptions } from "@/queries/shopping-list/options";
+import { deleteShoppingListItemAction } from "@/queries/shopping-list/actions";
+import {
+  SHOPPING_LISTS_QUERY_KEY,
+  shoppingListQueryOptions,
+} from "@/queries/shopping-list/options";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -11,11 +15,21 @@ export function useDeleteShoppingListItem(listId: string) {
   const queryKey = shoppingListQueryOptions(listId).queryKey;
 
   return useMutation({
-    mutationFn: (itemId: string) =>
-      deleteShoppingListItem({
+    mutationFn: async (itemId: string) => {
+      const response = await deleteShoppingListItemAction({
         listId,
         itemId,
-      }),
+      });
+
+      // Thrown an error if the action fails
+      if (!response.success) {
+        const errorMessage = getActionErrorMessage(response.errorCode, {
+          NOT_FOUND:
+            "Varan du försökte ta bort kunde inte hittas. Den kan redan ha tagits bort",
+        });
+        throw new Error(errorMessage);
+      }
+    },
 
     onMutate: async (itemIdToDelete) => {
       await queryClient.cancelQueries({ queryKey });
@@ -45,7 +59,7 @@ export function useDeleteShoppingListItem(listId: string) {
 
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey,
+        queryKey: SHOPPING_LISTS_QUERY_KEY,
       });
     },
   });

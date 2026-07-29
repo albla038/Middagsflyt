@@ -3,7 +3,6 @@ import "server-only";
 import { requireUser } from "@/data/user/verify-user";
 import { Result } from "@/lib/types";
 import prisma from "@/lib/db";
-import { Prisma, ShoppingListItem } from "@/lib/generated/prisma";
 import {
   ShoppingListItemCreate,
   ShoppingListItemsRestore,
@@ -138,11 +137,11 @@ export async function deleteShoppingListItem({
 }: {
   listId: string;
   itemId: string;
-}): Promise<Result<ShoppingListItem, Error>> {
+}): Promise<MutationResult> {
   const user = await requireUser();
 
   try {
-    const result = await prisma.shoppingListItem.delete({
+    await prisma.shoppingListItem.delete({
       where: {
         id: itemId,
 
@@ -157,26 +156,11 @@ export async function deleteShoppingListItem({
       },
     });
 
-    return { ok: true, data: result };
+    return { ok: true };
   } catch (error) {
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2025"
-    ) {
-      return {
-        ok: false,
-        error: new Error("Varan du försöker radera finns inte.", {
-          cause: error,
-        }),
-      };
-    }
-
     return {
       ok: false,
-      error: new Error(
-        "Något gick fel när varan skulle raderas. Vänligen försök igen.",
-        { cause: error instanceof Error ? error : Error(String(error)) },
-      ),
+      errorCode: prismaErrorToMutationErrorCode(error),
     };
   }
 }
