@@ -1,7 +1,6 @@
 import {
   ProteinType,
   RecipeType,
-  ShoppingList,
   Unit,
 } from "@/lib/generated/prisma";
 import { User } from "better-auth";
