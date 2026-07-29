@@ -1,6 +1,7 @@
 import { fetchRecipeIngredientsForShoppingList } from "@/data/recipe-ingredient/queries";
 import { verifyUser } from "@/data/user/verify-user";
-import { legacySafeQuery } from "@/lib/safe-query";
+import { errorCodeToHttpStatus } from "@/lib/error-code-http-mapper";
+import { safeQuery } from "@/lib/safe-query";
 import { NextRequest, NextResponse } from "next/server";
 import z from "zod";
 
@@ -45,17 +46,17 @@ export async function GET(request: NextRequest) {
 
   const { recipeIds, scheduledRecipeIds } = validated.data;
 
-  const recipeIngredientsRes = await legacySafeQuery(() =>
+  const queryRes = await safeQuery(() =>
     fetchRecipeIngredientsForShoppingList(recipeIds, scheduledRecipeIds),
   );
 
-  // Return 500 if DB query fails
-  if (!recipeIngredientsRes.ok) {
+  // Return HTML error code if DB query fails
+  if (!queryRes.ok) {
     return NextResponse.json(
-      { message: recipeIngredientsRes.error },
-      { status: 500 },
+      { error: queryRes.errorCode },
+      { status: errorCodeToHttpStatus(queryRes.errorCode) },
     );
   }
 
-  return NextResponse.json(recipeIngredientsRes.data);
+  return NextResponse.json(queryRes.data);
 }
