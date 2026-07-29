@@ -41,40 +41,31 @@ export async function fetchShoppingListMetrics(
 ): Promise<ShoppingListWithCount | null> {
   const user = await requireUser();
 
-  try {
-    const list = await prisma.shoppingList.findUnique({
-      where: {
-        id: listId,
+  const list = await prisma.shoppingList.findUnique({
+    where: {
+      id: listId,
 
-        household: {
-          members: {
-            some: { userId: user.id },
-          },
+      household: {
+        members: {
+          some: { userId: user.id },
         },
       },
+    },
 
-      include: {
-        _count: {
-          select: { items: true },
-        },
+    include: {
+      _count: {
+        select: { items: true },
       },
-    });
+    },
+  });
 
-    if (!list) {
-      return null;
-    }
-
-    // Transform the _count field to itemCount
-    const { _count, ...rest } = list;
-    return { ...rest, itemCount: _count.items };
-  } catch (error) {
-    throw new Error(
-      "Något gick fel när inköpslistan skulle hämtas. Vänligen försök igen.",
-      {
-        cause: error instanceof Error ? error : Error(String(error)),
-      },
-    );
+  if (!list) {
+    return null;
   }
+
+  // Transform the _count field to itemCount
+  const { _count, ...rest } = list;
+  return { ...rest, itemCount: _count.items };
 }
 
 export async function fetchShoppingList(
