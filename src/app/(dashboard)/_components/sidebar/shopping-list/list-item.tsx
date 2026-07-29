@@ -20,8 +20,6 @@ import { Edit, List, MoreHorizontal, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { shoppingListQueryOptions } from "@/queries/shopping-list/options";
 
 type ShoppingListItemProps = {
   list: ShoppingListWithCount;
@@ -32,12 +30,6 @@ export default function ShoppingListItem({ list }: ShoppingListItemProps) {
 
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
   const [isDeleteAlertOpen, setDeleteAlertOpen] = useState(false);
-
-  const { data } = useQuery({
-    ...shoppingListQueryOptions(list.id),
-    enabled: false,
-  });
-  const itemCount = data?.items.length ?? list.itemCount;
 
   return (
     <>
@@ -109,7 +101,7 @@ export default function ShoppingListItem({ list }: ShoppingListItemProps) {
         </DropdownMenu>
 
         <SidebarMenuBadge className="right-7 border border-sidebar-border">
-          {itemCount}
+          {list.itemCount}
         </SidebarMenuBadge>
       </SidebarMenuItem>
     </>

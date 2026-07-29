@@ -17,53 +17,43 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Toggle } from "@/components/ui/toggle";
-import { useShoppingList } from "@/queries/shopping-list/use-shopping-list";
+import { ShoppingListWithCount } from "@/lib/schemas/shopping-list";
 import { Edit, FolderTree, MoreVertical, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 type HeaderMenuProps = {
-  listId: string;
-  initialItemCount: number;
+  list: ShoppingListWithCount;
 };
 
-export default function HeaderMenu({
-  listId,
-  initialItemCount,
-}: HeaderMenuProps) {
-  const { data: list } = useShoppingList(listId);
-
+export default function HeaderMenu({ list }: HeaderMenuProps) {
   const { isGroupedByCategory, setGroupedByCategory } = useSortSelection();
 
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
   const [isDeleteAlertOpen, setDeleteAlertOpen] = useState(false);
 
-  const itemCount = list?.items.length ?? initialItemCount;
+  const itemCount = list.itemCount;
 
   return (
     <>
-      {list && (
-        <>
-          {/* Edit dialog */}
-          <ResponsiveDialog
-            open={isEditDialogOpen}
-            onOpenChange={setEditDialogOpen}
-            title="Redigera inköpslista"
-            description={`Byt namn på "${list?.name}"`}
-          >
-            <SaveShoppingListForm
-              list={list}
-              onClose={() => setEditDialogOpen(false)}
-            />
-          </ResponsiveDialog>
+      {/* Edit dialog */}
+      <ResponsiveDialog
+        open={isEditDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        title="Redigera inköpslista"
+        description={`Byt namn på "${list?.name}"`}
+      >
+        <SaveShoppingListForm
+          list={list}
+          onClose={() => setEditDialogOpen(false)}
+        />
+      </ResponsiveDialog>
 
-          {/* Delete alert */}
-          <DeleteShoppingListAlert
-            open={isDeleteAlertOpen}
-            onOpenChange={setDeleteAlertOpen}
-            list={{ ...list, itemCount }}
-          />
-        </>
-      )}
+      {/* Delete alert */}
+      <DeleteShoppingListAlert
+        open={isDeleteAlertOpen}
+        onOpenChange={setDeleteAlertOpen}
+        list={list}
+      />
 
       {/* Item count */}
       <div className="flex grow items-center gap-2">
