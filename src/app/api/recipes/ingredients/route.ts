@@ -1,6 +1,6 @@
 import { fetchRecipeIngredientsForShoppingList } from "@/data/recipe-ingredient/queries";
 import { verifyUser } from "@/data/user/verify-user";
-import { safeQuery } from "@/lib/safe-query";
+import { legacySafeQuery } from "@/lib/safe-query";
 import { NextRequest, NextResponse } from "next/server";
 import z from "zod";
 
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
 
   const { recipeIds, scheduledRecipeIds } = validated.data;
 
-  const recipeIngredientsRes = await safeQuery(() =>
+  const recipeIngredientsRes = await legacySafeQuery(() =>
     fetchRecipeIngredientsForShoppingList(recipeIds, scheduledRecipeIds),
   );
 

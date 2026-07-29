@@ -8,7 +8,7 @@ import { Recipe } from "@/lib/generated/prisma";
 import { fetchMissingIngredients } from "@/data/ingredient/queries";
 import { generateAndCreateIngredients } from "@/data/ingredient/mutations";
 import { requireUser } from "@/data/user/verify-user";
-import { safeQuery } from "@/lib/safe-query";
+import { legacySafeQuery } from "@/lib/safe-query";
 import { requireHouseholdId } from "@/data/household/queries";
 
 export async function createRecipeFromGeneratedData(
@@ -42,7 +42,7 @@ export async function createRecipeFromGeneratedData(
       (ingredient) => ingredient.name,
     );
 
-    const missingIngredientsRes = await safeQuery(() =>
+    const missingIngredientsRes = await legacySafeQuery(() =>
       fetchMissingIngredients(ingredientList),
     );
     if (!missingIngredientsRes.ok) {

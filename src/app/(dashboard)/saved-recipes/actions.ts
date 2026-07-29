@@ -6,7 +6,7 @@ import { createRecipeFromGeneratedData } from "@/data/recipe/mutations";
 import { revalidatePath } from "next/cache";
 import { findRecipeSlugByUrl } from "@/data/recipe/queries";
 import { requireUser } from "@/data/user/verify-user";
-import { safeQuery } from "@/lib/safe-query";
+import { legacySafeQuery } from "@/lib/safe-query";
 import { ActionState } from "@/lib/types";
 
 type FormState = ActionState<
@@ -48,7 +48,7 @@ export async function importRecipeFromUrl(
   const url = validated.data.url;
 
   // Check if the URL is already imported
-  const recipeExistsRes = await safeQuery(() => findRecipeSlugByUrl(url));
+  const recipeExistsRes = await legacySafeQuery(() => findRecipeSlugByUrl(url));
   if (!recipeExistsRes.ok) {
     return {
       success: false,

@@ -1,6 +1,6 @@
 import { fetchShoppingList } from "@/data/shopping-list/queries";
 import { verifyUser } from "@/data/user/verify-user";
-import { safeQuery } from "@/lib/safe-query";
+import { legacySafeQuery } from "@/lib/safe-query";
 import { NextRequest, NextResponse } from "next/server";
 import z from "zod";
 
@@ -30,7 +30,9 @@ export async function GET(
   const { listId } = validated.data;
 
   // Fetch the shopping list
-  const shoppingListRes = await safeQuery(() => fetchShoppingList(listId));
+  const shoppingListRes = await legacySafeQuery(() =>
+    fetchShoppingList(listId),
+  );
 
   // Return 500 if mutation fails
   if (!shoppingListRes.ok) {

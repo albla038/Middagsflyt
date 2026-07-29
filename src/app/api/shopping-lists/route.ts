@@ -1,6 +1,6 @@
 import { fetchAllShoppingLists } from "@/data/shopping-list/queries";
 import { verifyUser } from "@/data/user/verify-user";
-import { safeQuery } from "@/lib/safe-query";
+import { legacySafeQuery } from "@/lib/safe-query";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -11,7 +11,7 @@ export async function GET() {
   }
 
   // Fecth all shopping lists
-  const shoppingListsRes = await safeQuery(() => fetchAllShoppingLists());
+  const shoppingListsRes = await legacySafeQuery(() => fetchAllShoppingLists());
 
   // Return 500 if DB operation fails
   if (!shoppingListsRes.ok) {
