@@ -12,37 +12,28 @@ export async function fetchAllShoppingLists(): Promise<
 > {
   const user = await requireUser();
 
-  try {
-    const data = await prisma.shoppingList.findMany({
-      where: {
-        household: {
-          members: {
-            some: { userId: user.id },
-          },
+  const data = await prisma.shoppingList.findMany({
+    where: {
+      household: {
+        members: {
+          some: { userId: user.id },
         },
       },
+    },
 
-      include: {
-        _count: {
-          select: { items: true },
-        },
+    include: {
+      _count: {
+        select: { items: true },
       },
-    });
+    },
+  });
 
-    const transformedData = data.map(({ _count, ...list }) => ({
-      ...list,
-      itemCount: _count.items,
-    }));
+  const transformedData = data.map(({ _count, ...list }) => ({
+    ...list,
+    itemCount: _count.items,
+  }));
 
-    return transformedData;
-  } catch (error) {
-    throw new Error(
-      "Något gick fel när inköpslistorna skulle hämtas. Vänligen försök igen.",
-      {
-        cause: error instanceof Error ? error : Error(String(error)),
-      },
-    );
-  }
+  return transformedData;
 }
 
 export async function fetchShoppingListMetrics(

@@ -1,6 +1,7 @@
 import { fetchAllShoppingLists } from "@/data/shopping-list/queries";
 import { verifyUser } from "@/data/user/verify-user";
-import { legacySafeQuery } from "@/lib/safe-query";
+import { errorCodeToHttpStatus } from "@/lib/error-code-http-mapper";
+import { safeQuery } from "@/lib/safe-query";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -11,15 +12,15 @@ export async function GET() {
   }
 
   // Fecth all shopping lists
-  const shoppingListsRes = await legacySafeQuery(() => fetchAllShoppingLists());
+  const queryRes = await safeQuery(() => fetchAllShoppingLists());
 
-  // Return 500 if DB operation fails
-  if (!shoppingListsRes.ok) {
+  // Return HTTP error if query fails
+  if (!queryRes.ok) {
     return NextResponse.json(
-      { message: shoppingListsRes.error.message },
-      { status: 500 },
+      { error: queryRes.errorCode },
+      { status: errorCodeToHttpStatus(queryRes.errorCode) },
     );
   }
 
-  return NextResponse.json(shoppingListsRes.data);
+  return NextResponse.json(queryRes.data);
 }
