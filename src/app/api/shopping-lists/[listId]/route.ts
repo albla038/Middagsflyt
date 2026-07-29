@@ -1,6 +1,7 @@
 import { fetchShoppingList } from "@/data/shopping-list/queries";
 import { verifyUser } from "@/data/user/verify-user";
-import { legacySafeQuery } from "@/lib/safe-query";
+import { errorCodeToHttpStatus } from "@/lib/error-code-http-mapper";
+import { safeQuery } from "@/lib/safe-query";
 import { NextRequest, NextResponse } from "next/server";
 import z from "zod";
 
@@ -30,17 +31,15 @@ export async function GET(
   const { listId } = validated.data;
 
   // Fetch the shopping list
-  const shoppingListRes = await legacySafeQuery(() =>
-    fetchShoppingList(listId),
-  );
+  const queryRes = await safeQuery(() => fetchShoppingList(listId));
 
-  // Return 500 if mutation fails
-  if (!shoppingListRes.ok) {
+  // Return HTTP error if query fails
+  if (!queryRes.ok) {
     return NextResponse.json(
-      { message: shoppingListRes.error.message },
-      { status: 500 },
+      { error: queryRes.errorCode },
+      { status: errorCodeToHttpStatus(queryRes.errorCode) },
     );
   }
 
-  return NextResponse.json(shoppingListRes.data);
+  return NextResponse.json(queryRes.data);
 }

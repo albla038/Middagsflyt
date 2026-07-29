@@ -91,35 +91,24 @@ export async function fetchShoppingList(
 ): Promise<ShoppingListResponse | null> {
   const user = await requireUser();
 
-  try {
-    const list = await prisma.shoppingList.findUnique({
-      where: {
-        id: listId,
+  return await prisma.shoppingList.findUnique({
+    where: {
+      id: listId,
 
-        household: {
-          members: {
-            some: { userId: user.id },
-          },
+      household: {
+        members: {
+          some: { userId: user.id },
         },
       },
+    },
 
-      include: {
-        items: {
-          orderBy: { displayOrder: "desc" },
+    include: {
+      items: {
+        orderBy: { displayOrder: "desc" },
 
-          // TODO Add relations
-          // include: {},
-        },
+        // TODO Add relations
+        // include: {},
       },
-    });
-
-    return list;
-  } catch (error) {
-    throw new Error(
-      "Något gick fel när inköpslistan skulle hämtas. Vänligen försök igen.",
-      {
-        cause: error instanceof Error ? error : Error(String(error)),
-      },
-    );
-  }
+    },
+  });
 }

@@ -1,5 +1,8 @@
 import { recipeIngredientsSourceSchema } from "@/lib/schemas/recipe-ingredient";
-import { shoppingListWithCountSchema } from "@/lib/schemas/shopping-list";
+import {
+  shoppingListResponseSchema,
+  shoppingListWithCountSchema,
+} from "@/lib/schemas/shopping-list";
 import { createFetch, createSchema } from "@better-fetch/fetch";
 import { z } from "zod";
 
@@ -21,6 +24,11 @@ const zodSchema = createSchema({
 
   "/api/shopping-lists": {
     output: z.array(shoppingListWithCountSchema),
+  },
+
+  "/api/shopping-lists/:listId": {
+    params: z.object({ listId: z.cuid2() }),
+    output: shoppingListResponseSchema,
   },
 });
 
