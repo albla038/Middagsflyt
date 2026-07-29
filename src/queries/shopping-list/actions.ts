@@ -8,7 +8,6 @@ import {
   updateShoppingListItem,
 } from "@/data/shopping-list-item/mutations";
 import { requireUser } from "@/data/user/verify-user";
-import { ActionResult } from "@/lib/types";
 import {
   ShoppingListItemCreate,
   shoppingListItemCreateSchema,
@@ -133,53 +132,33 @@ export async function deleteShoppingListItemsAction({
 }: {
   listId: string;
   itemIds: z.infer<typeof itemIdsSchema>;
-}): Promise<ActionResult<void, void>> {
+}): Promise<ActionResponse> {
   await requireUser();
 
-  // Validate list ID
+  // Validate data
   const validatedListId = idSchema.safeParse(listId);
-  if (!validatedListId.success) {
-    return {
-      success: false,
-      message: "Ogiltigt list-ID. Vänligen kontakta supporten",
-    };
-  }
-
-  // Validate input data
   const validated = itemIdsSchema.safeParse(itemIds);
 
   // Return errors if validation fails
-  if (!validated.success) {
-    return {
-      success: false,
-      message: "Ogiltiga ID:n. Vänligen kontakta supporten",
-    };
+  if (!validatedListId.success || !validated.success) {
+    return { success: false, errorCode: "VALIDATION_FAILED" };
   }
 
-  const deleteResult = await deleteShoppingListItems({
+  // Delete the shopping list items
+  const deletionResult = await deleteShoppingListItems({
     listId: validatedListId.data,
     itemIds: validated.data,
   });
 
   // Return error if deletion fails
-  if (!deleteResult.ok) {
-    return {
-      success: false,
-      message:
-        "Något gick fel när varorna skulle tas bort. Vänligen försök igen.",
-    };
+  if (!deletionResult.ok) {
+    return { success: false, errorCode: deletionResult.errorCode };
   }
 
   revalidatePath(`/shopping-list/${listId}`);
 
-  return {
-    success: true,
-    message: "Varorna togs bort",
-  };
+  return { success: true };
 }
-
-type RestoreItemsErrors =
-  z.core.$ZodFlattenedError<ShoppingListItemsRestore>["fieldErrors"];
 
 export async function restoreShoppingListItemsAction({
   listId,
@@ -187,29 +166,16 @@ export async function restoreShoppingListItemsAction({
 }: {
   listId: string;
   data: ShoppingListItemsRestore;
-}): Promise<ActionResult<void, RestoreItemsErrors>> {
+}): Promise<ActionResponse> {
   await requireUser();
 
-  // Validate list ID
+  // Validate data
   const validatedListId = idSchema.safeParse(listId);
-  if (!validatedListId.success) {
-    return {
-      success: false,
-      message: "Ogiltigt list-ID. Vänligen kontakta supporten",
-    };
-  }
-
-  // Validate input data
   const validated = shoppingListItemsRestoreSchema.safeParse(data);
 
-  // Return errors if validation fails
-  if (!validated.success) {
-    const { fieldErrors } = z.flattenError(validated.error);
-    return {
-      success: false,
-      message: "Ogiltiga data. Vänligen kontakta supporten",
-      errors: fieldErrors,
-    };
+  // Return error code if validation fails
+  if (!validatedListId.success || !validated.success) {
+    return { success: false, errorCode: "VALIDATION_FAILED" };
   }
 
   // Restore items in database
@@ -220,16 +186,10 @@ export async function restoreShoppingListItemsAction({
 
   // Return error if restoration fails
   if (!restoreResult.ok) {
-    return {
-      success: false,
-      message: "Något gick fel när varorna skulle återställas.",
-    };
+    return { success: false, errorCode: restoreResult.errorCode };
   }
 
   revalidatePath(`/shopping-list/${listId}`);
 
-  return {
-    success: true,
-    message: "Varorna återställdes",
-  };
+  return { success: true };
 }

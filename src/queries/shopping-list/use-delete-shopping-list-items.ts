@@ -1,6 +1,10 @@
+import { getActionErrorMessage } from "@/lib/error-messages";
 import { getQueryClient } from "@/lib/query-client";
 import { deleteShoppingListItemsAction } from "@/queries/shopping-list/actions";
-import { shoppingListQueryOptions } from "@/queries/shopping-list/options";
+import {
+  SHOPPING_LISTS_QUERY_KEY,
+  shoppingListQueryOptions,
+} from "@/queries/shopping-list/options";
 import { useRestoreShoppingListItems } from "@/queries/shopping-list/use-restore-shopping-list-items";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -15,13 +19,16 @@ export function useDeleteShoppingListItems(listId: string) {
 
   return useMutation({
     mutationFn: async (itemIds: string[]) => {
-      const result = await deleteShoppingListItemsAction({ listId, itemIds });
+      const response = await deleteShoppingListItemsAction({ listId, itemIds });
 
-      if (!result.success) {
-        throw new Error(result.message, { cause: result.errors });
+      // Throw an error if the action fails
+      if (!response.success) {
+        const errorMessage = getActionErrorMessage(response.errorCode, {
+          NOT_FOUND:
+            "Varorna du försökte ta bort kunde inte hittas. De kan redan ha tagits bort",
+        });
+        throw new Error(errorMessage);
       }
-
-      return result.message;
     },
 
     onMutate: async (itemIds) => {
@@ -44,8 +51,8 @@ export function useDeleteShoppingListItems(listId: string) {
       return { prevShoppingList };
     },
 
-    onSuccess: (message, itemIds, context) => {
-      toast(message, {
+    onSuccess: (_, itemIds, context) => {
+      toast("Varorna togs bort.", {
         // Restore deleted items on cancel
         cancel: {
           label: "Ångra",
@@ -75,7 +82,9 @@ export function useDeleteShoppingListItems(listId: string) {
     },
 
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({
+        queryKey: SHOPPING_LISTS_QUERY_KEY,
+      });
     },
   });
 }

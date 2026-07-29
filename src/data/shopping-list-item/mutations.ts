@@ -1,7 +1,6 @@
 import "server-only";
 
 import { requireUser } from "@/data/user/verify-user";
-import { Result } from "@/lib/types";
 import prisma from "@/lib/db";
 import {
   ShoppingListItemCreate,
@@ -11,8 +10,6 @@ import {
 import { AddIngredientToShoppingListInput } from "@/lib/schemas/recipe-ingredient";
 import { MutationResult } from "@/lib/types/api";
 import { prismaErrorToMutationErrorCode } from "@/lib/prisma-error-mapper";
-
-// TODO: Replace swedish error messages with english
 
 export async function createShoppingListItem({
   listId,
@@ -171,7 +168,7 @@ export async function deleteShoppingListItems({
 }: {
   listId: string;
   itemIds: string[];
-}): Promise<Result<void, Error>> {
+}): Promise<MutationResult> {
   const user = await requireUser();
 
   try {
@@ -191,16 +188,11 @@ export async function deleteShoppingListItems({
       },
     });
 
-    return {
-      ok: true,
-      data: undefined,
-    };
+    return { ok: true };
   } catch (error) {
     return {
       ok: false,
-      error: new Error("Failed to delete shopping list items.", {
-        cause: error instanceof Error ? error : new Error(String(error)),
-      }),
+      errorCode: prismaErrorToMutationErrorCode(error),
     };
   }
 }
@@ -211,31 +203,34 @@ export async function restoreShoppingListItems({
 }: {
   listId: string;
   data: ShoppingListItemsRestore;
-}): Promise<Result<void, Error>> {
+}): Promise<MutationResult> {
   const user = await requireUser();
 
   try {
     await prisma.$transaction(async (tx) => {
       // Verify the shopping list exists and belongs to the user's household
       const list = await tx.shoppingList.findFirst({
-        where: {
-          id: listId,
+        where: { id: listId },
+
+        select: {
           household: {
-            members: {
-              some: { userId: user.id },
+            select: {
+              members: {
+                where: { userId: user.id },
+                select: { userId: true },
+              },
             },
           },
         },
       });
 
+      // Return early if the list doesn't exist
       if (!list) {
-        return {
-          ok: false,
-          // TODO: Check error message propagation
-          error: new Error(
-            "The shopping list does not exist or you do not have permission to restore items.",
-          ),
-        };
+        return { ok: false, errorCode: "NOT_FOUND" };
+      }
+      // OR, if the list does not belong to the user's household
+      if (list.household.members.length === 0) {
+        return { ok: false, errorCode: "FORBIDDEN" };
       }
 
       // Restore items
@@ -247,16 +242,11 @@ export async function restoreShoppingListItems({
       });
     });
 
-    return {
-      ok: true,
-      data: undefined,
-    };
+    return { ok: true };
   } catch (error) {
     return {
       ok: false,
-      error: new Error("Failed to restore shopping list items.", {
-        cause: error instanceof Error ? error : new Error(String(error)),
-      }),
+      errorCode: prismaErrorToMutationErrorCode(error),
     };
   }
 }

@@ -1,7 +1,11 @@
+import { getActionErrorMessage } from "@/lib/error-messages";
 import { getQueryClient } from "@/lib/query-client";
 import { ShoppingListItemsRestore } from "@/lib/schemas/shopping-list";
 import { restoreShoppingListItemsAction } from "@/queries/shopping-list/actions";
-import { shoppingListQueryOptions } from "@/queries/shopping-list/options";
+import {
+  SHOPPING_LISTS_QUERY_KEY,
+  shoppingListQueryOptions,
+} from "@/queries/shopping-list/options";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -13,16 +17,18 @@ export function useRestoreShoppingListItems(listId: string) {
 
   return useMutation({
     mutationFn: async (deletedItems: ShoppingListItemsRestore) => {
-      const result = await restoreShoppingListItemsAction({
+      const response = await restoreShoppingListItemsAction({
         listId,
         data: deletedItems,
       });
 
-      if (!result.success) {
-        throw new Error(result.message, { cause: result.errors });
+      if (!response.success) {
+        const errorMessage = getActionErrorMessage(response.errorCode, {
+          NOT_FOUND:
+            "Varorna kunde inte återställas. Inköpslistan kan ha tagits bort.",
+        });
+        throw new Error(errorMessage);
       }
-
-      return result.message;
     },
 
     onMutate: async (deletedItems) => {
@@ -45,8 +51,8 @@ export function useRestoreShoppingListItems(listId: string) {
       return { prevShoppingList };
     },
 
-    onSuccess: (message) => {
-      toast.success(message);
+    onSuccess: () => {
+      toast.success("Varorna återställdes.");
     },
 
     // If the mutation fails, roll back data
@@ -56,7 +62,9 @@ export function useRestoreShoppingListItems(listId: string) {
     },
 
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({
+        queryKey: SHOPPING_LISTS_QUERY_KEY,
+      });
     },
   });
 }
