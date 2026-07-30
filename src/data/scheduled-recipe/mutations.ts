@@ -3,6 +3,8 @@ import "server-only";
 import { Result } from "@/lib/types";
 import { requireUser } from "@/data/user/verify-user";
 import prisma from "@/lib/db";
+import { MutationResult } from "@/lib/types/api";
+import { prismaErrorToErrorCode } from "@/lib/prisma-error-mapper";
 
 export async function createScheduledRecipe({
   scheduleId,
@@ -175,6 +177,44 @@ export async function updateScheduledRecipeNote(
       error: new Error("Failed to update scheduled recipe note", {
         cause: error instanceof Error ? error : new Error(String(error)),
       }),
+    };
+  }
+}
+
+export async function updateScheduledRecipesServings(
+  updates: { id: string; servings: number }[],
+): Promise<MutationResult> {
+  const user = await requireUser();
+
+  try {
+    await prisma.$transaction(
+      updates.map((update) =>
+        prisma.scheduledRecipe.update({
+          where: {
+            id: update.id,
+
+            // Ensure the scheduled recipe belongs to the user's household
+            schedule: {
+              household: {
+                members: {
+                  some: { userId: user.id },
+                },
+              },
+            },
+          },
+
+          data: {
+            servings: update.servings,
+          },
+        }),
+      ),
+    );
+
+    return { ok: true };
+  } catch (error) {
+    return {
+      ok: false,
+      errorCode: prismaErrorToErrorCode(error),
     };
   }
 }
