@@ -195,7 +195,7 @@ export default function RecipeContent({
 
             <ServingsControl
               servings={servings}
-              setServings={setServings}
+              onServingsChange={setServings}
               defaultServings={defaultServings}
             />
           </div>

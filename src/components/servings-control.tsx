@@ -1,16 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { ForkKnife, Minus, Plus } from "lucide-react";
-import { Dispatch, SetStateAction } from "react";
 
 type ServingControlProps = {
   servings: number;
-  setServings: Dispatch<SetStateAction<number>>;
+  onServingsChange: (value: number) => void;
   defaultServings: number;
 };
 
 export default function ServingsControl({
   servings,
-  setServings,
+  onServingsChange,
   defaultServings,
 }: ServingControlProps) {
   return (
@@ -21,10 +20,10 @@ export default function ServingsControl({
         className="h-7"
         disabled={servings <= 1}
         onClick={() =>
-          setServings((prevState) =>
-            prevState - defaultServings / 2 > 0
-              ? prevState - defaultServings / 2
-              : prevState,
+          onServingsChange(
+            servings - defaultServings / 2 > 0
+              ? servings - defaultServings / 2
+              : servings,
           )
         }
       >
@@ -39,10 +38,10 @@ export default function ServingsControl({
         variant="ghost"
         className="h-7"
         onClick={() =>
-          setServings((prevState) =>
-            prevState + defaultServings / 2 > 0
-              ? prevState + defaultServings / 2
-              : prevState,
+          onServingsChange(
+            servings + defaultServings / 2 > 0
+              ? servings + defaultServings / 2
+              : servings,
           )
         }
       >
