@@ -5,6 +5,7 @@ import IngredientSelection from "@/app/(dashboard)/_components/add-to-shopping-l
 import IngredientSkeleton from "@/app/(dashboard)/_components/add-to-shopping-list-dialog/skeletons/ingredient";
 import TargetListSkeleton from "@/app/(dashboard)/_components/add-to-shopping-list-dialog/skeletons/target-list";
 import TargetListSelection from "@/app/(dashboard)/_components/add-to-shopping-list-dialog/target-list-selection";
+import { UIRecipeIngredientsSource } from "@/app/(dashboard)/_components/add-to-shopping-list-dialog/types";
 import ResponsiveDialog from "@/components/responsive-dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -60,6 +61,59 @@ export default function AddToShoppingListDialog({
   >(new Set());
   const [targetListId, setTargetListId] = useState<string | null>(null);
 
+  // DERIVED STATE
+  const title = step === 1 ? "Välj varor" : "Välj inköpslista";
+  const description =
+    step === 1
+      ? "Välj vilka varor du vill lägga till i en inköpslista"
+      : "Välj vilken inköpslista du vill lägga varorna i";
+
+  // Map recipeIngredientsSources to UIRecipeIngredientsSource,
+  // with selectedServings and isSelected
+  const recipes: UIRecipeIngredientsSource[] | undefined = useMemo(() => {
+    if (!recipeIngredientsSources) return undefined;
+
+    return ingredientSources.ids.map((id) => {
+      const source = recipeIngredientsSources[id];
+      const { servings, baseServings, ...rest } = source;
+
+      const sourceServings = baseServings ?? 4;
+      const selectedServings =
+        servingsSelections[id] ?? servings ?? sourceServings;
+      const servingsScale = selectedServings / sourceServings;
+
+      return {
+        ...rest,
+        selectedServings,
+        servings: servings ?? sourceServings,
+        baseServings,
+        recipeIngredients: source.recipeIngredients.map((recipeIng) => ({
+          ...recipeIng,
+          quantity: recipeIng.quantity
+            ? recipeIng.quantity * servingsScale
+            : null,
+          isSelected: !uncheckedIngredientIds.has(recipeIng.recipeIngredientId),
+        })),
+      };
+    });
+  }, [
+    recipeIngredientsSources,
+    ingredientSources.ids,
+    servingsSelections,
+    uncheckedIngredientIds,
+  ]);
+
+  // Count selected ingredients across all recipes
+  const selectedIngredientsCount = useMemo(
+    () =>
+      recipes?.reduce(
+        (total, { recipeIngredients }) =>
+          total + recipeIngredients.filter((ing) => ing.isSelected).length,
+        0,
+      ) ?? 0,
+    [recipes],
+  );
+
   // HANDLERS
   const toggleIngredientSelection = useCallback((id: string) => {
     setUncheckedIngredientIds((prev) => {
@@ -95,50 +149,27 @@ export default function AddToShoppingListDialog({
     [recipeIngredientsSources],
   );
 
-  // DERIVED STATE
-  const title = step === 1 ? "Välj varor" : "Välj inköpslista";
-  const description =
-    step === 1
-      ? "Välj vilka varor du vill lägga till i en inköpslista"
-      : "Välj vilken inköpslista du vill lägga varorna i";
+  const handleServingsChange = useCallback(
+    (sourceId: string, newServings: number) => {
+      setServingsSelections((prev) => {
+        // If the new servings is the same as the scheduled servings, remove it from the state
+        if (
+          recipes?.find((recipe) => recipe.sourceId === sourceId)?.servings ===
+          newServings
+        ) {
+          delete prev[sourceId];
+          return { ...prev };
+        }
+        // Otherwise, update the servings for the source
+        return {
+          ...prev,
+          [sourceId]: newServings,
+        };
+      });
+    },
+    [recipes],
+  );
 
-  // Map recipeIngredientsSources to UIRecipeIngredientsSource,
-  // with selectedServings and isSelected
-  const recipes = useMemo(() => {
-    if (!recipeIngredientsSources) return undefined;
-
-    return ingredientSources.ids.map((id) => {
-      const source = recipeIngredientsSources[id];
-      const { servings, baseServings, ...rest } = source;
-
-      const sourceServings = servings ?? baseServings ?? 4;
-      const currentServings = servingsSelections[id] ?? sourceServings;
-
-      return {
-        ...rest,
-        selectedServings: currentServings,
-        servings: sourceServings,
-        baseServings,
-        recipeIngredients: source.recipeIngredients.map((recipeIng) => ({
-          ...recipeIng,
-          isSelected: !uncheckedIngredientIds.has(recipeIng.recipeIngredientId),
-        })),
-      };
-    });
-  }, [
-    recipeIngredientsSources,
-    ingredientSources.ids,
-    servingsSelections,
-    uncheckedIngredientIds,
-  ]);
-
-  // Count selected ingredients across all recipes
-  const selectedIngredientsCount =
-    recipes?.reduce(
-      (total, { recipeIngredients }) =>
-        total + recipeIngredients.filter((ing) => ing.isSelected).length,
-      0,
-    ) ?? 0;
 
   // Main event handler for adding selected ingredients to the target shopping list
   function handleAddToList() {
@@ -179,9 +210,21 @@ export default function AddToShoppingListDialog({
             ),
         );
 
+      const scheduledRecipeUpdates = recipes
+        .filter(
+          (recipe) =>
+            recipe.sourceType === "SCHEDULED" &&
+            servingsSelections[recipe.sourceId] !== undefined,
+        )
+        .map((recipe) => ({
+          id: recipe.sourceId,
+          servings: servingsSelections[recipe.sourceId],
+        }));
+
       const actionRes = await addIngredientsToShoppingList({
         ingredients: selectedIngredients,
         listId: targetListId,
+        scheduledRecipeUpdates,
       });
 
       if (!actionRes.success) {
@@ -197,6 +240,10 @@ export default function AddToShoppingListDialog({
       toast(
         `${selectedIngredientsCount} varor lades till i ${shoppingLists?.find((list) => list.id === targetListId)?.name ?? "inköpslistan"}`,
         {
+          description:
+            scheduledRecipeUpdates.length > 0
+              ? "Antal portioner uppdaterades för dina schemalagda recept."
+              : undefined,
           action: {
             label: "Till inköpslista",
             onClick: () => router.push(`/shopping-list/${targetListId}`),
@@ -222,6 +269,7 @@ export default function AddToShoppingListDialog({
           recipes={recipes}
           onToggleIngredient={toggleIngredientSelection}
           onToggleGroup={toggleAllSelectionsForRecipe}
+          onServingsChange={handleServingsChange}
         />
       )
     ) : !shoppingLists ? (

@@ -6,7 +6,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { CheckedState } from "@radix-ui/react-checkbox";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ForkKnife } from "lucide-react";
 import { ReactNode } from "react";
 
 type IngredientGroupProps = {
@@ -44,10 +44,17 @@ export default function IngredientGroup({
               onToggleGroup(checked, recipe.sourceId);
           }}
         />
+
         <CollapsibleTrigger className="flex w-full cursor-pointer items-center justify-between gap-2">
           <span className="line-clamp-1 grow text-left font-medium">
             {recipe.name}
           </span>
+
+          <span className="flex items-center gap-0.5">
+            <ForkKnife className="size-4" />
+            {recipe.selectedServings}
+          </span>
+
           <ChevronRight className="size-4 shrink-0 transition-transform group-data-[state=open]/collapsible:rotate-90" />
         </CollapsibleTrigger>
       </div>
