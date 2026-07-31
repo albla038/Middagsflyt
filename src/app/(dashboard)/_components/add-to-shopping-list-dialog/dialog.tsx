@@ -62,12 +62,6 @@ export default function AddToShoppingListDialog({
   const [targetListId, setTargetListId] = useState<string | null>(null);
 
   // DERIVED STATE
-  const title = step === 1 ? "Välj varor" : "Välj inköpslista";
-  const description =
-    step === 1
-      ? "Välj vilka varor du vill lägga till i en inköpslista"
-      : "Välj vilken inköpslista du vill lägga varorna i";
-
   // Map recipeIngredientsSources to UIRecipeIngredientsSource,
   // with selectedServings and isSelected
   const recipes: UIRecipeIngredientsSource[] | undefined = useMemo(() => {
@@ -170,7 +164,6 @@ export default function AddToShoppingListDialog({
     [recipes],
   );
 
-
   // Main event handler for adding selected ingredients to the target shopping list
   function handleAddToList() {
     if (!targetListId || !recipes) return;
@@ -259,6 +252,15 @@ export default function AddToShoppingListDialog({
       onOpenChange(false);
     });
   }
+
+  const title =
+    step === 1
+      ? `Välj varor (${selectedIngredientsCount})`
+      : "Välj inköpslista";
+  const description =
+    step === 1
+      ? "Välj vilka varor du vill lägga till i en inköpslista"
+      : "Välj vilken inköpslista du vill lägga varorna i";
 
   const stepContent =
     step === 1 ? (
