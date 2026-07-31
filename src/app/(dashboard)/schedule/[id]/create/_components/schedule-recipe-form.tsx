@@ -160,7 +160,7 @@ export default function ScheduleRecipeForm({
               <div className="flex h-9 items-center justify-center rounded-md border border-border bg-background">
                 <ServingsControl
                   servings={servings}
-                  setServings={setServings}
+                  onServingsChange={setServings}
                   defaultServings={defaultServings}
                 />
               </div>
