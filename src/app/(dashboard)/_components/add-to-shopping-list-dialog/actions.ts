@@ -16,7 +16,7 @@ const addIngredientsToShoppingListSchema = z.object({
     .array(
       z.object({
         id: z.cuid2(),
-        servings: z.int().min(1),
+        servings: z.number().min(1),
       }),
     )
     .optional(),
