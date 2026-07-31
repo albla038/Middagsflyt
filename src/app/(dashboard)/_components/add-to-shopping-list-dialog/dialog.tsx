@@ -248,6 +248,10 @@ export default function AddToShoppingListDialog({
         queryKey: shoppingListsQueryOptions().queryKey,
       });
 
+      queryClient.invalidateQueries({
+        queryKey: recipeIngredientsQueryOptions(ingredientSources).queryKey,
+      });
+
       // Close dialog
       onOpenChange(false);
     });
