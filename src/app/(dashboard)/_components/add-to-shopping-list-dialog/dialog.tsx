@@ -164,6 +164,13 @@ export default function AddToShoppingListDialog({
     [recipes],
   );
 
+  function resetState() {
+    setStep(1);
+    setServingsSelections({});
+    setUncheckedIngredientIds(new Set());
+    setTargetListId(null);
+  }
+
   // Main event handler for adding selected ingredients to the target shopping list
   function handleAddToList() {
     if (!targetListId || !recipes) return;
@@ -203,6 +210,7 @@ export default function AddToShoppingListDialog({
             ),
         );
 
+      // Pair scheduled recipes with possible servings updates, if any
       const scheduledRecipeUpdates = recipes
         .filter(
           (recipe) =>
@@ -214,6 +222,7 @@ export default function AddToShoppingListDialog({
           servings: servingsSelections[recipe.sourceId],
         }));
 
+      // Call Server Action
       const actionRes = await addIngredientsToShoppingList({
         ingredients: selectedIngredients,
         listId: targetListId,
@@ -244,10 +253,10 @@ export default function AddToShoppingListDialog({
         },
       );
 
+      // Invalidate query caches
       queryClient.invalidateQueries({
         queryKey: shoppingListsQueryOptions().queryKey,
       });
-
       queryClient.invalidateQueries({
         queryKey: recipeIngredientsQueryOptions(ingredientSources).queryKey,
       });
@@ -294,6 +303,7 @@ export default function AddToShoppingListDialog({
       description={description}
       open={open}
       onOpenChange={onOpenChange}
+      onCloseAnimationEnd={resetState}
     >
       <div className="flex h-[60svh] flex-col md:h-[75svh]">
         {/* Main content */}

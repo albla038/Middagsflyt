@@ -107,7 +107,6 @@ export default function RecipeList({
       </div>
 
       <AddToShoppingListDialog
-        key={addToListRecipeId || "empty"}
         open={addToListDialogOpen}
         onOpenChange={setAddToListDialogOpen}
         ingredientSources={{

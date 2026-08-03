@@ -56,7 +56,6 @@ export default function ActionButtons({
       </div>
 
       <AddToShoppingListDialog
-        key={selectedRecipeIds.join(",")}
         open={addToListDialogOpen}
         onOpenChange={setAddToListDialogOpen}
         ingredientSources={{
