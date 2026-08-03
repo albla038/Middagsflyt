@@ -15,7 +15,7 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { ReactNode } from "react";
+import { AnimationEvent, ReactNode } from "react";
 
 type ResponsiveDialogProps = {
   children: ReactNode;
@@ -24,6 +24,7 @@ type ResponsiveDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   showCloseButtonInDialog?: boolean;
+  onCloseAnimationEnd?: () => void;
   dialogAction?: ReactNode;
 };
 
@@ -34,14 +35,24 @@ export default function ResponsiveDialog({
   open,
   onOpenChange,
   showCloseButtonInDialog = true,
+  onCloseAnimationEnd,
   dialogAction,
 }: ResponsiveDialogProps) {
   const isMobile = useIsMobile();
 
+  function handleAnimationEnd(event: AnimationEvent<HTMLDivElement>) {
+    if (event.currentTarget.dataset.state === "closed") {
+      onCloseAnimationEnd?.();
+    }
+  }
+
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="max-h-[90vh]">
+        <DrawerContent
+          className="max-h-[90vh]"
+          onAnimationEnd={handleAnimationEnd}
+        >
           {dialogAction ? (
             // Render dialogAction in flex-row layout if provided
             <div className="flex items-start justify-between p-4 pb-0">
@@ -67,7 +78,10 @@ export default function ResponsiveDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent showCloseButton={showCloseButtonInDialog}>
+      <DialogContent
+        showCloseButton={showCloseButtonInDialog}
+        onAnimationEnd={handleAnimationEnd}
+      >
         {dialogAction ? (
           // Render dialogAction in flex-row layout if provided
           <div className="flex items-start justify-between">
