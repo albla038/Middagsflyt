@@ -58,6 +58,7 @@ export function useCreateShoppingListItem(listId: string) {
               createdAt: now,
               updatedAt: now,
               displayOrder: newDisplayOrder,
+              scheduledRecipe: null,
             },
             ...old.items,
           ],

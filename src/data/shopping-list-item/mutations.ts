@@ -235,8 +235,9 @@ export async function restoreShoppingListItems({
 
       // Restore items
       await tx.shoppingListItem.createMany({
-        data: data.map((item) => ({
+        data: data.map(({ scheduledRecipe, ...item }) => ({
           ...item,
+          scheduledRecipeId: scheduledRecipe?.id ?? null,
           shoppingListId: listId,
         })),
       });

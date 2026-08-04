@@ -7,7 +7,7 @@ import { useUpdateShoppingListItem } from "@/queries/shopping-list/use-update-sh
 import { useDeleteShoppingListItem } from "@/queries/shopping-list/use-delete-shopping-list-item";
 import { ShoppingListItemResponse } from "@/lib/schemas/shopping-list";
 import { cn } from "@/lib/utils";
-import { GripVertical, Trash2 } from "lucide-react";
+import { CalendarClock, GripVertical, Trash2 } from "lucide-react";
 import { useState } from "react";
 import EditItemForm from "./edit-item-form";
 import { DraggableAttributes } from "@dnd-kit/core";
@@ -73,8 +73,8 @@ export default function ListItem({
         </div>
 
         <div className="flex items-center gap-2">
-          {/* // TODO If scheduled indicator */}
-          {/* {<CalendarClock />} */}
+          {/* If scheduled indicator */}
+          {!!item.scheduledRecipe && <CalendarClock className="size-4" />}
 
           {isDraggable && (
             <GripVertical
@@ -93,7 +93,11 @@ export default function ListItem({
         open={isEditing}
         onOpenChange={(open) => setIsEditing(open)}
         title="Redigera vara"
-        description="Redigera eller ta bort varan"
+        description={
+          item.scheduledRecipe
+            ? "Reserverad för schemalagt recept"
+            : "Redigera eller ta bort varan"
+        }
         showCloseButtonInDialog={false}
         dialogAction={
           // Delete item action button

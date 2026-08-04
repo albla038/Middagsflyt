@@ -13,6 +13,22 @@ export const shoppingListWithCountSchema = z.object({
 
 export type ShoppingListWithCount = z.infer<typeof shoppingListWithCountSchema>;
 
+const scheduledRecipeSchema = z.object({
+  id: z.cuid2(),
+  date: z.iso.datetime().transform((str) => new Date(str)),
+  servings: z.number().nullable(),
+  note: z.string().nullable(),
+
+  recipe: z.object({
+    id: z.cuid2(),
+    slug: z.string(),
+    name: z.string(),
+    imageUrl: z.string().nullable(),
+  }),
+});
+
+export type ScheduledRecipe = z.infer<typeof scheduledRecipeSchema>;
+
 const shoppingListItemResponseSchema = z.object({
   id: z.cuid2(),
   name: z.string(),
@@ -26,7 +42,8 @@ const shoppingListItemResponseSchema = z.object({
   updatedAt: z.iso.datetime().transform((str) => new Date(str)),
 
   categoryId: z.cuid2().nullable(),
-  // TODO Add more relations
+
+  scheduledRecipe: scheduledRecipeSchema.nullable(),
 });
 
 export type ShoppingListItemResponse = z.infer<
@@ -36,10 +53,10 @@ export type ShoppingListItemResponse = z.infer<
 export const shoppingListResponseSchema = z.object({
   id: z.cuid2(),
   name: z.string(),
-  items: z.array(shoppingListItemResponseSchema),
   householdId: z.cuid2(),
   createdAt: z.iso.datetime().transform((str) => new Date(str)),
   updatedAt: z.iso.datetime().transform((str) => new Date(str)),
+  items: z.array(shoppingListItemResponseSchema),
 });
 
 export type ShoppingListResponse = z.infer<typeof shoppingListResponseSchema>;
@@ -51,7 +68,6 @@ export const shoppingListItemCreateSchema = z.object({
   unit: z.enum(Unit).nullable(),
 
   categoryId: z.cuid2().nullable(),
-  // TODO Add more relations
 });
 
 export type ShoppingListItemCreate = z.infer<
@@ -70,28 +86,21 @@ export const shoppingListItemUpdateSchema = z.object({
   isPurchased: z.boolean().optional(),
 
   categoryId: z.cuid2().nullable().optional(),
-  // TODO Add Relations
 });
 
 export type ShoppingListItemUpdate = z.infer<
   typeof shoppingListItemUpdateSchema
 >;
 
-const shoppingListItemRestoreSchema = z.object({
-  id: z.cuid2(),
-  name: z.string(),
-  quantity: z.number().nullable(),
-  unit: z.enum(Unit).nullable(),
-  displayOrder: z.number(),
-  isPurchased: z.boolean(),
-  isManuallyEdited: z.boolean(),
-
+const shoppingListItemRestoreSchema = shoppingListItemResponseSchema.extend({
   createdAt: z.date(),
   updatedAt: z.date(),
 
-  categoryId: z.cuid2().nullable(),
-
-  // TODO Add more relations
+  scheduledRecipe: z
+    .object({
+      id: z.cuid2(),
+    })
+    .nullable(),
 });
 
 export const shoppingListItemsRestoreSchema = z.array(

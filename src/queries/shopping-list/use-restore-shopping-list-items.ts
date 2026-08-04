@@ -1,6 +1,6 @@
 import { getActionErrorMessage } from "@/lib/error-messages";
 import { getQueryClient } from "@/lib/query-client";
-import { ShoppingListItemsRestore } from "@/lib/schemas/shopping-list";
+import { ShoppingListItemResponse } from "@/lib/schemas/shopping-list";
 import { restoreShoppingListItemsAction } from "@/queries/shopping-list/actions";
 import {
   SHOPPING_LISTS_QUERY_KEY,
@@ -16,7 +16,7 @@ export function useRestoreShoppingListItems(listId: string) {
   const queryKey = shoppingListQueryOptions(listId).queryKey;
 
   return useMutation({
-    mutationFn: async (deletedItems: ShoppingListItemsRestore) => {
+    mutationFn: async (deletedItems: ShoppingListItemResponse[]) => {
       const response = await restoreShoppingListItemsAction({
         listId,
         data: deletedItems,

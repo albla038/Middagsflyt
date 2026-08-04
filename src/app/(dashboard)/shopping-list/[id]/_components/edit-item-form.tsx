@@ -24,6 +24,19 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item";
+import Image from "next/image";
+import { CalendarClock, ChevronRight, ForkKnife } from "lucide-react";
+import { sv } from "date-fns/locale";
+import { format } from "date-fns";
+import Link from "next/link";
 
 type EditItemFormProps = {
   listId: string;
@@ -57,8 +70,58 @@ export default function EditItemForm({
   }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="mt-2">
+    <form onSubmit={form.handleSubmit(onSubmit)}>
       <FieldGroup className="gap-4">
+        {item.scheduledRecipe && (
+          <Item
+            variant="muted"
+            asChild
+            className="p-3"
+            id={`scheduled-recipe-${item.scheduledRecipe.id}`}
+          >
+            <Link
+              href={{
+                pathname: `/saved-recipes/${item.scheduledRecipe.recipe.slug}`,
+              }}
+            >
+              {item.scheduledRecipe.recipe.imageUrl && (
+                <ItemMedia variant="image">
+                  <Image
+                    src={item.scheduledRecipe.recipe.imageUrl}
+                    alt={item.scheduledRecipe.recipe.name}
+                    width={64}
+                    height={64}
+                    className="object-cover"
+                  />
+                </ItemMedia>
+              )}
+
+              <ItemContent>
+                <ItemTitle className="line-clamp-1">
+                  {item.scheduledRecipe.recipe.name}
+                </ItemTitle>
+                <ItemDescription className="flex items-center gap-2">
+                  <span className="flex items-center gap-0.5">
+                    <CalendarClock className="size-3" />
+                    {format(item.scheduledRecipe.date, "EEE d MMM", {
+                      locale: sv,
+                    })}
+                  </span>
+                  •
+                  <span className="flex items-center gap-0.5">
+                    <ForkKnife className="size-3" />
+                    {item.scheduledRecipe.servings}
+                  </span>
+                </ItemDescription>
+              </ItemContent>
+
+              <ItemActions>
+                <ChevronRight className="size-4" />
+              </ItemActions>
+            </Link>
+          </Item>
+        )}
+
         <div className="grid grid-cols-2 gap-x-4 gap-y-2">
           {/* Name */}
           <Controller

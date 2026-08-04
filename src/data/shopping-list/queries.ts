@@ -84,12 +84,50 @@ export async function fetchShoppingList(
       },
     },
 
-    include: {
+    select: {
+      id: true,
+      name: true,
+      householdId: true,
+
+      createdAt: true,
+      updatedAt: true,
+
       items: {
         orderBy: { displayOrder: "desc" },
 
-        // TODO Add relations
-        // include: {},
+        select: {
+          id: true,
+          name: true,
+          quantity: true,
+          unit: true,
+          displayOrder: true,
+          isPurchased: true,
+          isManuallyEdited: true,
+
+          createdAt: true,
+          updatedAt: true,
+
+          categoryId: true,
+
+          // Include the scheduledRecipe relation for each item
+          scheduledRecipe: {
+            select: {
+              id: true,
+              date: true,
+              servings: true,
+              note: true,
+
+              recipe: {
+                select: {
+                  id: true,
+                  slug: true,
+                  name: true,
+                  imageUrl: true,
+                },
+              },
+            },
+          },
+        },
       },
     },
   });
