@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocalStorage } from "@/hooks/use-local-storage";
-import { createContext, ReactNode, useContext, useState } from "react";
+import { createContext, ReactNode, useContext } from "react";
 
 type SortSelectionProvider = {
   isGroupedByCategory: boolean;
