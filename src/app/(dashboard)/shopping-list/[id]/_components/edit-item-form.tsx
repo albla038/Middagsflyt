@@ -72,6 +72,7 @@ export default function EditItemForm({
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
       <FieldGroup className="gap-4">
+        {/* Scheduled recipe item card */}
         {item.scheduledRecipe && (
           <Item
             variant="muted"
@@ -81,7 +82,11 @@ export default function EditItemForm({
           >
             <Link
               href={{
+                // TODO Replace with /schedule/[scheduleId]/recipe/[slug]?servings=... ?
                 pathname: `/saved-recipes/${item.scheduledRecipe.recipe.slug}`,
+                query: {
+                  servings: item.scheduledRecipe.servings,
+                },
               }}
             >
               {item.scheduledRecipe.recipe.imageUrl && (

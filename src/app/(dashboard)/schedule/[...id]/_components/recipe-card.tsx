@@ -161,7 +161,8 @@ export default function RecipeCard({
       {/* Recipe details */}
       <div className="flex flex-col gap-2">
         <Link
-          href={`/saved-recipes/${slug}`} // TODO Replace with /[schedule]/[week]/[recipeSlug]
+          // TODO Replace with /schedule/[scheduleId]/recipe/[slug]?servings=... ?
+          href={{ pathname: `/saved-recipes/${slug}`, query: { servings } }}
           className={"hover:underline"}
         >
           <H3 className="line-clamp-2 truncate">{name}</H3>

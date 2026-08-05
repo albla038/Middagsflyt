@@ -9,11 +9,13 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
 import H2 from "@/components/ui/typography/h2";
+import { useQueryParams } from "@/hooks/use-query-params";
 import useScreenWakeLock from "@/hooks/use-screen-wake-lock";
 import { Unit } from "@/lib/generated/prisma";
 import { cn, formatQuantityDecimal } from "@/lib/utils";
 import { CalendarPlus, ListPlus } from "lucide-react";
-import { useReducer, useState } from "react";
+import { useReducer } from "react";
+import z from "zod";
 
 type IngredientContent = {
   id: string;
@@ -147,6 +149,10 @@ function createInitialState({
   };
 }
 
+const queryParamsSchema = z.object({
+  servings: z.coerce.number().positive(),
+});
+
 type RecipeContentProps = {
   ingredients: IngredientContent[];
   instructions: InstructionContent[];
@@ -171,10 +177,17 @@ export default function RecipeContent({
     createInitialState,
   );
 
-  // Servings state
+  // Servings state in query params
   const defaultServings = recipeYield ?? 4;
-  const [servings, setServings] = useState(defaultServings);
+  const [queryState, setQueryState] = useQueryParams(queryParamsSchema, {
+    servings: defaultServings,
+  });
+  const { servings } = queryState;
   const servingsScale = servings / defaultServings;
+
+  const setServings = (newServings: number) => {
+    setQueryState({ servings: newServings });
+  };
 
   // Keep screen on hook
   const { isLocked, toggleWakeLock } = useScreenWakeLock();
