@@ -1,7 +1,7 @@
 "use client";
 
-import { deleteScheduledRecipeAction } from "@/app/(dashboard)/schedule/[...id]/actions";
-import { useSelection } from "@/app/(dashboard)/schedule/[...id]/selection-provider";
+import { deleteScheduledRecipeAction } from "@/app/(dashboard)/schedule/[...slug]/actions";
+import { useSelection } from "@/app/(dashboard)/schedule/[...slug]/selection-provider";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -16,8 +16,7 @@ import { Dispatch, SetStateAction } from "react";
 import { toast } from "sonner";
 
 export type DeleteRecipeAlertState =
-  | { mode: "CLOSED" }
-  | { mode: "OPEN"; scheduledRecipeId: string };
+  { mode: "CLOSED" } | { mode: "OPEN"; scheduledRecipeId: string };
 
 type DeleteRecipeAlertProps = {
   scheduleId: string;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useSelection } from "@/app/(dashboard)/schedule/[...id]/selection-provider";
+import { useSelection } from "@/app/(dashboard)/schedule/[...slug]/selection-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";

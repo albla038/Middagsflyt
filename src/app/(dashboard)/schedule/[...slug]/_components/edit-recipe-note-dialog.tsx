@@ -1,6 +1,6 @@
 "use client";
 
-import { editScheduledRecipeNote } from "@/app/(dashboard)/schedule/[...id]/actions";
+import { editScheduledRecipeNote } from "@/app/(dashboard)/schedule/[...slug]/actions";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

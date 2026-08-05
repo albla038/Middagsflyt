@@ -1,6 +1,6 @@
 "use client";
 
-import { saveScheduledNote } from "@/app/(dashboard)/schedule/[...id]/actions";
+import { saveScheduledNote } from "@/app/(dashboard)/schedule/[...slug]/actions";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {

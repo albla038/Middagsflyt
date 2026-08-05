@@ -23,9 +23,9 @@ export default function ScheduleCalendar() {
 
   function handleSelect(date: Date | undefined) {
     if (date) {
-      const scheduleId = Array.isArray(params.id)
-        ? params.id?.at(0)
-        : params.id;
+      const scheduleId = Array.isArray(params.slug)
+        ? params.slug?.at(0)
+        : params.slug;
       const year = getISOWeekYear(date);
       const week = getISOWeek(date);
 

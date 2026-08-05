@@ -1,7 +1,7 @@
 import Header, { BreadcrumbItem } from "@/app/(dashboard)/_components/header";
-import ActionButtons from "@/app/(dashboard)/schedule/[...id]/_components/action-buttons";
-import SelectionSummary from "@/app/(dashboard)/schedule/[...id]/_components/selection-summary";
-import WeekdayGrid from "@/app/(dashboard)/schedule/[...id]/_components/weekday-grid";
+import ActionButtons from "@/app/(dashboard)/schedule/[...slug]/_components/action-buttons";
+import SelectionSummary from "@/app/(dashboard)/schedule/[...slug]/_components/selection-summary";
+import WeekdayGrid from "@/app/(dashboard)/schedule/[...slug]/_components/weekday-grid";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import H1 from "@/components/ui/typography/h1";
@@ -30,7 +30,7 @@ export default async function Page({
   params,
   searchParams,
 }: {
-  params: Promise<{ id: string[] }>;
+  params: Promise<{ slug: string[] }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   // Get the current date as fallback if no week is provided in the URL
@@ -46,7 +46,7 @@ export default async function Page({
   });
 
   // Parse the params to get the schedule ID, year, and week
-  const [rawId, rawYear, rawWeek] = (await params).id;
+  const [rawId, rawYear, rawWeek] = (await params).slug;
   const validatedParams = paramsSchema.safeParse({
     id: rawId,
     year: rawYear,

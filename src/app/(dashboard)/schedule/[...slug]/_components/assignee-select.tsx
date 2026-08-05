@@ -1,6 +1,6 @@
 "use client";
 
-import { updateAssignee } from "@/app/(dashboard)/schedule/[...id]/actions";
+import { updateAssignee } from "@/app/(dashboard)/schedule/[...slug]/actions";
 import {
   Select,
   SelectContent,

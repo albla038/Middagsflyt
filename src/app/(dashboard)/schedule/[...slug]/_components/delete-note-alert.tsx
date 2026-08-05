@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteScheduledNoteAction } from "@/app/(dashboard)/schedule/[...id]/actions";
+import { deleteScheduledNoteAction } from "@/app/(dashboard)/schedule/[...slug]/actions";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -15,8 +15,7 @@ import { Dispatch, SetStateAction } from "react";
 import { toast } from "sonner";
 
 export type DeleteNoteAlertState =
-  | { mode: "CLOSED" }
-  | { mode: "OPEN"; noteId: string };
+  { mode: "CLOSED" } | { mode: "OPEN"; noteId: string };
 
 type DeleteNoteAlertProps = {
   scheduleId: string;

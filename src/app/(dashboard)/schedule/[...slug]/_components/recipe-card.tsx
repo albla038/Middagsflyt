@@ -1,8 +1,8 @@
 "use client";
 
-import AssigneeSelect from "@/app/(dashboard)/schedule/[...id]/_components/assignee-select";
-import { rescheduleRecipe } from "@/app/(dashboard)/schedule/[...id]/actions";
-import { useSelection } from "@/app/(dashboard)/schedule/[...id]/selection-provider";
+import AssigneeSelect from "@/app/(dashboard)/schedule/[...slug]/_components/assignee-select";
+import { rescheduleRecipe } from "@/app/(dashboard)/schedule/[...slug]/actions";
+import { useSelection } from "@/app/(dashboard)/schedule/[...slug]/selection-provider";
 import StatValueSmall from "@/components/stat-value-small";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

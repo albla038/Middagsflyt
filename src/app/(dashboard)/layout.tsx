@@ -1,5 +1,5 @@
 import AppSidebar from "@/app/(dashboard)/_components/sidebar/app-sidebar";
-import SelectionProvider from "@/app/(dashboard)/schedule/[...id]/selection-provider";
+import SelectionProvider from "@/app/(dashboard)/schedule/[...slug]/selection-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ReactNode } from "react";
 

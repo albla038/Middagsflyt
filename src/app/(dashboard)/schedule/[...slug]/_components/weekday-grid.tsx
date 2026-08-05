@@ -1,21 +1,21 @@
 "use client";
 
-import AddButton from "@/app/(dashboard)/schedule/[...id]/_components/add-button";
+import AddButton from "@/app/(dashboard)/schedule/[...slug]/_components/add-button";
 import DeleteNoteAlert, {
   DeleteNoteAlertState,
-} from "@/app/(dashboard)/schedule/[...id]/_components/delete-note-alert";
+} from "@/app/(dashboard)/schedule/[...slug]/_components/delete-note-alert";
 import DeleteRecipeAlert, {
   DeleteRecipeAlertState,
-} from "@/app/(dashboard)/schedule/[...id]/_components/delete-recipe-alert";
+} from "@/app/(dashboard)/schedule/[...slug]/_components/delete-recipe-alert";
 import EditRecipeNoteDialog, {
   EditRecipeNoteDialogState,
-} from "@/app/(dashboard)/schedule/[...id]/_components/edit-recipe-note-dialog";
-import NoteCard from "@/app/(dashboard)/schedule/[...id]/_components/note-card";
-import RecipeCard from "@/app/(dashboard)/schedule/[...id]/_components/recipe-card";
+} from "@/app/(dashboard)/schedule/[...slug]/_components/edit-recipe-note-dialog";
+import NoteCard from "@/app/(dashboard)/schedule/[...slug]/_components/note-card";
+import RecipeCard from "@/app/(dashboard)/schedule/[...slug]/_components/recipe-card";
 import SaveNoteDialog, {
   SaveNoteDialogState,
-} from "@/app/(dashboard)/schedule/[...id]/_components/save-note-dialog";
-import { useSelection } from "@/app/(dashboard)/schedule/[...id]/selection-provider";
+} from "@/app/(dashboard)/schedule/[...slug]/_components/save-note-dialog";
+import { useSelection } from "@/app/(dashboard)/schedule/[...slug]/selection-provider";
 import {
   HouseholdMember,
   ScheduledNoteDisplayContent,
