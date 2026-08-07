@@ -14,16 +14,12 @@ import {
   Refrigerator,
   ArrowUpRight,
   Soup,
-  CalendarPlus,
-  ListPlus,
   LucideIcon,
   Mail,
 } from "lucide-react";
 import Image from "next/image";
 import { Recipe } from "@/lib/types/recipe";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import BookmarkToggle from "@/components/recipe/bookmark-toggle";
 import { ReactNode } from "react";
 import {
   HoverCard,
@@ -33,13 +29,10 @@ import {
 
 type RecipeHeaderProps = {
   recipe: Recipe;
-  isBookmarked: boolean;
+  actions?: ReactNode;
 };
 
-export default function RecipeHeader({
-  recipe,
-  isBookmarked,
-}: RecipeHeaderProps) {
+export default function RecipeHeader({ recipe, actions }: RecipeHeaderProps) {
   return (
     <section className="relative">
       <div
@@ -146,59 +139,10 @@ export default function RecipeHeader({
             )}
           </div>
         </div>
+
         {/* Action buttons */}
         <div className="flex items-center gap-2">
-          <Tooltip delayDuration={200}>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon-lg"
-                className="grow"
-                // onClick={() => {}} // TODO Add click handler
-              >
-                <CalendarPlus className="size-6" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Planera recept</p>
-            </TooltipContent>
-          </Tooltip>
-
-          <Tooltip delayDuration={200}>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon-lg"
-                className="grow"
-                // onClick={() => {}} // TODO Add click handler
-              >
-                <ListPlus className="size-6" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Lägg till recept i inköpslista</p>
-            </TooltipContent>
-          </Tooltip>
-
-          <Tooltip delayDuration={200}>
-            <TooltipTrigger asChild>
-              <BookmarkToggle
-                variant="ghost"
-                size="icon-lg"
-                className="grow"
-                isBookmarked={isBookmarked}
-                recipeId={recipe.id}
-                slug={recipe.slug}
-              />
-            </TooltipTrigger>
-            <TooltipContent>
-              {isBookmarked ? (
-                <p>Ta bort från Sparade recept</p>
-              ) : (
-                <p>Spara recept</p>
-              )}
-            </TooltipContent>
-          </Tooltip>
+          {actions}
 
           <Tooltip delayDuration={200}>
             <TooltipTrigger asChild>
