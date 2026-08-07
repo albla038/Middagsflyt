@@ -2,6 +2,11 @@
 
 import BookmarkToggle from "@/components/recipe/bookmark-toggle";
 import CopyLinkButton from "@/components/recipe/copy-link-button";
+import {
+  IngredientContent,
+  InstructionContent,
+} from "@/components/recipe/types";
+import { useRecipeContentState } from "@/components/recipe/use-recipe-content-state";
 import ServingsControl from "@/components/servings-control";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -11,143 +16,9 @@ import { Switch } from "@/components/ui/switch";
 import H2 from "@/components/ui/typography/h2";
 import { useQueryParams } from "@/hooks/use-query-params";
 import useScreenWakeLock from "@/hooks/use-screen-wake-lock";
-import { Unit } from "@/lib/generated/prisma";
 import { cn, formatQuantityDecimal } from "@/lib/utils";
 import { CalendarPlus, ListPlus } from "lucide-react";
-import { useReducer } from "react";
 import z from "zod";
-
-type IngredientContent = {
-  id: string;
-  text: string;
-  note: string | null;
-  quantity: number | null;
-  unit: Unit | null;
-};
-
-type InstructionContent = {
-  id: string;
-  text: string;
-  recipeIngredients: string[];
-};
-
-type ContentState = {
-  ingredients: (IngredientContent & {
-    isChecked: boolean;
-    isMuted: boolean;
-  })[];
-  instructions: (InstructionContent & {
-    isChecked: boolean;
-  })[];
-};
-
-type ContentAction =
-  | {
-      type: "CHECK_INGREDIENT";
-      payload: { id: string };
-    }
-  | {
-      type: "CHECK_INSTRUCTION";
-      payload: {
-        id: string;
-        ingredientIds: string[];
-        checked: boolean;
-      };
-    }
-  | {
-      type: "HOVER_INSTRUCTION";
-      payload: { ingredientIds: string[] };
-    }
-  | {
-      type: "CLEAR_HOVER";
-    };
-
-function contentReducer(
-  state: ContentState,
-  action: ContentAction,
-): ContentState {
-  switch (action.type) {
-    case "CHECK_INGREDIENT":
-      return {
-        ...state,
-        ingredients: state.ingredients.map((ingredient) =>
-          ingredient.id === action.payload.id
-            ? { ...ingredient, isChecked: !ingredient.isChecked }
-            : ingredient,
-        ),
-      };
-
-    case "CHECK_INSTRUCTION":
-      return {
-        ...state,
-        instructions: state.instructions.map((instruction) =>
-          instruction.id === action.payload.id
-            ? { ...instruction, isChecked: !instruction.isChecked }
-            : instruction,
-        ),
-        ingredients: state.ingredients.map((ingredient) =>
-          action.payload.ingredientIds.includes(ingredient.id)
-            ? { ...ingredient, isChecked: action.payload.checked }
-            : ingredient,
-        ),
-      };
-
-    case "HOVER_INSTRUCTION":
-      const { ingredientIds } = action.payload;
-      if (ingredientIds.length === 0) return state;
-
-      const ingredientIdSet = new Set(ingredientIds);
-
-      const shouldHighlight = state.ingredients.some(
-        (ingredient) =>
-          ingredientIdSet.has(ingredient.id) && !ingredient.isChecked,
-      );
-
-      if (shouldHighlight) {
-        return {
-          ...state,
-          ingredients: state.ingredients.map((ingredient) => ({
-            ...ingredient,
-            isMuted: !ingredientIds.includes(ingredient.id),
-          })),
-        };
-      }
-
-      return state;
-
-    case "CLEAR_HOVER":
-      return {
-        ...state,
-        ingredients: state.ingredients.map((ingredient) => ({
-          ...ingredient,
-          isMuted: false,
-        })),
-      };
-
-    default:
-      throw new Error("Unknown reducer action!");
-  }
-}
-
-function createInitialState({
-  ingredients,
-  instructions,
-}: {
-  ingredients: IngredientContent[];
-  instructions: InstructionContent[];
-}): ContentState {
-  return {
-    ingredients: ingredients.map((ingredient) => ({
-      ...ingredient,
-      isChecked: false,
-      isMuted: false,
-    })),
-    instructions: instructions.map((instruction) => ({
-      ...instruction,
-      isChecked: false,
-    })),
-  };
-}
 
 const queryParamsSchema = z.object({
   servings: z.coerce.number().positive(),
@@ -171,11 +42,7 @@ export default function RecipeContent({
   isBookmarked,
 }: RecipeContentProps) {
   // State
-  const [state, dispatch] = useReducer(
-    contentReducer,
-    { ingredients, instructions },
-    createInitialState,
-  );
+  const { state, dispatch } = useRecipeContentState(ingredients, instructions);
 
   // Servings state in query params
   const defaultServings = recipeYield ?? 4;
@@ -199,81 +66,79 @@ export default function RecipeContent({
         "sm:grid sm:grid-cols-2 sm:gap-0",
       )}
     >
-      <div className="flex flex-col">
-        {/* Recipe ingredients */}
-        <section className="flex flex-col rounded-xl bg-subtle p-4">
-          {/* Header */}
-          <div className="flex justify-between border-b border-border pb-3">
-            <H2>Ingredienser</H2>
+      {/* Recipe ingredients */}
+      <section className="flex flex-col rounded-xl bg-subtle p-4">
+        {/* Header */}
+        <div className="flex justify-between border-b border-border pb-3">
+          <H2>Ingredienser</H2>
 
-            <ServingsControl
-              servings={servings}
-              onServingsChange={setServings}
-              defaultServings={defaultServings}
-            />
-          </div>
-          {/* Ingredients list */}
-          <ScrollArea className="grow sm:max-h-[calc(100svh-150px)]">
-            <ul className="flex flex-col py-3 pr-3">
-              {state.ingredients.map((ingredient) => {
-                const { id, quantity, unit, text, note, isChecked, isMuted } =
-                  ingredient;
-                return (
-                  <li
-                    key={id}
-                    className={cn(
-                      "w-fit transition duration-300 hover:cursor-pointer",
-                      "*:after:content-['_']",
-                      {
-                        "text-muted-foreground line-through": isChecked,
-                        "text-muted-foreground": isMuted,
-                      },
-                    )}
-                    onClick={() =>
-                      dispatch({ type: "CHECK_INGREDIENT", payload: { id } })
-                    }
+          <ServingsControl
+            servings={servings}
+            onServingsChange={setServings}
+            defaultServings={defaultServings}
+          />
+        </div>
+        {/* Ingredients list */}
+        <ScrollArea className="grow sm:max-h-[calc(100svh-150px)]">
+          <ul className="flex flex-col py-3 pr-3">
+            {state.ingredients.map((ingredient) => {
+              const { id, quantity, unit, text, note, isChecked, isMuted } =
+                ingredient;
+              return (
+                <li
+                  key={id}
+                  className={cn(
+                    "w-fit transition duration-300 hover:cursor-pointer",
+                    "*:after:content-['_']",
+                    {
+                      "text-muted-foreground line-through": isChecked,
+                      "text-muted-foreground": isMuted,
+                    },
+                  )}
+                  onClick={() =>
+                    dispatch({ type: "CHECK_INGREDIENT", payload: { id } })
+                  }
+                >
+                  {quantity && (
+                    <span className="font-medium">
+                      {formatQuantityDecimal(quantity * servingsScale)}
+                    </span>
+                  )}
+                  {unit && unit !== "ST" && (
+                    <span className="font-medium">{unit.toLowerCase()}</span>
+                  )}
+                  <p
+                    className={cn("inline", {
+                      "text-muted-foreground line-through": isChecked,
+                    })}
                   >
-                    {quantity && (
-                      <span className="font-medium">
-                        {formatQuantityDecimal(quantity * servingsScale)}
-                      </span>
+                    {text}{" "}
+                    {note && (
+                      <span className="text-muted-foreground">{note}</span>
                     )}
-                    {unit && unit !== "ST" && (
-                      <span className="font-medium">{unit.toLowerCase()}</span>
-                    )}
-                    <p
-                      className={cn("inline", {
-                        "text-muted-foreground line-through": isChecked,
-                      })}
-                    >
-                      {text}{" "}
-                      {note && (
-                        <span className="text-muted-foreground">{note}</span>
-                      )}
-                    </p>
-                  </li>
-                );
-              })}
-            </ul>
-          </ScrollArea>
-          {/* Action buttons */}
-          <div className="flex justify-end gap-2">
-            <Button
-              variant={"secondary"}
-              onClick={() => {}} // TODO Add click handler
-            >
-              <ListPlus />
-              <span>Lägg i inköpslista</span>
-            </Button>
-            <Button
-              onClick={() => {}} // TODO Add click handler
-            >
-              <CalendarPlus />
-              <span>Planera</span>
-            </Button>
-          </div>
-        </section>
-      </div>
+                  </p>
+                </li>
+              );
+            })}
+          </ul>
+        </ScrollArea>
+        {/* Action buttons */}
+        <div className="flex justify-end gap-2">
+          <Button
+            variant={"secondary"}
+            onClick={() => {}} // TODO Add click handler
+          >
+            <ListPlus />
+            <span>Lägg i inköpslista</span>
+          </Button>
+          <Button
+            onClick={() => {}} // TODO Add click handler
+          >
+            <CalendarPlus />
+            <span>Planera</span>
+          </Button>
+        </div>
+      </section>
 
       {/* Recipe instructions */}
       <section className={cn("flex flex-col p-4", "sm:px-6")}>
@@ -315,7 +180,7 @@ export default function RecipeContent({
                       })
                     }
                   >
-                    <span className="flex h-[1lh] items-center">
+                    <span className="flex h-lh items-center">
                       <Checkbox
                         checked={isChecked}
                         onCheckedChange={(event) => {
