@@ -230,8 +230,30 @@ export default async function Recipe({ slug }: { slug: string }) {
         instructions={recipe.recipeInstructions}
         recipeYield={recipe.recipeYield}
         slug={slug}
-        recipeId={recipe.id}
-        isBookmarked={isBookmarked}
+        ingredientActions={
+          <>
+            <Button
+            // onClick={() => {}} // TODO Add click handler
+            >
+              <CalendarPlus />
+              <span>Planera</span>
+            </Button>
+            <Button
+              variant={"secondary"}
+              // onClick={() => {}} // TODO Add click handler
+            >
+              <ListPlus />
+              <span>Lägg i inköpslista</span>
+            </Button>
+          </>
+        }
+        instructionActions={
+          <BookmarkToggle
+            isBookmarked={isBookmarked ?? false}
+            recipeId={recipe.id}
+            slug={slug}
+          />
+        }
       />
     </article>
   );
@@ -249,12 +271,12 @@ function StatValue({
   return (
     <div
       className={cn(
-        "flex h-[1lh] items-center gap-1 text-sm font-medium",
+        "flex h-lh items-center gap-1 text-sm font-medium",
         "nth-[2n+1]:border-r nth-[2n+1]:border-border nth-[2n+1]:pr-2",
         "last:border-none last:pr-0 lg:border-r lg:border-border lg:pr-2",
       )}
     >
-      <Icon className="size-[14px]" />
+      <Icon className="size-3.5" />
       <span>{children}</span>
       <span className="text-muted-foreground">{desc}</span>
     </div>

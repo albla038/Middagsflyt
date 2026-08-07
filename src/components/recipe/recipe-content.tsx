@@ -8,7 +8,6 @@ import {
 } from "@/components/recipe/types";
 import { useRecipeContentState } from "@/components/recipe/use-recipe-content-state";
 import ServingsControl from "@/components/servings-control";
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -17,7 +16,7 @@ import H2 from "@/components/ui/typography/h2";
 import { useQueryParams } from "@/hooks/use-query-params";
 import useScreenWakeLock from "@/hooks/use-screen-wake-lock";
 import { cn, formatQuantityDecimal } from "@/lib/utils";
-import { CalendarPlus, ListPlus } from "lucide-react";
+import { ReactNode } from "react";
 import z from "zod";
 
 const queryParamsSchema = z.object({
@@ -29,8 +28,8 @@ type RecipeContentProps = {
   instructions: InstructionContent[];
   recipeYield?: number | null;
   slug: string;
-  recipeId: string;
-  isBookmarked?: boolean;
+  ingredientActions?: ReactNode;
+  instructionActions?: ReactNode;
 };
 
 export default function RecipeContent({
@@ -38,8 +37,8 @@ export default function RecipeContent({
   instructions,
   recipeYield,
   slug,
-  recipeId,
-  isBookmarked,
+  ingredientActions,
+  instructionActions,
 }: RecipeContentProps) {
   // State
   const { state, dispatch } = useRecipeContentState(ingredients, instructions);
@@ -67,7 +66,7 @@ export default function RecipeContent({
       )}
     >
       {/* Recipe ingredients */}
-      <section className="flex flex-col rounded-xl bg-subtle p-4">
+      <section className="flex h-fit flex-col rounded-xl bg-subtle p-4">
         {/* Header */}
         <div className="flex justify-between border-b border-border pb-3">
           <H2>Ingredienser</H2>
@@ -122,26 +121,15 @@ export default function RecipeContent({
             })}
           </ul>
         </ScrollArea>
-        {/* Action buttons */}
-        <div className="flex justify-end gap-2">
-          <Button
-            variant={"secondary"}
-            onClick={() => {}} // TODO Add click handler
-          >
-            <ListPlus />
-            <span>Lägg i inköpslista</span>
-          </Button>
-          <Button
-            onClick={() => {}} // TODO Add click handler
-          >
-            <CalendarPlus />
-            <span>Planera</span>
-          </Button>
-        </div>
+
+        {/* Ingredient list actions */}
+        {ingredientActions && (
+          <div className="flex flex-wrap gap-2 pr-3">{ingredientActions}</div>
+        )}
       </section>
 
       {/* Recipe instructions */}
-      <section className={cn("flex flex-col p-4", "sm:px-6")}>
+      <section className="flex h-fit flex-col p-4">
         {/* Header */}
         <div className="flex items-baseline justify-between border-b border-border pb-3">
           <H2>Gör så här</H2>
@@ -204,15 +192,10 @@ export default function RecipeContent({
           </ul>
         </ScrollArea>
 
-        {/* Action buttons */}
-        <div className="flex flex-wrap justify-end gap-2">
+        {/* Instruction list actions */}
+        <div className="flex flex-wrap gap-2 pr-3">
+          {instructionActions}
           <CopyLinkButton slug={slug} />
-
-          <BookmarkToggle
-            isBookmarked={isBookmarked ?? false}
-            recipeId={recipeId}
-            slug={slug}
-          />
         </div>
       </section>
     </div>
