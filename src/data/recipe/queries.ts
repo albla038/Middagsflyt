@@ -6,6 +6,8 @@ import { requireUser } from "@/data/user/verify-user";
 import { Order, SortBy } from "@/lib/types";
 import { RecipeDisplayContent } from "@/lib/schemas/recipe";
 import { startOfToday } from "date-fns";
+import { Prisma } from "@/lib/generated/prisma/client";
+import { Recipe } from "@/lib/types/recipe";
 
 // HELPER FUNCTIONS
 function searchFilters(searchQuery: string) {
@@ -58,71 +60,84 @@ function searchFilters(searchQuery: string) {
   ];
 }
 
+export const RecipeSelects = {
+  id: true,
+  slug: true,
+  name: true,
+  description: true,
+  recipeYield: true,
+  imageUrl: true,
+
+  recipeType: true,
+  proteinType: true,
+
+  totalTimeSeconds: true,
+  oven: true,
+
+  originalAuthor: true,
+  sourceUrl: true,
+  isImported: true,
+
+  createdAt: true,
+  updatedAt: true,
+
+  // Relation for RecipeIngredient component
+  recipeIngredients: {
+    select: {
+      id: true,
+      text: true,
+      note: true,
+      quantity: true,
+      unit: true,
+    },
+    orderBy: { displayOrder: "asc" },
+  },
+
+  // Relation for RecipeInstruction component
+  recipeInstructions: {
+    select: {
+      id: true,
+      text: true,
+      recipeIngredients: {
+        select: {
+          id: true,
+        },
+      },
+    },
+    orderBy: { step: "asc" },
+  },
+  // Relation for createdBy HoverCard
+  createdBy: {
+    select: {
+      name: true,
+      image: true,
+      email: true,
+    },
+  },
+} satisfies Prisma.RecipeSelect;
+
 // TODO Authenticate user in private queries
 
-export async function fetchRecipeBySlug(slug: string) {
-  try {
-    const recipe = await prisma.recipe.findUnique({
-      where: { slug },
-      include: {
-        // Relation for RecipeIngredient component
-        recipeIngredients: {
-          select: {
-            id: true,
-            text: true,
-            note: true,
-            quantity: true,
-            unit: true,
-          },
-          orderBy: { displayOrder: "asc" },
-        },
+export async function fetchRecipeBySlug(slug: string): Promise<Recipe | null> {
+  const recipe = await prisma.recipe.findUnique({
+    where: { slug },
+    select: RecipeSelects,
+  });
 
-        // Relation for RecipeInstruction component
-        recipeInstructions: {
-          select: {
-            id: true,
-            text: true,
-            recipeIngredients: {
-              select: {
-                id: true,
-              },
-            },
-          },
-          orderBy: { step: "asc" },
-        },
-        // Relation for createdBy HoverCard
-        createdBy: {
-          select: {
-            name: true,
-            image: true,
-            email: true,
-          },
-        },
-      },
-    });
+  if (!recipe) return null;
 
-    if (!recipe) return null;
+  // Transform the nested recipeIngredients to be a string array
+  const transformedInstructions = recipe.recipeInstructions.map(
+    (instruction) => ({
+      ...instruction,
+      recipeIngredients: instruction.recipeIngredients.map((ing) => ing.id),
+    }),
+  );
 
-    // Transform the nested recipeIngredients to be a string array
-    const transformedInstructions = recipe.recipeInstructions.map(
-      (instruction) => ({
-        ...instruction,
-        recipeIngredients: instruction.recipeIngredients.map((ing) => ing.id),
-      }),
-    );
-
-    return {
-      ...recipe,
-      recipeInstructions: transformedInstructions,
-    };
-  } catch (error) {
-    throw new Error(
-      "Något gick fel när receptet hämtades, vänligen försök igen!",
-      {
-        cause: error instanceof Error ? error : new Error(String(error)),
-      },
-    );
-  }
+  return {
+    ...recipe,
+    recipeInstructions: transformedInstructions,
+  };
 }
 
 export async function fetchRecipeNameBySlug(slug: string) {

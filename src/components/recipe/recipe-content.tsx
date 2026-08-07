@@ -1,11 +1,7 @@
 "use client";
 
-import BookmarkToggle from "@/components/recipe/bookmark-toggle";
 import CopyLinkButton from "@/components/recipe/copy-link-button";
-import {
-  IngredientContent,
-  InstructionContent,
-} from "@/components/recipe/types";
+import { RecipeIngredient, RecipeInstruction } from "@/lib/types/recipe";
 import { useRecipeContentState } from "@/components/recipe/use-recipe-content-state";
 import ServingsControl from "@/components/servings-control";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -24,8 +20,8 @@ const queryParamsSchema = z.object({
 });
 
 type RecipeContentProps = {
-  ingredients: IngredientContent[];
-  instructions: InstructionContent[];
+  ingredients: RecipeIngredient[];
+  instructions: RecipeInstruction[];
   recipeYield?: number | null;
   slug: string;
   ingredientActions?: ReactNode;

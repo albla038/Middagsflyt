@@ -1,15 +1,12 @@
-import {
-  IngredientContent,
-  InstructionContent,
-} from "@/components/recipe/types";
+import { RecipeIngredient, RecipeInstruction } from "@/lib/types/recipe";
 import { useReducer } from "react";
 
 type ContentState = {
-  ingredients: (IngredientContent & {
+  ingredients: (RecipeIngredient & {
     isChecked: boolean;
     isMuted: boolean;
   })[];
-  instructions: (InstructionContent & {
+  instructions: (RecipeInstruction & {
     isChecked: boolean;
   })[];
 };
@@ -106,8 +103,8 @@ function createInitialState({
   ingredients,
   instructions,
 }: {
-  ingredients: IngredientContent[];
-  instructions: InstructionContent[];
+  ingredients: RecipeIngredient[];
+  instructions: RecipeInstruction[];
 }): ContentState {
   return {
     ingredients: ingredients.map((ingredient) => ({
@@ -123,8 +120,8 @@ function createInitialState({
 }
 
 export function useRecipeContentState(
-  ingredients: IngredientContent[],
-  instructions: InstructionContent[],
+  ingredients: RecipeIngredient[],
+  instructions: RecipeInstruction[],
 ) {
   const [state, dispatch] = useReducer(
     contentReducer,
