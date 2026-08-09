@@ -1,6 +1,5 @@
 "use client";
 
-import CopyLinkButton from "@/components/recipe/copy-link-button";
 import { RecipeIngredient, RecipeInstruction } from "@/lib/types/recipe";
 import { useRecipeContentState } from "@/components/recipe/use-recipe-content-state";
 import ServingsControl from "@/components/servings-control";
@@ -23,7 +22,6 @@ type RecipeContentProps = {
   ingredients: RecipeIngredient[];
   instructions: RecipeInstruction[];
   recipeYield?: number | null;
-  slug: string;
   ingredientActions?: ReactNode;
   instructionActions?: ReactNode;
 };
@@ -32,7 +30,6 @@ export default function RecipeContent({
   ingredients,
   instructions,
   recipeYield,
-  slug,
   ingredientActions,
   instructionActions,
 }: RecipeContentProps) {
@@ -189,10 +186,9 @@ export default function RecipeContent({
         </ScrollArea>
 
         {/* Instruction list actions */}
-        <div className="flex flex-wrap gap-2 pr-3">
-          {instructionActions}
-          <CopyLinkButton slug={slug} />
-        </div>
+        {instructionActions && (
+          <div className="flex flex-wrap gap-2 pr-3">{instructionActions}</div>
+        )}
       </section>
     </div>
   );

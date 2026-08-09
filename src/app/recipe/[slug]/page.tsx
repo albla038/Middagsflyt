@@ -1,4 +1,5 @@
 import BookmarkToggle from "@/components/recipe/bookmark-toggle";
+import CopyLinkButton from "@/components/recipe/copy-link-button";
 import RecipeContent from "@/components/recipe/recipe-content";
 import RecipeHeader from "@/components/recipe/recipe-header";
 import { Button } from "@/components/ui/button";
@@ -88,6 +89,19 @@ export default async function RecipePage({
                 )}
               </TooltipContent>
             </Tooltip>
+
+            <Tooltip delayDuration={200}>
+              <TooltipTrigger asChild>
+                <CopyLinkButton
+                  variant="icon-lg"
+                  slug={recipe.slug}
+                  className="grow"
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Kopiera länk</p>
+              </TooltipContent>
+            </Tooltip>
           </>
         }
       />
@@ -97,7 +111,6 @@ export default async function RecipePage({
         ingredients={recipe.recipeIngredients}
         instructions={recipe.recipeInstructions}
         recipeYield={recipe.recipeYield}
-        slug={slug}
         ingredientActions={
           <>
             <Button
@@ -106,6 +119,7 @@ export default async function RecipePage({
               <CalendarPlus />
               <span>Planera</span>
             </Button>
+
             <Button
               variant={"secondary"}
               // onClick={() => {}} // TODO Add click handler
@@ -116,11 +130,15 @@ export default async function RecipePage({
           </>
         }
         instructionActions={
-          <BookmarkToggle
-            isBookmarked={isBookmarked ?? false}
-            recipeId={recipe.id}
-            slug={slug}
-          />
+          <>
+            <BookmarkToggle
+              isBookmarked={isBookmarked ?? false}
+              recipeId={recipe.id}
+              slug={slug}
+            />
+
+            <CopyLinkButton slug={slug} />
+          </>
         }
       />
     </article>

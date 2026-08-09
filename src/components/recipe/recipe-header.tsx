@@ -1,10 +1,4 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import CopyLinkButton from "@/components/recipe/copy-link-button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import H1 from "@/components/ui/typography/h1";
 import { cn, nameToInitials } from "@/lib/utils";
 import {
@@ -141,22 +135,7 @@ export default function RecipeHeader({ recipe, actions }: RecipeHeaderProps) {
         </div>
 
         {/* Action buttons */}
-        <div className="flex items-center gap-2">
-          {actions}
-
-          <Tooltip delayDuration={200}>
-            <TooltipTrigger asChild>
-              <CopyLinkButton
-                variant="icon-lg"
-                slug={recipe.slug}
-                className="grow"
-              />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Kopiera länk</p>
-            </TooltipContent>
-          </Tooltip>
-        </div>
+        {actions && <div className="flex items-center gap-2">{actions}</div>}
       </div>
     </section>
   );
