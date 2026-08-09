@@ -9,7 +9,7 @@ import { format, parse } from "date-fns";
 import { CalendarClock, LoaderCircle } from "lucide-react";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import z from "zod/v4";
+import z from "zod";
 
 const paramsSchema = z.cuid2();
 
