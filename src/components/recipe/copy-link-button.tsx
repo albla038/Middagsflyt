@@ -2,25 +2,27 @@
 
 import { Button } from "@/components/ui/button";
 import { LucideLink } from "lucide-react";
-import { ComponentPropsWithRef } from "react";
+import { ComponentProps } from "react";
 import { toast } from "sonner";
 
-type CopyLinkButtonProps = ComponentPropsWithRef<"button"> & {
-  variant?: "secondary" | "icon-lg";
+type CopyLinkButtonProps = ComponentProps<typeof Button> & {
   slug: string;
 };
 
 export default function CopyLinkButton({
-  variant = "secondary",
+  variant = "default",
+  size = "default",
   slug,
   className,
-  ...rest
+  ...props
 }: CopyLinkButtonProps) {
+  const isIconOnly = size?.includes("icon") ?? false;
+
   return (
     <Button
-      {...rest}
-      variant={variant === "secondary" ? "secondary" : "ghost"}
-      size={variant === "secondary" ? "default" : "icon-lg"}
+      {...props}
+      variant={variant}
+      size={size}
       className={className}
       onClick={() => {
         navigator.clipboard.writeText(`/recipe/${slug}`);
@@ -30,14 +32,9 @@ export default function CopyLinkButton({
         });
       }}
     >
-      {variant === "secondary" ? (
-        <>
-          <LucideLink />
-          <span>Kopiera länk</span>
-        </>
-      ) : (
-        <LucideLink className="size-6" />
-      )}
+      <LucideLink />
+
+      {!isIconOnly && "Kopiera länk"}
     </Button>
   );
 }
