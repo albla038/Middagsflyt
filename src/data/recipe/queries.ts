@@ -109,6 +109,7 @@ export const recipeSelects = {
   // Relation for createdBy HoverCard
   createdBy: {
     select: {
+      id: true,
       name: true,
       image: true,
       email: true,
@@ -157,20 +158,15 @@ export async function fetchRecipeNameBySlug(slug: string) {
   }
 }
 
-export async function fetchRecipeForUserBySlug(slug: string): Promise<
-  | (Recipe & {
-      isSaved: boolean;
-      isCreatedByUser: boolean;
-    })
-  | null
-> {
+export async function fetchRecipeForUserBySlug(
+  slug: string,
+): Promise<(Recipe & { isSaved: boolean }) | null> {
   const user = await requireUser();
 
   const recipe = await prisma.recipe.findUnique({
     where: { slug },
     select: {
       ...recipeSelects,
-      createdById: true,
 
       _count: {
         select: {
@@ -198,12 +194,11 @@ export async function fetchRecipeForUserBySlug(slug: string): Promise<
     }),
   );
 
-  const { _count, createdById, ...rest } = recipe;
+  const { _count, ...rest } = recipe;
 
   return {
     ...rest,
     isSaved: _count.savedBy > 0,
-    isCreatedByUser: createdById === user.id,
     recipeInstructions: transformedInstructions,
   };
 }

@@ -9,9 +9,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { fetchRecipeBySlug } from "@/data/recipe/queries";
-import { checkIfRecipeIsSaved } from "@/data/saved-recipe/queries";
-import { verifyUser } from "@/data/user/verify-user";
+import { fetchRecipeForUserBySlug } from "@/data/recipe/queries";
 import { CalendarPlus, ListPlus } from "lucide-react";
 import { notFound } from "next/navigation";
 
@@ -20,11 +18,7 @@ export default async function SavedRecipePage({
 }: PageProps<"/saved-recipes/[slug]">) {
   const { slug } = await params;
 
-  const [recipe, user] = await Promise.all([
-    fetchRecipeBySlug(slug),
-    verifyUser(),
-  ]);
-
+  const recipe = await fetchRecipeForUserBySlug(slug);
   if (!recipe) notFound();
 
   const breadcrumbs: BreadcrumbItem[] = [
@@ -37,10 +31,7 @@ export default async function SavedRecipePage({
     },
   ];
 
-  let isBookmarked = false;
-  if (user) {
-    isBookmarked = await checkIfRecipeIsSaved(recipe.id);
-  }
+  const isBookmarked = recipe.isSaved;
 
   return (
     <>
