@@ -49,13 +49,13 @@ export default async function Page({
     await searchParams,
   );
 
-  const recipes =
+  const [recipes, savedRecipesCount, createdRecipesCount] = await Promise.all([
     display === "created"
       ? await fetchAllCreatedRecipes(query, order, sort)
-      : await fetchAllSavedRecipes(query, order, sort);
-
-  const savedRecipesCount = await getSavedRecipesCount(query);
-  const createdRecipesCount = await getCreatedRecipesCount(query);
+      : await fetchAllSavedRecipes(query, order, sort),
+    getSavedRecipesCount(query),
+    getCreatedRecipesCount(query),
+  ]);
 
   return (
     <ScrollArea className="h-full">
