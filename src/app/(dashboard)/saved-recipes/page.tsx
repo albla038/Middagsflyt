@@ -8,7 +8,7 @@ import {
 import H1 from "@/components/ui/typography/h1";
 import RecipeList from "@/components/recipe-list/recipe-list";
 import { Button } from "@/components/ui/button";
-import { Bookmark, ChevronRight, Database, LoaderCircle } from "lucide-react";
+import { Bookmark, ChevronRight, Database } from "lucide-react";
 import z from "zod";
 import SavedOrCreatedTabs from "@/app/(dashboard)/saved-recipes/_components/saved-or-created-tabs";
 import { Suspense } from "react";
@@ -21,6 +21,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import AddRecipeDialogButton from "@/app/(dashboard)/saved-recipes/_components/add-recipe-dialog-button";
+import { Spinner } from "@/components/ui/spinner";
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -49,13 +50,13 @@ export default async function Page({
     await searchParams,
   );
 
-  const [recipes, savedRecipesCount, createdRecipesCount] = await Promise.all([
+  const recipesPromise =
     display === "created"
-      ? await fetchAllCreatedRecipes(query, order, sort)
-      : await fetchAllSavedRecipes(query, order, sort),
-    getSavedRecipesCount(query),
-    getCreatedRecipesCount(query),
-  ]);
+      ? fetchAllCreatedRecipes(query, order, sort)
+      : fetchAllSavedRecipes(query, order, sort);
+
+  const savedRecipesCountPromise = getSavedRecipesCount(query);
+  const createdRecipesCountPromise = getCreatedRecipesCount(query);
 
   return (
     <ScrollArea className="h-full">
@@ -71,8 +72,8 @@ export default async function Page({
             <div className="flex items-start gap-2">
               <Suspense>
                 <SavedOrCreatedTabs
-                  savedCount={savedRecipesCount}
-                  createdCount={createdRecipesCount}
+                  savedCountPromise={savedRecipesCountPromise}
+                  createdCountPromise={createdRecipesCountPromise}
                 />
               </Suspense>
               <AddRecipeDialogButton />
@@ -83,12 +84,12 @@ export default async function Page({
             fallback={
               <div className="flex items-center gap-2">
                 <p>Läser in recept</p>
-                <LoaderCircle className="size-4 animate-spin" />
+                <Spinner />
               </div>
             }
           >
             <RecipeList
-              recipes={recipes}
+              recipesPromise={recipesPromise}
               basePath="/saved-recipes"
               searchQuery={query}
               displayType={display}

@@ -11,17 +11,17 @@ import { RecipeDisplayContent } from "@/lib/schemas/recipe";
 import { MyRecipesDisplay } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Grid2X2, ListFilter, Rows3 } from "lucide-react";
-import { Suspense, useState } from "react";
+import { Suspense, use, useState } from "react";
 
 type RecipeListProps = {
-  recipes: RecipeDisplayContent[];
+  recipesPromise: Promise<RecipeDisplayContent[]>;
   basePath: "/saved-recipes" | "/library";
   searchQuery?: string;
   displayType?: MyRecipesDisplay;
 };
 
 export default function RecipeList({
-  recipes,
+  recipesPromise,
   basePath,
   searchQuery = "",
   displayType,
@@ -30,6 +30,8 @@ export default function RecipeList({
   const [addToListRecipeId, setAddToListRecipeId] = useState<string | null>(
     null,
   );
+
+  const recipes = use(recipesPromise);
 
   return (
     <>

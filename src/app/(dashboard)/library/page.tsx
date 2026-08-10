@@ -1,14 +1,17 @@
 import Header, { BreadcrumbItem } from "@/app/(dashboard)/_components/header";
-import { fetchAllRecipesForUser } from "@/data/recipe/queries";
+import {
+  fetchAllRecipesForUser,
+  fetchRecipesCount,
+} from "@/data/recipe/queries";
 import H1 from "@/components/ui/typography/h1";
 import RecipeList from "@/components/recipe-list/recipe-list";
-import { Database, LoaderCircle } from "lucide-react";
+import { Database } from "lucide-react";
 import z from "zod";
 import { Suspense } from "react";
 import { ORDER_OPTIONS, SORT_BY_OPTIONS } from "@/lib/types";
-
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
+import CountBadge from "@/app/(dashboard)/library/_components/count-badge";
+import { Spinner } from "@/components/ui/spinner";
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -33,8 +36,8 @@ export default async function Page({
 }) {
   const { query, order, sort } = searchParamsSchema.parse(await searchParams);
 
-  const recipes = await fetchAllRecipesForUser(query, order, sort);
-  const recipeCount = recipes.length;
+  const recipesPromise = fetchAllRecipesForUser(query, order, sort);
+  const recipesCountPromise = fetchRecipesCount(query);
 
   return (
     <ScrollArea className="h-full">
@@ -42,28 +45,26 @@ export default async function Page({
         <Header breadcrumbs={breadcrumbs} />
 
         <main className="grid w-full max-w-[64rem] gap-12 px-2 py-16">
-          <div className="flex justify-between">
-            <div className="flex items-start gap-2">
-              <H1>
-                <Database />
-                Receptbibliotek
-              </H1>
-              <Badge variant="outline" className="mt-1">
-                {recipeCount}
-              </Badge>
-            </div>
+          <div className="flex items-center gap-2">
+            <H1>
+              <Database />
+              Receptbibliotek
+            </H1>
+            <Suspense>
+              <CountBadge countPromise={recipesCountPromise} />
+            </Suspense>
           </div>
 
           <Suspense
             fallback={
               <div className="flex items-center gap-2">
                 <p>Läser in recept</p>
-                <LoaderCircle className="size-4 animate-spin" />
+                <Spinner />
               </div>
             }
           >
             <RecipeList
-              recipes={recipes}
+              recipesPromise={recipesPromise}
               basePath="/library"
               searchQuery={query}
               displayType={"created"}

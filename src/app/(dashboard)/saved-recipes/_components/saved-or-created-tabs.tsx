@@ -4,19 +4,23 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { MyRecipesDisplay } from "@/lib/types";
+import { use } from "react";
 
 type SavedOrCreatedTabsProps = {
-  savedCount: number;
-  createdCount: number;
+  savedCountPromise: Promise<number>;
+  createdCountPromise: Promise<number>;
 };
 
 export default function SavedOrCreatedTabs({
-  savedCount,
-  createdCount,
+  savedCountPromise,
+  createdCountPromise,
 }: SavedOrCreatedTabsProps) {
   const params = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
+
+  const savedCount = use(savedCountPromise);
+  const createdCount = use(createdCountPromise);
 
   function handleChange(value: MyRecipesDisplay) {
     const searchParams = new URLSearchParams(params);

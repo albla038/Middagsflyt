@@ -166,55 +166,58 @@ export async function fetchAllRecipesForUser(
 ): Promise<RecipeDisplayContent[]> {
   const user = await requireUser();
 
-  try {
-    const data = await prisma.recipe.findMany({
-      where: {
-        OR: searchFilters(searchQuery),
-      },
-      orderBy: {
-        [sortBy]: order,
-      },
-      select: {
-        id: true,
-        slug: true,
-        name: true,
-        imageUrl: true,
-        recipeType: true,
-        proteinType: true,
-        totalTimeSeconds: true,
-        recipeYield: true,
-        isImported: true,
-        createdById: true,
-        _count: {
-          select: {
-            savedBy: {
-              where: {
-                household: {
-                  members: {
-                    some: { userId: user.id },
-                  },
+  const data = await prisma.recipe.findMany({
+    where: {
+      OR: searchFilters(searchQuery),
+    },
+    orderBy: {
+      [sortBy]: order,
+    },
+    select: {
+      id: true,
+      slug: true,
+      name: true,
+      imageUrl: true,
+      recipeType: true,
+      proteinType: true,
+      totalTimeSeconds: true,
+      recipeYield: true,
+      isImported: true,
+      createdById: true,
+      _count: {
+        select: {
+          savedBy: {
+            where: {
+              household: {
+                members: {
+                  some: { userId: user.id },
                 },
               },
             },
           },
         },
       },
-    });
+    },
+  });
 
-    return data.map((recipe) => {
-      const { _count, createdById, ...rest } = recipe;
-      return {
-        ...rest,
-        isSaved: _count.savedBy > 0,
-        isCreatedByUser: createdById === user.id,
-      };
-    });
-  } catch (error) {
-    throw new Error(
-      "Något gick fel när recepten hämtades, vänligen försök igen!",
-      { cause: error instanceof Error ? error : new Error(String(error)) },
-    );
-  }
+  return data.map((recipe) => {
+    const { _count, createdById, ...rest } = recipe;
+    return {
+      ...rest,
+      isSaved: _count.savedBy > 0,
+      isCreatedByUser: createdById === user.id,
+    };
+  });
+}
+
+export async function fetchRecipesCount(searchQuery: string) {
+  const count = await prisma.recipe.count({
+    where: {
+      OR: searchFilters(searchQuery),
+    },
+  });
+
+  return count;
 }
 
 export async function fetchAllSavedRecipes(
