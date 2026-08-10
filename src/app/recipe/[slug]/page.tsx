@@ -1,4 +1,4 @@
-import BookmarkToggle from "@/components/recipe/bookmark-toggle";
+import BookmarkButton from "@/components/recipe/bookmark-button";
 import CopyLinkButton from "@/components/recipe/copy-link-button";
 import RecipeContent from "@/components/recipe/recipe-content";
 import RecipeHeader from "@/components/recipe/recipe-header";
@@ -46,7 +46,7 @@ export default async function RecipePage({
                   className="grow"
                   // onClick={() => {}} // TODO Add click handler
                 >
-                  <CalendarPlus className="size-6" />
+                  <CalendarPlus />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -62,7 +62,7 @@ export default async function RecipePage({
                   className="grow"
                   // onClick={() => {}} // TODO Add click handler
                 >
-                  <ListPlus className="size-6" />
+                  <ListPlus />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -72,13 +72,12 @@ export default async function RecipePage({
 
             <Tooltip delayDuration={200}>
               <TooltipTrigger asChild>
-                <BookmarkToggle
+                <BookmarkButton
                   variant="ghost"
                   size="icon-lg"
                   className="grow"
                   isBookmarked={isBookmarked}
                   recipeId={recipe.id}
-                  slug={recipe.slug}
                 />
               </TooltipTrigger>
               <TooltipContent>
@@ -93,7 +92,8 @@ export default async function RecipePage({
             <Tooltip delayDuration={200}>
               <TooltipTrigger asChild>
                 <CopyLinkButton
-                  variant="icon-lg"
+                  variant="ghost"
+                  size="icon-lg"
                   slug={recipe.slug}
                   className="grow"
                 />
@@ -114,6 +114,7 @@ export default async function RecipePage({
         ingredientActions={
           <>
             <Button
+            // variant="secondary"
             // onClick={() => {}} // TODO Add click handler
             >
               <CalendarPlus />
@@ -121,7 +122,7 @@ export default async function RecipePage({
             </Button>
 
             <Button
-              variant={"secondary"}
+              variant="secondary"
               // onClick={() => {}} // TODO Add click handler
             >
               <ListPlus />
@@ -131,13 +132,13 @@ export default async function RecipePage({
         }
         instructionActions={
           <>
-            <BookmarkToggle
-              isBookmarked={isBookmarked ?? false}
+            <BookmarkButton
+              variant="ghost"
+              isBookmarked={isBookmarked}
               recipeId={recipe.id}
-              slug={slug}
             />
 
-            <CopyLinkButton slug={slug} />
+            <CopyLinkButton variant="ghost" slug={slug} />
           </>
         }
       />

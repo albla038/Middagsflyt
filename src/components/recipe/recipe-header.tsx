@@ -135,7 +135,7 @@ export default function RecipeHeader({ recipe, actions }: RecipeHeaderProps) {
         </div>
 
         {/* Action buttons */}
-        {actions && <div className="flex items-center gap-2">{actions}</div>}
+        {actions && <div className="flex items-center justify-center gap-2">{actions}</div>}
       </div>
     </section>
   );

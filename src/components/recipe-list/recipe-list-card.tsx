@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MyRecipesDisplay } from "@/lib/types";
-import BookmarkToggle from "@/components/recipe/bookmark-toggle";
+import BookmarkButton from "@/components/recipe/bookmark-button";
 import StatValueSmall from "@/components/stat-value-small";
 import { RecipeDisplayContent } from "@/lib/schemas/recipe";
 
@@ -97,7 +97,6 @@ export default function RecipeListCard({
             <ActionButtons
               isSaved={recipe.isSaved}
               id={recipe.id}
-              slug={recipe.slug}
               displayType={displayType}
               onClickSchedule={() => onClickSchedule(recipe.id)}
               onClickAddToList={() => onClickAddToList(recipe.id)}
@@ -150,14 +149,12 @@ function ActionButtons({
   displayType,
   isSaved,
   id,
-  slug,
   onClickSchedule,
   onClickAddToList,
 }: {
   displayType?: MyRecipesDisplay;
   isSaved: boolean;
   id: string;
-  slug: string;
   onClickSchedule: () => void;
   onClickAddToList: () => void;
 }) {
@@ -166,10 +163,9 @@ function ActionButtons({
       {displayType === "created" && (
         <Tooltip delayDuration={200}>
           <TooltipTrigger asChild>
-            <BookmarkToggle
+            <BookmarkButton
               isBookmarked={isSaved}
               recipeId={id}
-              slug={slug}
               variant="default"
               size="icon"
               className={cn(
@@ -197,11 +193,9 @@ function ActionButtons({
             <Button
               size="icon"
               variant={displayType === "saved" ? "default" : "outline"}
-              // TODO add onclick
               onClick={(event) => {
                 event.preventDefault();
                 event.stopPropagation();
-
                 onClickSchedule();
               }}
             >
@@ -222,7 +216,6 @@ function ActionButtons({
               onClick={(event) => {
                 event.preventDefault();
                 event.stopPropagation();
-
                 onClickAddToList();
               }}
             >
