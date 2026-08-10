@@ -60,7 +60,7 @@ function searchFilters(searchQuery: string) {
   ];
 }
 
-export const RecipeSelects = {
+export const recipeSelects = {
   id: true,
   slug: true,
   name: true,
@@ -116,12 +116,10 @@ export const RecipeSelects = {
   },
 } satisfies Prisma.RecipeSelect;
 
-// TODO Authenticate user in private queries
-
 export async function fetchRecipeBySlug(slug: string): Promise<Recipe | null> {
   const recipe = await prisma.recipe.findUnique({
     where: { slug },
-    select: RecipeSelects,
+    select: recipeSelects,
   });
 
   if (!recipe) return null;
@@ -157,6 +155,57 @@ export async function fetchRecipeNameBySlug(slug: string) {
       },
     );
   }
+}
+
+export async function fetchRecipeForUserBySlug(slug: string): Promise<
+  | (Recipe & {
+      isSaved: boolean;
+      isCreatedByUser: boolean;
+    })
+  | null
+> {
+  const user = await requireUser();
+
+  const recipe = await prisma.recipe.findUnique({
+    where: { slug },
+    select: {
+      ...recipeSelects,
+      createdById: true,
+
+      _count: {
+        select: {
+          savedBy: {
+            where: {
+              household: {
+                members: {
+                  some: { userId: user.id },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!recipe) return null;
+
+  // Transform the nested recipeIngredients to be a string array
+  const transformedInstructions = recipe.recipeInstructions.map(
+    (instruction) => ({
+      ...instruction,
+      recipeIngredients: instruction.recipeIngredients.map((ing) => ing.id),
+    }),
+  );
+
+  const { _count, createdById, ...rest } = recipe;
+
+  return {
+    ...rest,
+    isSaved: _count.savedBy > 0,
+    isCreatedByUser: createdById === user.id,
+    recipeInstructions: transformedInstructions,
+  };
 }
 
 export async function fetchAllRecipesForUser(
