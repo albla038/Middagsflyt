@@ -2,11 +2,10 @@ import "server-only";
 
 import { requireHouseholdId } from "@/data/household/queries";
 import prisma from "@/lib/db";
-import { Result } from "@/lib/types";
+import { MutationResult } from "@/lib/types/api";
+import { prismaErrorToErrorCode } from "@/lib/prisma-error-mapper";
 
-export async function saveRecipe(
-  recipeId: string,
-): Promise<Result<void, Error>> {
+export async function saveRecipe(recipeId: string): Promise<MutationResult> {
   try {
     const householdId = await requireHouseholdId();
 
@@ -22,23 +21,13 @@ export async function saveRecipe(
       update: {},
     });
 
-    return {
-      ok: true,
-      data: undefined,
-    };
+    return { ok: true };
   } catch (error) {
-    return {
-      ok: false,
-      error: new Error("Failed to save recipe", {
-        cause: error instanceof Error ? error : new Error(String(error)),
-      }),
-    };
+    return { ok: false, errorCode: prismaErrorToErrorCode(error) };
   }
 }
 
-export async function unsaveRecipe(
-  recipeId: string,
-): Promise<Result<void, Error>> {
+export async function unsaveRecipe(recipeId: string): Promise<MutationResult> {
   try {
     const householdId = await requireHouseholdId();
 
@@ -47,16 +36,8 @@ export async function unsaveRecipe(
       where: { householdId, recipeId },
     });
 
-    return {
-      ok: true,
-      data: undefined,
-    };
+    return { ok: true };
   } catch (error) {
-    return {
-      ok: false,
-      error: new Error("Failed to remove recipe from saved recipes", {
-        cause: error instanceof Error ? error : new Error(String(error)),
-      }),
-    };
+    return { ok: false, errorCode: prismaErrorToErrorCode(error) };
   }
 }

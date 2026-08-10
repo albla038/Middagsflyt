@@ -2,62 +2,43 @@
 
 import { saveRecipe, unsaveRecipe } from "@/data/saved-recipe/mutations";
 import { requireUser } from "@/data/user/verify-user";
-import { Result } from "@/lib/types";
+import { ActionResponseData } from "@/lib/types/api";
 import { revalidatePath } from "next/cache";
-import z from "zod/v4";
+import z from "zod";
 
 const recipeIdSchema = z.object({
   recipeId: z.cuid2(),
-  slug: z.string(),
   isBookmarked: z.boolean(),
+  pathname: z.string(),
 });
 
-export async function toggleBookmark({
-  recipeId,
-  slug,
-  isBookmarked,
-}: {
-  recipeId: string;
-  slug: string;
-  isBookmarked: boolean;
-}): Promise<Result<{ isSaved: boolean }, Error>> {
+export async function toggleBookmarkAction(
+  data: z.infer<typeof recipeIdSchema>,
+): Promise<ActionResponseData<{ isSaved: boolean }>> {
   await requireUser();
 
-  const validated = recipeIdSchema.safeParse({ recipeId, slug, isBookmarked });
+  // Validate inputs
+  const validated = recipeIdSchema.safeParse(data);
+
+  // Return error code if validation fails
   if (!validated.success) {
-    console.log("Invalid recipe ID:", validated.error);
-    return {
-      ok: false,
-      error: new Error("Invalid inputs to server action:", validated.error),
-    };
+    return { success: false, errorCode: "VALIDATION_FAILED" };
   }
 
   const isSaved = validated.data.isBookmarked;
 
-  if (isSaved) {
-    const result = await unsaveRecipe(validated.data.recipeId);
-    if (!result.ok) {
-      return {
-        ok: false,
-        error: result.error,
-      };
-    }
-  } else {
-    const result = await saveRecipe(validated.data.recipeId);
-    if (!result.ok) {
-      return {
-        ok: false,
-        error: result.error,
-      };
-    }
+  const mutationRes = isSaved
+    ? await unsaveRecipe(validated.data.recipeId)
+    : await saveRecipe(validated.data.recipeId);
+
+  if (!mutationRes.ok) {
+    return { success: false, errorCode: mutationRes.errorCode };
   }
 
-  revalidatePath(`/recipe/${validated.data.slug}`);
+  revalidatePath(validated.data.pathname);
+  revalidatePath("/saved-recipes");
+  revalidatePath("/library");
+  revalidatePath("/schedule/recipe/[id]", "page");
 
-  return {
-    ok: true,
-    data: {
-      isSaved: !isSaved,
-    },
-  };
+  return { success: true, data: { isSaved: !isSaved } };
 }
