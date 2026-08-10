@@ -13,7 +13,7 @@ import { Slash } from "lucide-react";
 import Link from "next/link";
 import { ReactNode } from "react";
 
-export type BreadcrumbItem = { label: string; href?: string };
+export type BreadcrumbItem = { label: ReactNode; href?: string };
 
 type HeaderProps = {
   children?: ReactNode;
