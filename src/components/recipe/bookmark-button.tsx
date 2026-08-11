@@ -9,19 +9,17 @@ import { usePathname } from "next/navigation";
 import { ComponentProps, useTransition } from "react";
 import { toast } from "sonner";
 
-type ActionButtonProps = ComponentProps<typeof Button> & {
-  isBookmarked: boolean;
+type BookmarkButtonProps = ComponentProps<typeof Button> & {
   recipeId: string;
+  isBookmarked: boolean;
 };
 
 export default function BookmarkButton({
-  variant = "default",
-  size = "default",
-  className,
-  isBookmarked,
   recipeId,
+  isBookmarked,
+  size,
   ...props
-}: ActionButtonProps) {
+}: BookmarkButtonProps) {
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
 
@@ -53,9 +51,7 @@ export default function BookmarkButton({
   return (
     <Button
       {...props}
-      variant={variant}
       size={size}
-      className={className}
       disabled={isPending}
       onClick={(event) => {
         event.preventDefault();

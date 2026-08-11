@@ -10,8 +10,7 @@ type CopyLinkButtonProps = ComponentProps<typeof Button> & {
 };
 
 export default function CopyLinkButton({
-  variant = "default",
-  size = "default",
+  size,
   slug,
   className,
   ...props
@@ -21,7 +20,6 @@ export default function CopyLinkButton({
   return (
     <Button
       {...props}
-      variant={variant}
       size={size}
       className={className}
       onClick={() => {
