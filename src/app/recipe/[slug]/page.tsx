@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { fetchRecipeBySlug } from "@/data/recipe/queries";
 import { checkIfRecipeIsSaved } from "@/data/saved-recipe/queries";
 import { verifyUser } from "@/data/user/verify-user";
-import { CalendarPlus, ListPlus } from "lucide-react";
+import { CalendarPlus } from "lucide-react";
 import { notFound } from "next/navigation";
 
 export default async function RecipePage({
@@ -49,14 +49,12 @@ export default async function RecipePage({
 
             {/* Add to shopping list action button */}
             <IconTooltip content={<p>Lägg till recept i inköpslista</p>}>
-              <Button
+              <AddToListButton
                 variant="ghost"
                 size="icon-lg"
                 className="grow"
-                // onClick={() => {}} // TODO Add click handler
-              >
-                <ListPlus />
-              </Button>
+                recipeId={recipe.id}
+              />
             </IconTooltip>
 
             {/* Bookmark action button */}
@@ -106,7 +104,7 @@ export default async function RecipePage({
               <span>Planera</span>
             </Button>
 
-            <AddToListButton variant="secondary" />
+            <AddToListButton variant="secondary" recipeId={recipe.id} />
           </>
         }
         instructionActions={

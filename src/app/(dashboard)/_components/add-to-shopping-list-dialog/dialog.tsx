@@ -28,12 +28,14 @@ type AddToShoppingListDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   ingredientSources: IngredientSources;
+  initialServings?: number;
 };
 
 export default function AddToShoppingListDialog({
   open,
   onOpenChange,
   ingredientSources,
+  initialServings,
 }: AddToShoppingListDialogProps) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -53,13 +55,21 @@ export default function AddToShoppingListDialog({
 
   // STATE
   const [step, setStep] = useState<1 | 2>(1);
-  const [servingsSelections, setServingsSelections] = useState<
-    Record<string, number>
-  >({});
   const [uncheckedIngredientIds, setUncheckedIngredientIds] = useState<
     Set<string>
   >(new Set());
   const [targetListId, setTargetListId] = useState<string | null>(null);
+
+  // Set initial servings selections for single recipe sources, if provided.
+  const initialSelections = useMemo(
+    () =>
+      initialServings && ingredientSources.ids.length === 1
+        ? { [ingredientSources.ids[0]]: initialServings }
+        : {},
+    [initialServings, ingredientSources.ids],
+  );
+  const [servingsSelections, setServingsSelections] =
+    useState<Record<string, number>>(initialSelections);
 
   // DERIVED STATE
   // Map recipeIngredientsSources to UIRecipeIngredientsSource,
@@ -164,12 +174,12 @@ export default function AddToShoppingListDialog({
     [recipes],
   );
 
-  function resetState() {
+  const resetState = useCallback(() => {
     setStep(1);
-    setServingsSelections({});
+    setServingsSelections(initialSelections);
     setUncheckedIngredientIds(new Set());
     setTargetListId(null);
-  }
+  }, [initialSelections]);
 
   // Main event handler for adding selected ingredients to the target shopping list
   function handleAddToList() {

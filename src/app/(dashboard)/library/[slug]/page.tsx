@@ -1,12 +1,13 @@
 import Header, { BreadcrumbItem } from "@/app/(dashboard)/_components/header";
 import IconTooltip from "@/components/icon-tooltip";
+import AddToListButton from "@/components/recipe/add-to-list-button";
 import BookmarkButton from "@/components/recipe/bookmark-button";
 import CopyLinkButton from "@/components/recipe/copy-link-button";
 import RecipeContent from "@/components/recipe/recipe-content";
 import RecipeHeader from "@/components/recipe/recipe-header";
 import { Button } from "@/components/ui/button";
 import { fetchRecipeForUserBySlug } from "@/data/recipe/queries";
-import { CalendarPlus, ListPlus } from "lucide-react";
+import { CalendarPlus } from "lucide-react";
 import { notFound } from "next/navigation";
 
 export default async function LibraryRecipePage({
@@ -54,14 +55,12 @@ export default async function LibraryRecipePage({
 
                 {/* Add to shopping list action button */}
                 <IconTooltip content={<p>Lägg till recept i inköpslista</p>}>
-                  <Button
+                  <AddToListButton
                     variant="ghost"
                     size="icon-lg"
                     className="grow"
-                    // onClick={() => {}} // TODO Add click handler
-                  >
-                    <ListPlus />
-                  </Button>
+                    recipeId={recipe.id}
+                  />
                 </IconTooltip>
 
                 {/* Bookmark action button */}
@@ -111,13 +110,7 @@ export default async function LibraryRecipePage({
                   <span>Planera</span>
                 </Button>
 
-                <Button
-                  variant="secondary"
-                  // onClick={() => {}} // TODO Add click handler
-                >
-                  <ListPlus />
-                  <span>Lägg i inköpslista</span>
-                </Button>
+                <AddToListButton variant="secondary" recipeId={recipe.id} />
               </>
             }
             instructionActions={
