@@ -1,14 +1,10 @@
 import Header, { BreadcrumbItem } from "@/app/(dashboard)/_components/header";
+import IconTooltip from "@/components/icon-tooltip";
 import BookmarkButton from "@/components/recipe/bookmark-button";
 import CopyLinkButton from "@/components/recipe/copy-link-button";
 import RecipeContent from "@/components/recipe/recipe-content";
 import RecipeHeader from "@/components/recipe/recipe-header";
 import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { fetchScheduledRecipe } from "@/data/scheduled-recipe/queries";
 import { stringifyPageSearchParams } from "@/lib/utils";
 import { getISOWeek, getISOWeekYear } from "date-fns";
@@ -60,70 +56,58 @@ export default async function ScheduledRecipePage({
             recipe={recipe}
             actions={
               <>
-                <Tooltip delayDuration={200}>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon-lg"
-                      className="grow"
-                      // onClick={() => {}} // TODO Add click handler
-                    >
-                      <CalendarPlus />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Planera recept</p>
-                  </TooltipContent>
-                </Tooltip>
+                {/* Plan recipe action button */}
+                <IconTooltip content={<p>Planera recept</p>}>
+                  <Button
+                    variant="ghost"
+                    size="icon-lg"
+                    className="grow"
+                    // onClick={() => {}} // TODO Add click handler
+                  >
+                    <CalendarPlus />
+                  </Button>
+                </IconTooltip>
 
-                <Tooltip delayDuration={200}>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon-lg"
-                      className="grow"
-                      // onClick={() => {}} // TODO Add click handler
-                    >
-                      <ListPlus />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Lägg till recept i inköpslista</p>
-                  </TooltipContent>
-                </Tooltip>
+                {/* Add to shopping list action button */}
+                <IconTooltip content={<p>Lägg till recept i inköpslista</p>}>
+                  <Button
+                    variant="ghost"
+                    size="icon-lg"
+                    className="grow"
+                    // onClick={() => {}} // TODO Add click handler
+                  >
+                    <ListPlus />
+                  </Button>
+                </IconTooltip>
 
-                <Tooltip delayDuration={200}>
-                  <TooltipTrigger asChild>
-                    <BookmarkButton
-                      variant="ghost"
-                      size="icon-lg"
-                      className="grow"
-                      isBookmarked={recipe.isSaved}
-                      recipeId={recipe.id}
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {recipe.isSaved ? (
+                {/* Bookmark action button */}
+                <IconTooltip
+                  content={
+                    recipe.isSaved ? (
                       <p>Ta bort från Sparade recept</p>
                     ) : (
                       <p>Spara recept</p>
-                    )}
-                  </TooltipContent>
-                </Tooltip>
+                    )
+                  }
+                >
+                  <BookmarkButton
+                    variant="ghost"
+                    size="icon-lg"
+                    className="grow"
+                    isBookmarked={recipe.isSaved}
+                    recipeId={recipe.id}
+                  />
+                </IconTooltip>
 
-                <Tooltip delayDuration={200}>
-                  <TooltipTrigger asChild>
-                    <CopyLinkButton
-                      variant="ghost"
-                      size="icon-lg"
-                      slug={recipe.slug}
-                      className="grow"
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Kopiera länk</p>
-                  </TooltipContent>
-                </Tooltip>
+                {/* Copy link action button */}
+                <IconTooltip content={<p>Kopiera länk</p>}>
+                  <CopyLinkButton
+                    variant="ghost"
+                    size="icon-lg"
+                    slug={recipe.slug}
+                    className="grow"
+                  />
+                </IconTooltip>
               </>
             }
           />

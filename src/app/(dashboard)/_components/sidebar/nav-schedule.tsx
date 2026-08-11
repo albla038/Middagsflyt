@@ -38,16 +38,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import DeleteScheduleAlert, {
   DeleteAlertState,
 } from "@/app/(dashboard)/_components/sidebar/delete-schedule-alert";
 import { getISOWeek, getISOWeekYear, parse } from "date-fns";
+import IconTooltip from "@/components/icon-tooltip";
 
 const pagePath = "/schedule";
 
@@ -102,21 +98,16 @@ export default function NavSchedule({ schedulesPromise }: NavScheduleProps) {
                 "group-hover/collapsible:opacity-100",
               )}
             >
-              <Tooltip delayDuration={200}>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="size-5"
-                    onClick={() => setSaveDialogState({ mode: "CREATE" })}
-                  >
-                    <Plus />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  <p>Ny kalender</p>
-                </TooltipContent>
-              </Tooltip>
+              <IconTooltip content={<p>Ny kalender</p>}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-5"
+                  onClick={() => setSaveDialogState({ mode: "CREATE" })}
+                >
+                  <Plus />
+                </Button>
+              </IconTooltip>
             </div>
           </SidebarGroupLabel>
           <CollapsibleTrigger asChild>

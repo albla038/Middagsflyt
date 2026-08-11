@@ -1,11 +1,7 @@
 "use client";
 
+import IconTooltip from "@/components/icon-tooltip";
 import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { ArrowDown } from "lucide-react";
 import Link from "next/link";
@@ -24,21 +20,16 @@ export default function OrderByToggle() {
   }
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Button variant="ghost" size="icon" asChild>
-          <Link href={`${pathname}/?${searchParams.toString()}`} replace>
-            <ArrowDown
-              className={cn("rotate-0 transition-transform duration-200", {
-                "rotate-180": order === "asc",
-              })}
-            />
-          </Link>
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent>
-        <p>Vänd sorteringsordning</p>
-      </TooltipContent>
-    </Tooltip>
+    <IconTooltip content={<p>Vänd sorteringsordning</p>}>
+      <Button variant="ghost" size="icon" asChild>
+        <Link href={`${pathname}/?${searchParams.toString()}`} replace>
+          <ArrowDown
+            className={cn("rotate-0 transition-transform duration-200", {
+              "rotate-180": order === "asc",
+            })}
+          />
+        </Link>
+      </Button>
+    </IconTooltip>
   );
 }

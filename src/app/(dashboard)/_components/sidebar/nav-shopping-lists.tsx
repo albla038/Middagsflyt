@@ -10,14 +10,10 @@ import {
   SidebarGroupLabel,
   SidebarMenu,
 } from "@/components/ui/sidebar";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { ShoppingListWithCount } from "@/lib/schemas/shopping-list";
 import { Plus } from "lucide-react";
 import { use, useState } from "react";
+import IconTooltip from "@/components/icon-tooltip";
 
 type NavShoppingListsProps = {
   shoppingListsPromise: Promise<ShoppingListWithCount[]>;
@@ -45,16 +41,11 @@ export default function NavShoppingLists({
       <SidebarGroup>
         <SidebarGroupLabel>Inköpslistor</SidebarGroupLabel>
 
-        <Tooltip delayDuration={200}>
-          <TooltipTrigger asChild>
-            <SidebarGroupAction onClick={() => setCreateDialogOpen(true)}>
-              <Plus /> <span className="sr-only">Ny inköpslista</span>
-            </SidebarGroupAction>
-          </TooltipTrigger>
-          <TooltipContent side="right">
-            <p>Ny inköpslista</p>
-          </TooltipContent>
-        </Tooltip>
+        <IconTooltip content={<p>Ny inköpslista</p>} tooltipContentProps={{side: "right"}}>
+          <SidebarGroupAction onClick={() => setCreateDialogOpen(true)}>
+            <Plus /> <span className="sr-only">Ny inköpslista</span>
+          </SidebarGroupAction>
+        </IconTooltip>
 
         <SidebarGroupContent>
           <SidebarMenu>

@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { CircleAlert, CircleCheck, LoaderCircle } from "lucide-react";
 import ThemeProvider from "@/providers/theme-provider";
 import ReactQueryProvider from "@/providers/react-query-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -35,7 +36,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <TooltipProvider>{children}</TooltipProvider>
           </ThemeProvider>
         </ReactQueryProvider>
         <Toaster
