@@ -1,3 +1,4 @@
+import AuthActionGuard from "@/components/auth-action-guard";
 import IconTooltip from "@/components/icon-tooltip";
 import AddToListButton from "@/components/recipe/add-to-list-button";
 import BookmarkButton from "@/components/recipe/bookmark-button";
@@ -35,46 +36,48 @@ export default async function RecipePage({
         recipe={recipe}
         actions={
           <>
-            {/* Plan recipe action button */}
-            <IconTooltip content={<p>Planera recept</p>}>
-              <Button
-                variant="ghost"
-                size="icon-lg"
-                className="grow"
-                // onClick={() => {}} // TODO Add click handler
+            <AuthActionGuard isAuthenticated={!!user}>
+              {/* Plan recipe action button */}
+              <IconTooltip content={<p>Planera recept</p>}>
+                <Button
+                  variant="ghost"
+                  size="icon-lg"
+                  className="grow"
+                  // onClick={() => {}} // TODO Add click handler
+                >
+                  <CalendarPlus />
+                </Button>
+              </IconTooltip>
+
+              {/* Add to shopping list action button */}
+              <IconTooltip content={<p>Lägg till recept i inköpslista</p>}>
+                <AddToListButton
+                  variant="ghost"
+                  size="icon-lg"
+                  className="grow"
+                  recipeId={recipe.id}
+                />
+              </IconTooltip>
+
+              {/* Bookmark action button */}
+              <IconTooltip
+                content={
+                  isBookmarked ? (
+                    <p>Ta bort från Sparade recept</p>
+                  ) : (
+                    <p>Spara recept</p>
+                  )
+                }
               >
-                <CalendarPlus />
-              </Button>
-            </IconTooltip>
-
-            {/* Add to shopping list action button */}
-            <IconTooltip content={<p>Lägg till recept i inköpslista</p>}>
-              <AddToListButton
-                variant="ghost"
-                size="icon-lg"
-                className="grow"
-                recipeId={recipe.id}
-              />
-            </IconTooltip>
-
-            {/* Bookmark action button */}
-            <IconTooltip
-              content={
-                isBookmarked ? (
-                  <p>Ta bort från Sparade recept</p>
-                ) : (
-                  <p>Spara recept</p>
-                )
-              }
-            >
-              <BookmarkButton
-                variant="ghost"
-                size="icon-lg"
-                className="grow"
-                isBookmarked={isBookmarked}
-                recipeId={recipe.id}
-              />
-            </IconTooltip>
+                <BookmarkButton
+                  variant="ghost"
+                  size="icon-lg"
+                  className="grow"
+                  isBookmarked={isBookmarked}
+                  recipeId={recipe.id}
+                />
+              </IconTooltip>
+            </AuthActionGuard>
 
             {/* Copy link action button */}
             <IconTooltip content={<p>Kopiera länk</p>}>
@@ -95,7 +98,7 @@ export default async function RecipePage({
         instructions={recipe.recipeInstructions}
         recipeYield={recipe.recipeYield}
         ingredientActions={
-          <>
+          <AuthActionGuard isAuthenticated={!!user}>
             <Button
             // variant="secondary"
             // onClick={() => {}} // TODO Add click handler
@@ -105,15 +108,17 @@ export default async function RecipePage({
             </Button>
 
             <AddToListButton variant="secondary" recipeId={recipe.id} />
-          </>
+          </AuthActionGuard>
         }
         instructionActions={
           <>
-            <BookmarkButton
-              variant="ghost"
-              isBookmarked={isBookmarked}
-              recipeId={recipe.id}
-            />
+            <AuthActionGuard isAuthenticated={!!user}>
+              <BookmarkButton
+                variant="ghost"
+                isBookmarked={isBookmarked}
+                recipeId={recipe.id}
+              />
+            </AuthActionGuard>
 
             <CopyLinkButton variant="ghost" slug={slug} />
           </>
