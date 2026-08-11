@@ -29,6 +29,7 @@ import {
   Utensils,
 } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 type RecipeCardProps = {
@@ -49,6 +50,9 @@ export default function RecipeCard({
   onDelete,
 }: RecipeCardProps) {
   const { dispatch } = useSelection();
+  const params = useSearchParams();
+
+  const dateQueryParam = params.get("date");
 
   const {
     id: scheduledRecipeId,
@@ -60,11 +64,11 @@ export default function RecipeCard({
     createdAt,
   } = scheduledRecipe;
 
-  const { slug, name, totalTimeSeconds, proteinType, recipeType } = recipe;
+  const { name, totalTimeSeconds, proteinType, recipeType } = recipe;
 
   async function handleDateChange(daysDifference: number) {
     const state = await rescheduleRecipe({
-      scheduledRecipeId: scheduledRecipe.id,
+      scheduledRecipeId,
       scheduleId,
       previousDate: date,
       difference: daysDifference,
@@ -161,9 +165,11 @@ export default function RecipeCard({
       {/* Recipe details */}
       <div className="flex flex-col gap-2">
         <Link
-          // TODO Replace with /schedule/[scheduleId]/recipe/[slug]?servings=... ?
-          href={{ pathname: `/saved-recipes/${slug}`, query: { servings } }}
-          className={"hover:underline"}
+          href={{
+            pathname: `/schedule/recipe/${scheduledRecipeId}`,
+            query: dateQueryParam ? { date: dateQueryParam } : undefined,
+          }}
+          className="hover:underline"
         >
           <H3 className="line-clamp-2 truncate">{name}</H3>
         </Link>

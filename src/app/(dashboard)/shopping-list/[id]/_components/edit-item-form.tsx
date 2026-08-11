@@ -80,15 +80,7 @@ export default function EditItemForm({
             className="p-3"
             id={`scheduled-recipe-${item.scheduledRecipe.id}`}
           >
-            <Link
-              href={{
-                // TODO Replace with /schedule/[scheduleId]/recipe/[slug]?servings=... ?
-                pathname: `/saved-recipes/${item.scheduledRecipe.recipe.slug}`,
-                query: {
-                  servings: item.scheduledRecipe.servings,
-                },
-              }}
-            >
+            <Link href={`/schedule/recipe/${item.scheduledRecipe.id}`}>
               {item.scheduledRecipe.recipe.imageUrl && (
                 <ItemMedia variant="image">
                   <Image
