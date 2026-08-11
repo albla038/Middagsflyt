@@ -33,12 +33,15 @@ export default function ScheduleCalendar() {
       newSearchParams.set("date", format(date, "yyyy-MM-dd"));
 
       if (pathname.includes(`/schedule/${scheduleId}/create`)) {
-        router.replace(`${pathname}/?${newSearchParams.toString()}`);
+        // If user is on a create page, stay there but update the date
+        router.replace(`${pathname}?${newSearchParams.toString()}`);
       } else if (pathname.includes(`/schedule/${scheduleId}`)) {
+        // If user is on a schedule page, update the week and date
         router.replace(
           `/schedule/${scheduleId}/${year}/${week}?${newSearchParams.toString()}`,
         );
       } else {
+        // Else, if the user is on a different page, just update the date query parameter
         router.replace(`${pathname}/?${newSearchParams.toString()}`);
       }
     }
