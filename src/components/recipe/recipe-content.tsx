@@ -22,6 +22,7 @@ type RecipeContentProps = {
   ingredients: RecipeIngredient[];
   instructions: RecipeInstruction[];
   recipeYield?: number | null;
+  initialServings?: number | null;
   ingredientActions?: ReactNode;
   instructionActions?: ReactNode;
 };
@@ -30,6 +31,7 @@ export default function RecipeContent({
   ingredients,
   instructions,
   recipeYield,
+  initialServings,
   ingredientActions,
   instructionActions,
 }: RecipeContentProps) {
@@ -39,7 +41,7 @@ export default function RecipeContent({
   // Servings state in query params
   const defaultServings = recipeYield ?? 4;
   const [queryState, setQueryState] = useQueryParams(queryParamsSchema, {
-    servings: defaultServings,
+    servings: initialServings ?? defaultServings,
   });
   const { servings } = queryState;
   const servingsScale = servings / defaultServings;

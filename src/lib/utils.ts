@@ -344,3 +344,21 @@ export function parseIngredientInputString(value: string): {
     unit,
   };
 }
+
+export function stringifyPageSearchParams(
+  searchParams: Record<string, string | string[] | undefined>,
+): string {
+  const params = new URLSearchParams();
+
+  for (const [key, value] of Object.entries(searchParams)) {
+    if (!value) continue;
+
+    if (Array.isArray(value)) {
+      value.forEach((v) => params.append(key, v));
+    } else {
+      params.append(key, value);
+    }
+  }
+
+  return params.toString();
+}
