@@ -1,6 +1,6 @@
-import IngredientGroup from "@/app/(dashboard)/_components/add-to-shopping-list-dialog/ingredient-group";
-import IngredientItem from "@/app/(dashboard)/_components/add-to-shopping-list-dialog/ingredient-item";
-import { UIRecipeIngredientsSource } from "@/app/(dashboard)/_components/add-to-shopping-list-dialog/types";
+import IngredientGroup from "@/components/add-to-shopping-list-dialog/ingredient-group";
+import IngredientItem from "@/components/add-to-shopping-list-dialog/ingredient-item";
+import { UIRecipeIngredientsSource } from "@/components/add-to-shopping-list-dialog/types";
 import ServingsControl from "@/components/servings-control";
 
 type IngredientSelectionProps = {

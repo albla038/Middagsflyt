@@ -1,6 +1,6 @@
 "use client";
 
-import AddToShoppingListDialog from "@/app/(dashboard)/_components/add-to-shopping-list-dialog/dialog";
+import AddToShoppingListDialog from "@/components/add-to-shopping-list-dialog/dialog";
 import OrderByToggle from "@/components/recipe-list/order-by-toggle";
 import RecipeListCard from "@/components/recipe-list/recipe-list-card";
 import SearchBar from "@/components/recipe-list/search-bar";

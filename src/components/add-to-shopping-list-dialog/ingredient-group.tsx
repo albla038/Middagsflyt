@@ -1,4 +1,4 @@
-import { UIRecipeIngredientsSource } from "@/app/(dashboard)/_components/add-to-shopping-list-dialog/types";
+import { UIRecipeIngredientsSource } from "@/components/add-to-shopping-list-dialog/types";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Collapsible,

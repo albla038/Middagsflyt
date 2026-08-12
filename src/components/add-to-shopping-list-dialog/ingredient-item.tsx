@@ -1,4 +1,4 @@
-import { UIRecipeIngredient } from "@/app/(dashboard)/_components/add-to-shopping-list-dialog/types";
+import { UIRecipeIngredient } from "@/components/add-to-shopping-list-dialog/types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 

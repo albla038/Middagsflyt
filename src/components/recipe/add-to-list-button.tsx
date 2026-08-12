@@ -1,6 +1,6 @@
 "use client";
 
-import AddToShoppingListDialog from "@/app/(dashboard)/_components/add-to-shopping-list-dialog/dialog";
+import AddToShoppingListDialog from "@/components/add-to-shopping-list-dialog/dialog";
 import { Button } from "@/components/ui/button";
 import { ListPlus } from "lucide-react";
 import { useSearchParams } from "next/navigation";
