@@ -61,136 +61,142 @@ export default function RecipeContent({
       )}
     >
       {/* Recipe ingredients */}
-      <section className="flex h-fit flex-col rounded-xl bg-subtle p-4">
-        {/* Header */}
-        <div className="flex justify-between border-b border-border pb-3">
-          <H2>Ingredienser</H2>
+      <section className="flex flex-col">
+        <div className="flex flex-col rounded-xl bg-subtle p-4">
+          {/* Header */}
+          <div className="flex justify-between border-b border-border pb-3">
+            <H2>Ingredienser</H2>
 
-          <ServingsControl
-            servings={servings}
-            onServingsChange={setServings}
-            defaultServings={defaultServings}
-          />
-        </div>
-        {/* Ingredients list */}
-        <ScrollArea className="grow sm:max-h-[calc(100svh-150px)]">
-          <ul className="flex flex-col py-3 pr-3">
-            {state.ingredients.map((ingredient) => {
-              const { id, quantity, unit, text, note, isChecked, isMuted } =
-                ingredient;
-              return (
-                <li
-                  key={id}
-                  className={cn(
-                    "w-fit transition duration-300 hover:cursor-pointer",
-                    "*:after:content-['_']",
-                    {
-                      "text-muted-foreground line-through": isChecked,
-                      "text-muted-foreground": isMuted,
-                    },
-                  )}
-                  onClick={() =>
-                    dispatch({ type: "CHECK_INGREDIENT", payload: { id } })
-                  }
-                >
-                  {quantity && (
-                    <span className="font-medium">
-                      {formatQuantityDecimal(quantity * servingsScale)}
-                    </span>
-                  )}
-                  {unit && unit !== "ST" && (
-                    <span className="font-medium">{unit.toLowerCase()}</span>
-                  )}
-                  <p
-                    className={cn("inline", {
-                      "text-muted-foreground line-through": isChecked,
-                    })}
-                  >
-                    {text}{" "}
-                    {note && (
-                      <span className="text-muted-foreground">{note}</span>
+            <ServingsControl
+              servings={servings}
+              onServingsChange={setServings}
+              defaultServings={defaultServings}
+            />
+          </div>
+          {/* Ingredients list */}
+          <ScrollArea className="sm:max-h-[calc(100svh-150px)]">
+            <ul className="flex flex-col py-3 pr-3">
+              {state.ingredients.map((ingredient) => {
+                const { id, quantity, unit, text, note, isChecked, isMuted } =
+                  ingredient;
+                return (
+                  <li
+                    key={id}
+                    className={cn(
+                      "w-fit transition duration-300 hover:cursor-pointer",
+                      "*:after:content-['_']",
+                      {
+                        "text-muted-foreground line-through": isChecked,
+                        "text-muted-foreground": isMuted,
+                      },
                     )}
-                  </p>
-                </li>
-              );
-            })}
-          </ul>
-        </ScrollArea>
+                    onClick={() =>
+                      dispatch({ type: "CHECK_INGREDIENT", payload: { id } })
+                    }
+                  >
+                    {quantity && (
+                      <span className="font-medium">
+                        {formatQuantityDecimal(quantity * servingsScale)}
+                      </span>
+                    )}
+                    {unit && unit !== "ST" && (
+                      <span className="font-medium">{unit.toLowerCase()}</span>
+                    )}
+                    <p
+                      className={cn("inline", {
+                        "text-muted-foreground line-through": isChecked,
+                      })}
+                    >
+                      {text}{" "}
+                      {note && (
+                        <span className="text-muted-foreground">{note}</span>
+                      )}
+                    </p>
+                  </li>
+                );
+              })}
+            </ul>
+          </ScrollArea>
 
-        {/* Ingredient list actions */}
-        {ingredientActions && (
-          <div className="flex flex-wrap gap-2 pr-3">{ingredientActions}</div>
-        )}
+          {/* Ingredient list actions */}
+          {ingredientActions && (
+            <div className="flex flex-wrap gap-2 pr-3">{ingredientActions}</div>
+          )}
+        </div>
       </section>
 
       {/* Recipe instructions */}
-      <section className="flex h-fit flex-col p-4">
-        {/* Header */}
-        <div className="flex items-baseline justify-between border-b border-border pb-3">
-          <H2>Gör så här</H2>
-          <span className="flex items-center gap-2">
-            <Label htmlFor="keep-screen-on">Håll skärmen tänd</Label>
-            <Switch
-              id="keep-screen-on"
-              checked={isLocked}
-              onCheckedChange={toggleWakeLock}
-            />
-          </span>
+      <section className="flex flex-col">
+        <div className="flex flex-col p-4">
+          {/* Header */}
+          <div className="flex items-baseline justify-between border-b border-border pb-3">
+            <H2>Gör så här</H2>
+            <span className="flex items-center gap-2">
+              <Label htmlFor="keep-screen-on">Håll skärmen tänd</Label>
+              <Switch
+                id="keep-screen-on"
+                checked={isLocked}
+                onCheckedChange={toggleWakeLock}
+              />
+            </span>
+          </div>
+
+          {/* Instructions list */}
+          <ScrollArea className="sm:max-h-[calc(100svh-150px)]">
+            <ul className="flex flex-col gap-3 py-3 pr-3">
+              {state.instructions.map((instruction) => {
+                const { id, text, isChecked, recipeIngredients } = instruction;
+                return (
+                  <li key={id}>
+                    <Label
+                      className={cn(
+                        "flex items-start gap-2 rounded-md border border-border p-3 text-base font-normal transition duration-300",
+                        "has-[[aria-checked=true]]:text-muted-foreground has-[[aria-checked=true]]:line-through has-[[aria-checked=true]]:[&>p]:line-clamp-1",
+                        "hover:bg-accent",
+                      )}
+                      onMouseEnter={() =>
+                        dispatch({
+                          type: "HOVER_INSTRUCTION",
+                          payload: { ingredientIds: recipeIngredients },
+                        })
+                      }
+                      onMouseLeave={() =>
+                        dispatch({
+                          type: "CLEAR_HOVER",
+                        })
+                      }
+                    >
+                      <span className="flex h-lh items-center">
+                        <Checkbox
+                          checked={isChecked}
+                          onCheckedChange={(event) => {
+                            if (typeof event !== "boolean") return;
+                            dispatch({
+                              type: "CHECK_INSTRUCTION",
+                              payload: {
+                                id,
+                                ingredientIds: recipeIngredients,
+                                checked: event,
+                              },
+                            });
+                          }}
+                        />
+                      </span>
+                      <p>{text}</p>
+                    </Label>
+                  </li>
+                );
+              })}
+            </ul>
+          </ScrollArea>
+
+          {/* Instruction list actions */}
+          {instructionActions && (
+            <div className="flex flex-wrap gap-2 pr-3">
+              {instructionActions}
+            </div>
+          )}
         </div>
-
-        {/* Instructions list */}
-        <ScrollArea className="sm:max-h-[calc(100svh-150px)]">
-          <ul className="flex flex-col gap-3 py-3 pr-3">
-            {state.instructions.map((instruction) => {
-              const { id, text, isChecked, recipeIngredients } = instruction;
-              return (
-                <li key={id}>
-                  <Label
-                    className={cn(
-                      "flex items-start gap-2 rounded-md border border-border p-3 text-base font-normal transition duration-300",
-                      "has-[[aria-checked=true]]:text-muted-foreground has-[[aria-checked=true]]:line-through has-[[aria-checked=true]]:[&>p]:line-clamp-1",
-                      "hover:bg-accent",
-                    )}
-                    onMouseEnter={() =>
-                      dispatch({
-                        type: "HOVER_INSTRUCTION",
-                        payload: { ingredientIds: recipeIngredients },
-                      })
-                    }
-                    onMouseLeave={() =>
-                      dispatch({
-                        type: "CLEAR_HOVER",
-                      })
-                    }
-                  >
-                    <span className="flex h-lh items-center">
-                      <Checkbox
-                        checked={isChecked}
-                        onCheckedChange={(event) => {
-                          if (typeof event !== "boolean") return;
-                          dispatch({
-                            type: "CHECK_INSTRUCTION",
-                            payload: {
-                              id,
-                              ingredientIds: recipeIngredients,
-                              checked: event,
-                            },
-                          });
-                        }}
-                      />
-                    </span>
-                    <p>{text}</p>
-                  </Label>
-                </li>
-              );
-            })}
-          </ul>
-        </ScrollArea>
-
-        {/* Instruction list actions */}
-        {instructionActions && (
-          <div className="flex flex-wrap gap-2 pr-3">{instructionActions}</div>
-        )}
       </section>
     </div>
   );
