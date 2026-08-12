@@ -57,18 +57,6 @@ export type Order = (typeof ORDER_OPTIONS)[number];
 export type SortBy = (typeof SORT_BY_OPTIONS)[number];
 export type MyRecipesDisplay = (typeof MY_RECIPES_DISPLAY_OPTIONS)[number];
 
-export type HouseholdMember = {
-  role: string;
-  user: User;
-};
-
-export type ScheduleWithMembers = {
-  id: string;
-  name: string;
-  description: string | null;
-  members: HouseholdMember[];
-};
-
 export type ScheduledNoteDisplayContent = {
   id: string;
   date: Date;

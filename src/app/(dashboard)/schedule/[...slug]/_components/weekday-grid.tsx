@@ -16,8 +16,8 @@ import SaveNoteDialog, {
   SaveNoteDialogState,
 } from "@/app/(dashboard)/schedule/[...slug]/_components/save-note-dialog";
 import { useSelection } from "@/app/(dashboard)/schedule/[...slug]/selection-provider";
+import { HouseholdMember } from "@/lib/schemas/household";
 import {
-  HouseholdMember,
   ScheduledNoteDisplayContent,
   ScheduledRecipeDisplayContent,
 } from "@/lib/types";

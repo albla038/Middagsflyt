@@ -18,8 +18,8 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import UserAvatar from "@/components/user-avatar";
+import { HouseholdMember } from "@/lib/schemas/household";
 import { RecipeDisplayContent } from "@/lib/schemas/recipe";
-import { HouseholdMember } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { format, getISOWeek, getISOWeekYear } from "date-fns";
 import { ListFilter, LoaderCircle } from "lucide-react";

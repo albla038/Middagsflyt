@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import UserAvatar from "@/components/user-avatar";
-import { HouseholdMember } from "@/lib/types";
+import { HouseholdMember } from "@/lib/schemas/household";
 import { User } from "better-auth";
 import { LoaderCircle } from "lucide-react";
 import { useTransition } from "react";
