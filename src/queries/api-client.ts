@@ -1,4 +1,5 @@
 import { recipeIngredientsSourceSchema } from "@/lib/schemas/recipe-ingredient";
+import { scheduleWithMembersSchema } from "@/lib/schemas/schedule";
 import {
   shoppingListResponseSchema,
   shoppingListWithCountSchema,
@@ -29,6 +30,10 @@ const zodSchema = createSchema({
   "/api/shopping-lists/:listId": {
     params: z.object({ listId: z.cuid2() }),
     output: shoppingListResponseSchema,
+  },
+
+  "/api/schedules": {
+    output: z.array(scheduleWithMembersSchema),
   },
 });
 
