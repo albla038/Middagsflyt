@@ -2,7 +2,7 @@ import { householdMemberSchema } from "@/lib/schemas/household";
 import z from "zod";
 
 export const scheduleWithMembersSchema = z.object({
-  id: z.string(),
+  id: z.cuid2(),
   name: z.string(),
   description: z.string().nullable(),
   members: z.array(householdMemberSchema),
