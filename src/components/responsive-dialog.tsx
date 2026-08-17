@@ -26,6 +26,7 @@ type ResponsiveDialogProps = {
   showCloseButtonInDialog?: boolean;
   onCloseAnimationEnd?: () => void;
   dialogAction?: ReactNode;
+  dialogContentClassName?: string;
 };
 
 export default function ResponsiveDialog({
@@ -34,9 +35,10 @@ export default function ResponsiveDialog({
   description,
   open,
   onOpenChange,
-  showCloseButtonInDialog = true,
+  showCloseButtonInDialog,
   onCloseAnimationEnd,
   dialogAction,
+  dialogContentClassName,
 }: ResponsiveDialogProps) {
   const isMobile = useIsMobile();
 
@@ -49,13 +51,10 @@ export default function ResponsiveDialog({
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent
-          className="max-h-[90vh]"
-          onAnimationEnd={handleAnimationEnd}
-        >
+        <DrawerContent onAnimationEnd={handleAnimationEnd}>
           {dialogAction ? (
             // Render dialogAction in flex-row layout if provided
-            <div className="flex items-start justify-between p-4 pb-0">
+            <div className="flex items-start justify-between p-4">
               <div className="grid gap-0.5">
                 <DrawerTitle>{title}</DrawerTitle>
                 <DrawerDescription>{description}</DrawerDescription>
@@ -70,7 +69,7 @@ export default function ResponsiveDialog({
             </DrawerHeader>
           )}
 
-          <div className="p-4">{children}</div>
+          <div className="p-4 pt-0">{children}</div>
         </DrawerContent>
       </Drawer>
     );
@@ -81,6 +80,7 @@ export default function ResponsiveDialog({
       <DialogContent
         showCloseButton={showCloseButtonInDialog}
         onAnimationEnd={handleAnimationEnd}
+        className={dialogContentClassName}
       >
         {dialogAction ? (
           // Render dialogAction in flex-row layout if provided
