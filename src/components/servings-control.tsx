@@ -29,7 +29,7 @@ export default function ServingsControl({
       >
         <Minus className="size-5" />
       </Button>
-      <span className="flex items-center gap-1 font-medium">
+      <span className="flex min-w-10 items-center justify-center gap-1 font-medium">
         <ForkKnife className="size-4" />
         {servings}
       </span>
