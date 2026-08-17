@@ -18,7 +18,7 @@ export default function ServingsControl({
         type="button"
         variant={"ghost"}
         className="h-7"
-        disabled={servings <= 1}
+        disabled={servings - defaultServings / 2 <= 0}
         onClick={() =>
           onServingsChange(
             servings - defaultServings / 2 > 0
