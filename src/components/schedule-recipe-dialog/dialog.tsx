@@ -20,8 +20,9 @@ import { Recipe } from "@/lib/types/recipe";
 import { schedulesQueryOptions } from "@/queries/schedules/options";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
+import { format, getISOWeek, getISOWeekYear } from "date-fns";
 import { sv } from "date-fns/locale";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useTransition } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
@@ -58,6 +59,8 @@ export default function ScheduleRecipeDialog({
   });
 
   const [isPending, startTransition] = useTransition();
+
+  const router = useRouter();
 
   // Watch the selected date and schedule ID
   const selectedDate = useWatch({
@@ -98,7 +101,17 @@ export default function ScheduleRecipeDialog({
         return;
       }
 
-      toast.success("Receptet har schemalagts");
+      // Display success toast with link to the schedule
+      const week = getISOWeek(data.date);
+      const year = getISOWeekYear(data.date);
+      toast.success("Receptet har schemalagts", {
+        action: {
+          label: "Till kalendern",
+          onClick: () =>
+            router.push(`/schedule/${data.scheduleId}/${year}/${week}`),
+        },
+      });
+
       onOpenChange(false);
     });
   }
@@ -113,7 +126,7 @@ export default function ScheduleRecipeDialog({
       onCloseAnimationEnd={form.reset}
     >
       <form onSubmit={form.handleSubmit(handleSubmit)}>
-        <FieldGroup className="max-h-[60svh] gap-0 md:max-h-[75svh]">
+        <FieldGroup className="max-h-[55svh] gap-0 md:max-h-[75svh]">
           <FieldGroup className="scrollbar-none overflow-y-auto pb-7 md:flex-row">
             <FieldGroup className="contents md:flex">
               <div className="order-1 grid grid-cols-2 gap-4 md:contents">
