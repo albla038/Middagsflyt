@@ -127,7 +127,7 @@ export default function ScheduleRecipeDialog({
     >
       <form onSubmit={form.handleSubmit(handleSubmit)}>
         <FieldGroup className="max-h-[55svh] gap-0 md:max-h-[75svh]">
-          <FieldGroup className="scrollbar-none overflow-y-auto pb-7 md:flex-row">
+          <FieldGroup className="scrollbar-none overflow-y-auto px-1 pb-7 md:flex-row">
             <FieldGroup className="contents md:flex">
               <div className="order-1 grid grid-cols-2 gap-4 md:contents">
                 <ScheduleSelectField
