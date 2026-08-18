@@ -43,7 +43,7 @@ export default function DeleteRecipeAlert({
       if (state) {
         if (state.success) {
           dispatch({
-            type: "TOGGLE_RECIPE",
+            type: "REMOVE_RECIPE",
             payload: {
               scheduleId,
               scheduledRecipe: {

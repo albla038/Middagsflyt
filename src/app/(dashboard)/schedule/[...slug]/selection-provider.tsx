@@ -23,6 +23,10 @@ type Action =
       payload: { scheduleId: string; scheduledRecipe: SelectedRecipe };
     }
   | {
+      type: "REMOVE_RECIPE";
+      payload: { scheduleId: string; scheduledRecipe: SelectedRecipe };
+    }
+  | {
       type: "SELECT_MULTIPLE";
       payload: { scheduleId: string; scheduledRecipes: SelectedRecipe[] };
     }
@@ -53,6 +57,28 @@ function selectionReducer(
       const newSelection = isSelected
         ? currentSelection.filter((recipe) => recipe.id !== scheduledRecipe.id)
         : [...currentSelection, scheduledRecipe];
+
+      return {
+        ...state,
+        [scheduleId]: newSelection,
+      };
+    }
+
+    case "REMOVE_RECIPE": {
+      const { scheduleId, scheduledRecipe } = payload;
+
+      // Get current selection for the schedule, or empty array if none
+      const currentSelection = state[scheduleId] ?? [];
+
+      // 1. Check if the recipe is already selected
+      const isSelected = currentSelection.some(
+        (recipe) => recipe.id === scheduledRecipe.id,
+      );
+
+      // 2. If the recipe is selected, remove it from the selection array
+      const newSelection = isSelected
+        ? currentSelection.filter((recipe) => recipe.id !== scheduledRecipe.id)
+        : currentSelection;
 
       return {
         ...state,
