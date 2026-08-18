@@ -52,7 +52,7 @@ export function useDeleteShoppingListItems(listId: string) {
     },
 
     onSuccess: (_, itemIds, context) => {
-      toast("Varorna togs bort.", {
+      toast.success("Varorna togs bort.", {
         // Restore deleted items on cancel
         cancel: {
           label: "Ångra",

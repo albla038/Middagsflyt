@@ -249,8 +249,11 @@ export default function AddToShoppingListDialog({
         return;
       }
 
-      toast(
-        `${selectedIngredientsCount} varor lades till i ${shoppingLists?.find((list) => list.id === targetListId)?.name ?? "inköpslistan"}`,
+      const listName = shoppingLists?.find(
+        (list) => list.id === targetListId,
+      )?.name;
+      toast.success(
+        `${selectedIngredientsCount} varor lades till i ${listName ?? "inköpslistan"}`,
         {
           description:
             scheduledRecipeUpdates.length > 0

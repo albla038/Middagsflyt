@@ -75,12 +75,11 @@ export default function SaveShoppingListForm({
 
       onClose();
 
-      toast(`"${data.name}" sparades`, {
+      toast.success(`"${data.name}" sparades`, {
         action: {
           label: "Till inköpslista",
           onClick: () => router.push(`/shopping-list/${response.data.listId}`),
         },
-        richColors: true,
       });
     });
   }
