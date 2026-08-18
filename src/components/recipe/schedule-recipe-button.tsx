@@ -48,7 +48,7 @@ export default function ScheduleRecipeButton({
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         recipe={recipe}
-        servings={servings}
+        servings={servings ?? 4}
       />
     </>
   );

@@ -5,13 +5,14 @@ import OrderByToggle from "@/components/recipe-list/order-by-toggle";
 import RecipeListCard from "@/components/recipe-list/recipe-list-card";
 import SearchBar from "@/components/recipe-list/search-bar";
 import SortSelect from "@/components/recipe-list/sort-select";
+import ScheduleRecipeDialog from "@/components/schedule-recipe-dialog/dialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RecipeDisplayContent } from "@/lib/schemas/recipe";
 import { MyRecipesDisplay } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Grid2X2, ListFilter, Rows3 } from "lucide-react";
-import { Suspense, use, useState } from "react";
+import { Suspense, use, useMemo, useState } from "react";
 
 type RecipeListProps = {
   recipesPromise: Promise<RecipeDisplayContent[]>;
@@ -27,11 +28,15 @@ export default function RecipeList({
   displayType,
 }: RecipeListProps) {
   const [addToListDialogOpen, setAddToListDialogOpen] = useState(false);
-  const [addToListRecipeId, setAddToListRecipeId] = useState<string | null>(
-    null,
-  );
+  const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
+  const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
 
   const recipes = use(recipesPromise);
+
+  const selectedRecipe = useMemo(
+    () => recipes.find((recipe) => recipe.id === selectedRecipeId),
+    [recipes, selectedRecipeId],
+  );
 
   return (
     <>
@@ -95,10 +100,11 @@ export default function RecipeList({
                   basePath={basePath}
                   displayType={displayType}
                   onClickSchedule={(recipeId) => {
-                    // TODO Open schedule dialog
+                    setSelectedRecipeId(recipeId);
+                    setScheduleDialogOpen(true);
                   }}
                   onClickAddToList={(recipeId) => {
-                    setAddToListRecipeId(recipeId);
+                    setSelectedRecipeId(recipeId);
                     setAddToListDialogOpen(true);
                   }}
                 />
@@ -113,9 +119,23 @@ export default function RecipeList({
         onOpenChange={setAddToListDialogOpen}
         ingredientSources={{
           type: "recipe",
-          ids: addToListRecipeId ? [addToListRecipeId] : [],
+          ids: selectedRecipeId ? [selectedRecipeId] : [],
         }}
       />
+
+      {selectedRecipe && (
+        <ScheduleRecipeDialog
+          open={scheduleDialogOpen}
+          onOpenChange={(open) => {
+            setScheduleDialogOpen(open);
+            if (!open) {
+              setSelectedRecipeId(null);
+            }
+          }}
+          recipe={selectedRecipe}
+          servings={selectedRecipe.recipeYield ?? 4}
+        />
+      )}
     </>
   );
 }
