@@ -46,7 +46,7 @@ export default function ScheduleRecipeForm({
 
   // STATE for selected recipe and assignee
   const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
-  const [assigneeId, setAssigneeId] = useState<string | undefined>(undefined);
+  const [assigneeId, setAssigneeId] = useState<string | null>(null);
   const assignee = members.find(
     (member) => member.user.id === assigneeId,
   )?.user;
@@ -179,7 +179,7 @@ export default function ScheduleRecipeForm({
 
             <div className="grid gap-1">
               <Select
-                value={assigneeId}
+                value={assigneeId ?? ""}
                 onValueChange={(assigneeId) => setAssigneeId(assigneeId)}
               >
                 <SelectTrigger

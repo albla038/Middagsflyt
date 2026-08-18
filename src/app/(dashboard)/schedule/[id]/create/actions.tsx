@@ -23,7 +23,7 @@ const scheduleRecipeSchema = z.object({
   recipeId: z.cuid2("Ogiltigt recept-ID"),
   date: z.date("Ogiltigt datum"),
   servings: z.number().min(1, "Antal portioner måste vara minst 1"),
-  assigneeId: z.string("Ogiltigt användar-ID").optional(),
+  assigneeId: z.string("Ogiltigt användar-ID").nullable(),
   note: z.preprocess(
     (value) => (value === "" ? null : value),
     z.string("Ange en giltig anteckning").nullable(),
@@ -35,7 +35,7 @@ export async function scheduleRecipe(
   recipeId: string | null,
   date: Date,
   servings: number,
-  assigneeId: string | undefined,
+  assigneeId: string | null,
   prevState: ScheduleRecipeFormState,
   formData: FormData,
 ): Promise<ScheduleRecipeFormState> {

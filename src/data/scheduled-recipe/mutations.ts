@@ -5,6 +5,7 @@ import { requireUser } from "@/data/user/verify-user";
 import prisma from "@/lib/db";
 import { MutationResult } from "@/lib/types/api";
 import { prismaErrorToErrorCode } from "@/lib/prisma-error-mapper";
+import { ScheduleRecipeCreate } from "@/lib/schemas/scheduled-recipe";
 
 export async function createScheduledRecipe({
   scheduleId,
@@ -13,14 +14,7 @@ export async function createScheduledRecipe({
   servings,
   assigneeId,
   note,
-}: {
-  scheduleId: string;
-  recipeId: string;
-  date: Date;
-  servings: number;
-  assigneeId: string | undefined;
-  note: string | null;
-}): Promise<Result<void, Error>> {
+}: ScheduleRecipeCreate): Promise<MutationResult> {
   const user = await requireUser();
 
   try {
@@ -52,17 +46,9 @@ export async function createScheduledRecipe({
       },
     });
 
-    return {
-      ok: true,
-      data: undefined,
-    };
+    return { ok: true };
   } catch (error) {
-    return {
-      ok: false,
-      error: new Error("Failed to create scheduled recipe", {
-        cause: error instanceof Error ? error : new Error(String(error)),
-      }),
-    };
+    return { ok: false, errorCode: prismaErrorToErrorCode(error) };
   }
 }
 
