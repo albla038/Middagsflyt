@@ -151,7 +151,7 @@ export default function RecipeContent({
                     <Label
                       className={cn(
                         "flex items-start gap-2 rounded-md border border-border p-3 text-base font-normal transition duration-300",
-                        "has-[[aria-checked=true]]:text-muted-foreground has-[[aria-checked=true]]:line-through has-[[aria-checked=true]]:[&>p]:line-clamp-1",
+                        "has-aria-checked:text-muted-foreground has-aria-checked:line-through has-aria-checked:[&>p]:line-clamp-1",
                         "hover:bg-accent",
                       )}
                       onMouseEnter={() =>

@@ -40,7 +40,7 @@ export default function RecipeListCard({
         )}
       >
         <Link href={`${basePath}/${recipe.slug}`}>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-b-xl bg-accent">
+          <div className="relative aspect-4/3 overflow-hidden rounded-b-xl bg-accent">
             {recipe.imageUrl ? (
               <>
                 {isLoading && <Skeleton className="size-full rounded-xl" />}

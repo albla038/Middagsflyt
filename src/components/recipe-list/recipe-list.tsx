@@ -90,7 +90,7 @@ export default function RecipeList({
           <ul
             className={cn(
               "grid gap-5",
-              "min-[40rem]:grid-cols-2 min-[64rem]:grid-cols-3",
+              "sm:grid-cols-2 lg:grid-cols-3",
             )}
           >
             {recipes.map((recipe) => (

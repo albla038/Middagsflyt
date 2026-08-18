@@ -63,7 +63,7 @@ export default async function Page({
       <div className="relative flex w-full flex-col items-center">
         <Header breadcrumbs={breadcrumbs} />
 
-        <main className="grid w-full max-w-[64rem] gap-12 px-2 py-16">
+        <main className="grid w-full max-w-5xl gap-12 px-2 py-16">
           <div className="flex justify-between">
             <H1>
               <Bookmark />
