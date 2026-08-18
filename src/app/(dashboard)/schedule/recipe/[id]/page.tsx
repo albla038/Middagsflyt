@@ -5,11 +5,10 @@ import BookmarkButton from "@/components/recipe/bookmark-button";
 import CopyLinkButton from "@/components/recipe/copy-link-button";
 import RecipeContent from "@/components/recipe/recipe-content";
 import RecipeHeader from "@/components/recipe/recipe-header";
-import { Button } from "@/components/ui/button";
+import ScheduleRecipeButton from "@/components/recipe/schedule-recipe-button";
 import { fetchScheduledRecipe } from "@/data/scheduled-recipe/queries";
 import { stringifyPageSearchParams } from "@/lib/utils";
 import { getISOWeek, getISOWeekYear } from "date-fns";
-import { CalendarPlus } from "lucide-react";
 import { notFound } from "next/navigation";
 
 export default async function ScheduledRecipePage({
@@ -59,14 +58,13 @@ export default async function ScheduledRecipePage({
               <>
                 {/* Plan recipe action button */}
                 <IconTooltip content={<p>Planera recept</p>}>
-                  <Button
+                  <ScheduleRecipeButton
                     variant="ghost"
                     size="icon-lg"
                     className="grow"
-                    // onClick={() => {}} // TODO Add click handler
-                  >
-                    <CalendarPlus />
-                  </Button>
+                    recipe={recipe}
+                    scheduledServings={scheduledRecipe.servings}
+                  />
                 </IconTooltip>
 
                 {/* Add to shopping list action button */}
@@ -120,13 +118,10 @@ export default async function ScheduledRecipePage({
             initialServings={scheduledRecipe.servings}
             ingredientActions={
               <>
-                <Button
-                // variant="secondary"
-                // onClick={() => {}} // TODO Add click handler
-                >
-                  <CalendarPlus />
-                  <span>Planera</span>
-                </Button>
+                <ScheduleRecipeButton
+                  recipe={recipe}
+                  scheduledServings={scheduledRecipe.servings}
+                />
 
                 <AddToListButton
                   variant="secondary"

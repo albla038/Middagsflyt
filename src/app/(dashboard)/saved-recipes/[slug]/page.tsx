@@ -5,9 +5,8 @@ import BookmarkButton from "@/components/recipe/bookmark-button";
 import CopyLinkButton from "@/components/recipe/copy-link-button";
 import RecipeContent from "@/components/recipe/recipe-content";
 import RecipeHeader from "@/components/recipe/recipe-header";
-import { Button } from "@/components/ui/button";
+import ScheduleRecipeButton from "@/components/recipe/schedule-recipe-button";
 import { fetchRecipeForUserBySlug } from "@/data/recipe/queries";
-import { CalendarPlus } from "lucide-react";
 import { notFound } from "next/navigation";
 
 export default async function SavedRecipePage({
@@ -43,14 +42,12 @@ export default async function SavedRecipePage({
               <>
                 {/* Plan recipe action button */}
                 <IconTooltip content={<p>Planera recept</p>}>
-                  <Button
+                  <ScheduleRecipeButton
                     variant="ghost"
                     size="icon-lg"
                     className="grow"
-                    // onClick={() => {}} // TODO Add click handler
-                  >
-                    <CalendarPlus />
-                  </Button>
+                    recipe={recipe}
+                  />
                 </IconTooltip>
 
                 {/* Add to shopping list action button */}
@@ -102,13 +99,7 @@ export default async function SavedRecipePage({
             recipeYield={recipe.recipeYield}
             ingredientActions={
               <>
-                <Button
-                // variant="secondary"
-                // onClick={() => {}} // TODO Add click handler
-                >
-                  <CalendarPlus />
-                  <span>Planera</span>
-                </Button>
+                <ScheduleRecipeButton recipe={recipe} />
 
                 <AddToListButton variant="secondary" recipeId={recipe.id} />
               </>
