@@ -242,7 +242,7 @@ export default function AddToShoppingListDialog({
       if (!actionRes.success) {
         const errorMessage = getActionErrorMessage(actionRes.errorCode, {
           NOT_FOUND:
-            "Inköpslistan kunde inte hittas. Den kanske ha tagits bort?",
+            "Inköpslistan kunde inte hittas. Den kanske har tagits bort?",
         });
 
         toast.error(errorMessage);
