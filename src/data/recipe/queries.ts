@@ -313,6 +313,11 @@ export async function fetchAllSavedRecipes(
             createdById: true,
 
             schedules: {
+              where: {
+                date: {
+                  gte: startOfToday(),
+                },
+              },
               select: {
                 date: true,
               },
@@ -330,9 +335,9 @@ export async function fetchAllSavedRecipes(
         ...rest,
         isSaved: true,
         isCreatedByUser: createdById === user.id,
-        scheduledDates: schedules
-          .map((scheduledRecipe) => scheduledRecipe.date)
-          .filter((date) => startOfToday() <= date),
+        scheduledDates: schedules.map(
+          (scheduledRecipe) => scheduledRecipe.date,
+        ),
       };
     });
   } catch (error) {
