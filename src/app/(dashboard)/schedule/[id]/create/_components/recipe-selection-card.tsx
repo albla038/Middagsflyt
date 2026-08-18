@@ -39,10 +39,10 @@ export default function RecipeSelectionCard({
           className={cn(
             "group cursor-pointer gap-0 overflow-hidden border-transparent p-0",
             "transition-all duration-300 hover:border-border hover:bg-subtle",
-            "has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary-foreground",
+            "has-data-[state=checked]:border-primary has-data-[state=checked]:bg-primary-foreground",
           )}
         >
-          <div className="relative aspect-[4/3] overflow-hidden rounded-b-xl bg-accent">
+          <div className="relative aspect-4/3 overflow-hidden rounded-b-xl bg-accent">
             {imageUrl ? (
               <>
                 {isImageLoading && (

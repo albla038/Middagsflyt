@@ -121,8 +121,7 @@ export default async function Page({
       <div className="relative flex h-svh w-full flex-col items-center">
         <Header breadcrumbs={breadcrumbs} />
 
-        {/* // TODO Remove max width */}
-        <main className="relative flex size-full flex-col gap-12 px-2 py-16 xl:max-w-[64rem] 2xl:max-w-[72rem]">
+        <main className="relative flex size-full flex-col gap-12 px-8 py-16 xl:max-w-7xl">
           <div className="flex justify-between">
             <div className="grid gap-2">
               <div className="flex items-center gap-3">

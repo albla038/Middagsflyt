@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import H3 from "@/components/ui/typography/h3";
 import { HouseholdMember } from "@/lib/schemas/household";
-import {  ScheduledRecipeDisplayContent } from "@/lib/types";
+import { ScheduledRecipeDisplayContent } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import {
   ArrowLeft,
@@ -88,7 +88,7 @@ export default function RecipeCard({
     <article
       className={cn(
         "flex flex-col gap-2 rounded-md border border-subtle bg-subtle p-3",
-        "has-[[aria-checked=true]]:border-primary",
+        "has-aria-checked:border-primary",
       )}
     >
       {/* Action buttons */}
@@ -131,20 +131,16 @@ export default function RecipeCard({
               </DropdownMenuItem>
 
               {/* Edit note action */}
-              <DropdownMenuItem
-                onSelect={() =>
-                  setTimeout(() => onEditNote(scheduledRecipe), 0)
-                }
-              >
+              <DropdownMenuItem onSelect={() => onEditNote(scheduledRecipe)}>
                 <Edit />
                 Redigera anteckning
               </DropdownMenuItem>
 
               {/* Remove action */}
               <DropdownMenuItem
-                onSelect={() =>
-                  setTimeout(() => onDelete(scheduledRecipeId), 0)
-                }
+                onSelect={() => {
+                  onDelete(scheduledRecipeId);
+                }}
               >
                 <Trash2 className="text-destructive" />
                 Ta bort
@@ -199,7 +195,7 @@ export default function RecipeCard({
 
         {note && (
           <div className="flex gap-1 text-xs text-muted-foreground">
-            <span className="flex h-[1lh] items-center">
+            <span className="flex h-lh items-center">
               <Notebook className="size-3" />
             </span>
             <p>{note}</p>

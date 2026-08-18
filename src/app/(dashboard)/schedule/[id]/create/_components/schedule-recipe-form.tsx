@@ -20,7 +20,6 @@ import { Textarea } from "@/components/ui/textarea";
 import UserAvatar from "@/components/user-avatar";
 import { HouseholdMember } from "@/lib/schemas/household";
 import { RecipeDisplayContent } from "@/lib/schemas/recipe";
-import { cn } from "@/lib/utils";
 import { format, getISOWeek, getISOWeekYear } from "date-fns";
 import { ListFilter, LoaderCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -135,12 +134,7 @@ export default function ScheduleRecipeForm({
             value={selectedRecipeId}
             onValueChange={setSelectedRecipeId}
           >
-            <ul
-              className={cn(
-                "grid gap-5",
-                "min-[40rem]:grid-cols-2 min-[64rem]:grid-cols-3",
-              )}
-            >
+            <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {recipes.map((recipe) => (
                 <li key={recipe.id}>
                   <RecipeSelectionCard recipe={recipe} />

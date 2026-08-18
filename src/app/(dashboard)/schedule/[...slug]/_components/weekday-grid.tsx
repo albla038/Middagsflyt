@@ -96,7 +96,7 @@ export default function WeekdayGrid({
                 className={cn(
                   "flex size-9 items-center justify-center rounded-md text-lg font-medium",
                   "group-data-[today=true]:bg-accent",
-                  "group-data-[selected=true]:!bg-primary group-data-[selected=true]:text-primary-foreground",
+                  "group-data-[selected=true]:bg-primary! group-data-[selected=true]:text-primary-foreground",
                 )}
               >
                 {format(weekday.date, "d")}
