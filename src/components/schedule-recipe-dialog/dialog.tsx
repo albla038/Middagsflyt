@@ -1,6 +1,7 @@
 "use client";
 
 import ResponsiveDialog from "@/components/responsive-dialog";
+import { createScheduledRecipeAction } from "@/components/schedule-recipe-dialog/actions";
 import AssigneeSelectField from "@/components/schedule-recipe-dialog/fields/assignee-select";
 import DateSelectField from "@/components/schedule-recipe-dialog/fields/date-select";
 import NoteField from "@/components/schedule-recipe-dialog/fields/note";
@@ -8,6 +9,8 @@ import ScheduleSelectField from "@/components/schedule-recipe-dialog/fields/sche
 import ServingsControlField from "@/components/schedule-recipe-dialog/fields/servings-control";
 import { Button } from "@/components/ui/button";
 import { Field, FieldGroup } from "@/components/ui/field";
+import { Spinner } from "@/components/ui/spinner";
+import { getActionErrorMessage } from "@/lib/error-messages";
 import {
   ScheduleRecipeForm,
   ScheduleRecipeFormInput,
@@ -19,8 +22,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useTransition } from "react";
 import { useForm, useWatch } from "react-hook-form";
+import { toast } from "sonner";
 
 type ScheduleRecipeDialogProps = {
   open: boolean;
@@ -53,11 +57,21 @@ export default function ScheduleRecipeDialog({
     },
   });
 
-  // Watch the selected date to update the submit button text
+  const [isPending, startTransition] = useTransition();
+
+  // Watch the selected date and schedule ID
   const selectedDate = useWatch({
     control: form.control,
     name: "date",
   });
+  const selectedScheduleId = useWatch({
+    control: form.control,
+    name: "scheduleId",
+  });
+  const selectedSchedule = useMemo(
+    () => schedules?.find((s) => s.id === selectedScheduleId),
+    [schedules, selectedScheduleId],
+  );
 
   // Set schedule ID directly if only one schedule exists
   useEffect(() => {
@@ -69,14 +83,24 @@ export default function ScheduleRecipeDialog({
     }
   }, [schedules, form]);
 
-  const selectedSchedule = useMemo(
-    () => schedules?.find((s) => s.id === form.getValues("scheduleId")),
-    [schedules, form],
-  );
-
   // Main submit handler
   function handleSubmit(data: ScheduleRecipeForm) {
-    console.log(data);
+    startTransition(async () => {
+      const response = await createScheduledRecipeAction(data);
+
+      // Diplay toast error message and return if action fails
+      if (!response.success) {
+        const errorMessage = getActionErrorMessage(response.errorCode, {
+          NOT_FOUND:
+            "Receptet, kalendern eller användaren kunde inte hittas. De kanske har tagits bort?",
+        });
+        toast.error(errorMessage);
+        return;
+      }
+
+      toast.success("Receptet har schemalagts");
+      onOpenChange(false);
+    });
   }
 
   return (
@@ -86,6 +110,7 @@ export default function ScheduleRecipeDialog({
       open={open}
       onOpenChange={onOpenChange}
       dialogContentClassName="md:max-w-2xl"
+      onCloseAnimationEnd={form.reset}
     >
       <form onSubmit={form.handleSubmit(handleSubmit)}>
         <FieldGroup className="max-h-[60svh] gap-0 md:max-h-[75svh]">
@@ -116,8 +141,18 @@ export default function ScheduleRecipeDialog({
           </FieldGroup>
 
           <Field orientation="responsive-reverse">
-            <Button type="submit" disabled={!form.formState.isDirty}>
-              Schemalägg den {format(selectedDate, "do MMMM", { locale: sv })}
+            <Button
+              type="submit"
+              disabled={isPending || !form.formState.isDirty}
+              className="min-w-64"
+            >
+              {isPending ? (
+                <>
+                  <Spinner /> Schemalägger...
+                </>
+              ) : (
+                `Schemalägg den ${format(selectedDate, "do MMMM", { locale: sv })}`
+              )}
             </Button>
             <Button
               type="button"
