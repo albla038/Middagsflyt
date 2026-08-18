@@ -30,7 +30,7 @@ type ScheduleRecipeDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   recipe: Pick<Recipe, "id" | "name" | "slug" | "recipeYield">;
-  servings: number;
+  servings?: number;
 };
 
 export default function ScheduleRecipeDialog({
@@ -51,7 +51,7 @@ export default function ScheduleRecipeDialog({
       recipeId: recipe.id,
       scheduleId: "",
       date: new Date(),
-      servings,
+      servings: servings ?? 4,
       note: "",
       assigneeId: "",
     },
