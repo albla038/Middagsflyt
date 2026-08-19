@@ -5,8 +5,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { fetchIngredientCategories } from "@/data/ingredient-category/queries";
 import { fetchAllIngredientsWithAlias } from "@/data/ingredient/queries";
 import { fetchShoppingListMetrics } from "@/data/shopping-list/queries";
-import { shoppingListQueryOptions } from "@/queries/shopping-list/options";
 import { getQueryClient } from "@/lib/query-client";
+import { shoppingListQueryOptions } from "@/queries/shopping-list/options";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { notFound } from "next/navigation";
 import z from "zod";
@@ -46,8 +46,8 @@ export default async function ShoppingListPage({
   ]);
 
   return (
-    <ScrollArea className="h-full w-full bg-subtle">
-      <div className="flex h-svh flex-col items-center">
+    <ScrollArea className="h-full bg-subtle">
+      <div className="flex min-h-svh flex-col items-center">
         <Header breadcrumbs={breadcrumbs}>
           <HeaderMenu list={list} />
         </Header>
