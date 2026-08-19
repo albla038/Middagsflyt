@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ScheduledRecipeDisplayContent } from "@/lib/types";
+import { ScheduledRecipeDisplayContent } from "@/lib/types/scheduled-recipe";
 import { LoaderCircle } from "lucide-react";
 import { Dispatch, SetStateAction, useActionState, useEffect } from "react";
 import { toast } from "sonner";

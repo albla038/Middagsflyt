@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import H3 from "@/components/ui/typography/h3";
 import { HouseholdMember } from "@/lib/schemas/household";
-import { ScheduledRecipeDisplayContent } from "@/lib/types";
+import { ScheduledRecipeDisplayContent } from "@/lib/types/scheduled-recipe";
 import { cn } from "@/lib/utils";
 import {
   ArrowLeft,

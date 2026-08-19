@@ -1,10 +1,10 @@
 import "server-only";
 
+import { recipeSelects } from "@/data/recipe/queries";
 import { requireUser } from "@/data/user/verify-user";
 import prisma from "@/lib/db";
-import { ScheduledRecipeDisplayContent } from "@/lib/types";
-import { recipeSelects } from "@/data/recipe/queries";
 import { Recipe } from "@/lib/types/recipe";
+import { ScheduledRecipeDisplayContent } from "@/lib/types/scheduled-recipe";
 
 export async function fetchScheduledRecipe(id: string): Promise<{
   id: string;

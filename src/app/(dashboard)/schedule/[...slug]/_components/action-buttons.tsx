@@ -3,7 +3,7 @@
 import { useSelection } from "@/app/(dashboard)/schedule/[...slug]/selection-provider";
 import AddToShoppingListDialog from "@/components/add-to-shopping-list-dialog/dialog";
 import { Button } from "@/components/ui/button";
-import { ScheduledRecipeDisplayContent } from "@/lib/types";
+import { ScheduledRecipeDisplayContent } from "@/lib/types/scheduled-recipe";
 import { CopyCheck, ListPlus } from "lucide-react";
 import { useState } from "react";
 
