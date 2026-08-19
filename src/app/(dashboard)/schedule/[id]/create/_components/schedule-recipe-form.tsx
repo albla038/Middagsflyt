@@ -19,7 +19,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import UserAvatar from "@/components/user-avatar";
 import { HouseholdMember } from "@/lib/schemas/household";
-import { RecipeDisplayContent } from "@/lib/schemas/recipe";
+import { RecipeCardDisplayContent } from "@/lib/schemas/recipe";
 import { format, getISOWeek, getISOWeekYear } from "date-fns";
 import { ListFilter, LoaderCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -29,7 +29,7 @@ import { toast } from "sonner";
 type ScheduleRecipeFormProps = {
   scheduleId: string;
   selectedDate: Date;
-  recipeData: Promise<RecipeDisplayContent[]>;
+  recipeData: Promise<RecipeCardDisplayContent[]>;
   searchQuery: string;
   members: HouseholdMember[];
 };

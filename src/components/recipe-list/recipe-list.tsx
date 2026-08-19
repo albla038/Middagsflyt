@@ -8,14 +8,13 @@ import SortSelect from "@/components/recipe-list/sort-select";
 import ScheduleRecipeDialog from "@/components/schedule-recipe-dialog/dialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RecipeDisplayContent } from "@/lib/schemas/recipe";
+import { RecipeCardDisplayContent } from "@/lib/schemas/recipe";
 import { MyRecipesDisplay } from "@/lib/types";
-import { cn } from "@/lib/utils";
 import { Grid2X2, ListFilter, Rows3 } from "lucide-react";
 import { Suspense, use, useMemo, useState } from "react";
 
 type RecipeListProps = {
-  recipesPromise: Promise<RecipeDisplayContent[]>;
+  recipesPromise: Promise<RecipeCardDisplayContent[]>;
   basePath: "/saved-recipes" | "/library";
   searchQuery?: string;
   displayType?: MyRecipesDisplay;
@@ -87,12 +86,7 @@ export default function RecipeList({
             <p>Inga recept hittades.</p>
           )
         ) : (
-          <ul
-            className={cn(
-              "grid gap-5",
-              "sm:grid-cols-2 lg:grid-cols-3",
-            )}
-          >
+          <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {recipes.map((recipe) => (
               <li key={recipe.id} className="list-none">
                 <RecipeListCard

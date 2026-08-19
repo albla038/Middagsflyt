@@ -4,7 +4,7 @@ import { ProteinType } from "@/lib/generated/prisma";
 import prisma from "@/lib/db";
 import { requireUser } from "@/data/user/verify-user";
 import { Order, SortBy } from "@/lib/types";
-import { RecipeDisplayContent } from "@/lib/schemas/recipe";
+import { RecipeCardDisplayContent } from "@/lib/schemas/recipe";
 import { startOfToday } from "date-fns";
 import { Prisma } from "@/lib/generated/prisma/client";
 import { Recipe } from "@/lib/types/recipe";
@@ -207,7 +207,7 @@ export async function fetchAllRecipesForUser(
   searchQuery: string,
   order: "asc" | "desc" = "desc",
   sortBy: "createdAt" | "name" = "createdAt",
-): Promise<RecipeDisplayContent[]> {
+): Promise<RecipeCardDisplayContent[]> {
   const user = await requireUser();
 
   const data = await prisma.recipe.findMany({
@@ -268,7 +268,7 @@ export async function fetchAllSavedRecipes(
   searchQuery: string,
   order: Order = "desc",
   sort: SortBy = "createdAt",
-): Promise<RecipeDisplayContent[]> {
+): Promise<RecipeCardDisplayContent[]> {
   const user = await requireUser();
 
   function sortBy(sort: SortBy, order: Order) {
@@ -352,7 +352,7 @@ export async function fetchAllCreatedRecipes(
   searchQuery: string,
   order: "asc" | "desc" = "desc",
   sortBy: "createdAt" | "name" = "createdAt",
-): Promise<RecipeDisplayContent[]> {
+): Promise<RecipeCardDisplayContent[]> {
   const user = await requireUser();
 
   try {

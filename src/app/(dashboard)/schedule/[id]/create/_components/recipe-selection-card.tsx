@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroupItem } from "@/components/ui/radio-group";
 import { Skeleton } from "@/components/ui/skeleton";
 import H3 from "@/components/ui/typography/h3";
-import { RecipeDisplayContent } from "@/lib/schemas/recipe";
+import { RecipeCardDisplayContent } from "@/lib/schemas/recipe";
 import { cn } from "@/lib/utils";
 import { CalendarClock, ClockFading, Soup, Utensils } from "lucide-react";
 import Image from "next/image";
@@ -12,7 +12,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 type RecipeSelectionCardProps = {
-  recipe: RecipeDisplayContent;
+  recipe: RecipeCardDisplayContent;
 };
 
 export default function RecipeSelectionCard({

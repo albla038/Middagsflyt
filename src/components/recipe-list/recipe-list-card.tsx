@@ -11,11 +11,11 @@ import H3 from "@/components/ui/typography/h3";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MyRecipesDisplay } from "@/lib/types";
 import StatValueSmall from "@/components/stat-value-small";
-import { RecipeDisplayContent } from "@/lib/schemas/recipe";
+import { RecipeCardDisplayContent } from "@/lib/schemas/recipe";
 import CardActionButtons from "@/components/recipe-list/card-action-buttons";
 
 type RecipeListCardProps = {
-  recipe: RecipeDisplayContent;
+  recipe: RecipeCardDisplayContent;
   basePath: "/saved-recipes" | "/library";
   displayType?: MyRecipesDisplay;
   onClickSchedule: (recipeId: string) => void;

@@ -1,7 +1,7 @@
 import { ProteinType, RecipeType } from "@/lib/generated/prisma";
 import z from "zod";
 
-export const recipeDisplayContentSchema = z.object({
+export const recipeCardDisplayContentSchema = z.object({
   id: z.string(),
   name: z.string(),
   slug: z.string(),
@@ -16,4 +16,6 @@ export const recipeDisplayContentSchema = z.object({
   scheduledDates: z.array(z.date()).optional(),
 });
 
-export type RecipeDisplayContent = z.infer<typeof recipeDisplayContentSchema>;
+export type RecipeCardDisplayContent = z.infer<
+  typeof recipeCardDisplayContentSchema
+>;
