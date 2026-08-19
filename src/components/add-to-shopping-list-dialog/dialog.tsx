@@ -16,7 +16,10 @@ import { AddIngredientToShoppingListInput } from "@/lib/schemas/recipe-ingredien
 import { IngredientSources } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { recipeIngredientsQueryOptions } from "@/queries/recipes/ingredients/options";
-import { shoppingListsQueryOptions } from "@/queries/shopping-list/options";
+import {
+  SHOPPING_LISTS_QUERY_KEY,
+  shoppingListsQueryOptions,
+} from "@/queries/shopping-list/options";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState, useTransition } from "react";
@@ -268,7 +271,7 @@ export default function AddToShoppingListDialog({
 
       // Invalidate query caches
       queryClient.invalidateQueries({
-        queryKey: shoppingListsQueryOptions().queryKey,
+        queryKey: SHOPPING_LISTS_QUERY_KEY,
       });
       queryClient.invalidateQueries({
         queryKey: recipeIngredientsQueryOptions(ingredientSources).queryKey,
