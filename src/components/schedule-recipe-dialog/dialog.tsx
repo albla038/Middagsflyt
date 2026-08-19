@@ -16,7 +16,6 @@ import {
   ScheduleRecipeFormInput,
   scheduleRecipeFormSchema,
 } from "@/lib/schemas/scheduled-recipe";
-import { Recipe } from "@/lib/types/recipe";
 import { schedulesQueryOptions } from "@/queries/schedules/options";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
@@ -30,7 +29,11 @@ import { toast } from "sonner";
 type ScheduleRecipeDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  recipe: Pick<Recipe, "id" | "name" | "slug" | "recipeYield">;
+  recipe: {
+    id: string;
+    name: string;
+    recipeYield: number | null;
+  };
   servings: number;
 };
 

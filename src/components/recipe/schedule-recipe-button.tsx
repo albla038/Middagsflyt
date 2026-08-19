@@ -2,14 +2,17 @@
 
 import ScheduleRecipeDialog from "@/components/schedule-recipe-dialog/dialog";
 import { Button } from "@/components/ui/button";
-import { Recipe } from "@/lib/types/recipe";
 import { CalendarPlus } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { ComponentProps, useState } from "react";
 import z from "zod";
 
 type ScheduleRecipeButtonProps = ComponentProps<typeof Button> & {
-  recipe: Pick<Recipe, "id" | "name" | "slug" | "recipeYield">;
+  recipe: {
+    id: string;
+    name: string;
+    recipeYield: number | null;
+  };
   scheduledServings?: number | null;
 };
 
