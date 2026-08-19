@@ -4,13 +4,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { useCreateShoppingListItem } from "@/queries/shopping-list/use-create-shopping-list-item";
+import { IngredientWithAlias } from "@/lib/types";
 import { cn, parseIngredientInputString } from "@/lib/utils";
-import { ListOrdered, Plus, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCreateShoppingListItem } from "@/queries/shopping-list/use-create-shopping-list-item";
 import { createId } from "@paralleldrive/cuid2";
 import Fuse from "fuse.js";
-import { IngredientWithAlias } from "@/lib/types";
+import { ListOrdered, Plus, X } from "lucide-react";
+import { useMemo, useState } from "react";
 
 function isExactMatch(
   ingredient: IngredientWithAlias,
@@ -63,10 +63,15 @@ export default function ListInput({ listId, ingredients }: ListInputProps) {
   // Parse the input value to extract name, quantity, and unit
   const parsedInput = useMemo(() => parseIngredientInputString(input), [input]);
 
-  const filteredIngredients = fuse
-    .search(parsedInput.name)
-    .filter(({ item }) => !isExactMatch(item, parsedInput.name))
-    .map(({ item }) => item);
+  // Filter the ingredients based on the parsed input name, excluding exact matches
+  const filteredIngredients = useMemo(
+    () =>
+      fuse
+        .search(parsedInput.name)
+        .filter(({ item }) => !isExactMatch(item, parsedInput.name))
+        .map(({ item }) => item),
+    [fuse, parsedInput.name],
+  );
 
   function handleSubmit() {
     const trimmedValue = input.trim();
@@ -74,6 +79,7 @@ export default function ListInput({ listId, ingredients }: ListInputProps) {
     // Return early if the trimmed value is empty
     if (!trimmedValue) return;
 
+    // Find an existing ingredient if the parsed input name has an exact match
     const existingIngredient = ingredients.find((ingredient) =>
       isExactMatch(ingredient, parsedInput.name),
     );
@@ -105,12 +111,12 @@ export default function ListInput({ listId, ingredients }: ListInputProps) {
       }}
       className={cn(
         "sticky bottom-0 z-10 flex flex-col gap-2 border-t border-border bg-background p-3 pb-0",
-        "sm:top-26 sm:mt-8 sm:h-[86px] sm:border-none sm:bg-transparent sm:p-0 sm:pb-3",
+        "sm:top-26 sm:mt-8 sm:h-[98px] sm:border-none sm:bg-transparent sm:p-0 sm:pb-3",
       )}
     >
       <div className="absolute -top-9 hidden w-full sm:block">
-        <div className="h-20 bg-subtle" />
-        <div className="h-12 bg-linear-to-b from-subtle to-transparent" />
+        <div className="h-18 bg-subtle" />
+        <div className="h-16 bg-linear-to-b from-subtle to-transparent" />
       </div>
       <form
         className="relative"
@@ -146,16 +152,20 @@ export default function ListInput({ listId, ingredients }: ListInputProps) {
 
       <ScrollArea className="w-full overflow-x-hidden">
         {placeholder === "Sök" && (
-          <ul className="flex items-center gap-2 pb-2">
+          <ul className="flex items-center gap-2 pb-3">
             {input ? (
               <li className="flex items-center justify-center">
-                <Badge variant="primary-secondary" onClick={handleSubmit}>
+                <Badge
+                  variant="primary-secondary"
+                  className="cursor-pointer px-3 py-1.5"
+                  onClick={handleSubmit}
+                >
                   &quot;{input}&quot;
                 </Badge>
               </li>
             ) : (
               <li className="flex items-center justify-center">
-                <Badge>
+                <Badge className="px-3 py-1.5">
                   <ListOrdered /> Favoritvaror
                 </Badge>
               </li>
@@ -172,7 +182,7 @@ export default function ListInput({ listId, ingredients }: ListInputProps) {
                 <li key={id} className="flex items-center justify-center">
                   <Badge
                     variant="primary-secondary"
-                    className="cursor-pointer"
+                    className="cursor-pointer px-3 py-1.5"
                     onClick={() => {
                       createItem({
                         id: createId(),
