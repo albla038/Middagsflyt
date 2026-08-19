@@ -300,6 +300,15 @@ export function parseIngredientInputString(value: string): {
 
   const tokens = cleanedValue.split(/\s+/);
 
+  // If there's only one token, treat it as the name with no quantity or unit
+  if (tokens.length === 1) {
+    return {
+      name: value.trim(),
+      quantity: null,
+      unit: null,
+    };
+  }
+
   // Search for index of quantity token
   const quantityTokenIndex = tokens.findIndex(
     (value) => quantitySchema.safeParse(value).success,
@@ -335,6 +344,15 @@ export function parseIngredientInputString(value: string): {
   // Remove and get unit token from array
   const [unitToken] = tokens.splice(unitTokenIndex, 1);
   const unit = unitSchema.parse(unitToken.toUpperCase());
+
+  // If there are no remaining tokens, there's no name, so return the original input as the name
+  if (tokens.length === 0) {
+    return {
+      name: value.trim(),
+      quantity: null,
+      unit: null,
+    };
+  }
 
   return {
     name: tokens.join(" "),
