@@ -1,7 +1,7 @@
 import { UNIT_ALIASES } from "@/lib/constants";
 import { Unit } from "@/lib/generated/prisma";
 import { ShoppingListItemResponse } from "@/lib/schemas/shopping-list";
-import { ScheduledNoteDisplayContent } from "@/lib/types";
+import { ScheduledNoteDisplayContent } from "@/lib/types/scheduled-note";
 import { ScheduledRecipeDisplayContent } from "@/lib/types/scheduled-recipe";
 import { clsx, type ClassValue } from "clsx";
 import {

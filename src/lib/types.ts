@@ -52,19 +52,6 @@ export type Order = (typeof ORDER_OPTIONS)[number];
 export type SortBy = (typeof SORT_BY_OPTIONS)[number];
 export type MyRecipesDisplay = (typeof MY_RECIPES_DISPLAY_OPTIONS)[number];
 
-export type ScheduledNoteDisplayContent = {
-  id: string;
-  date: Date;
-  title: string;
-  text: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-  createdBy: {
-    name: string;
-    email: string;
-  } | null;
-};
-
 export type IngredientWithAlias = {
   id: string;
   name: string;

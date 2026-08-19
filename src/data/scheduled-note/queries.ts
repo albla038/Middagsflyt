@@ -2,7 +2,7 @@ import "server-only";
 
 import { requireUser } from "@/data/user/verify-user";
 import prisma from "@/lib/db";
-import { ScheduledNoteDisplayContent } from "@/lib/types";
+import { ScheduledNoteDisplayContent } from "@/lib/types/scheduled-note";
 
 export async function fetchScheduledNotesByDateRange(
   scheduleId: string,

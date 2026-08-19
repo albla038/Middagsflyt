@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ScheduledNoteDisplayContent } from "@/lib/types";
+import { ScheduledNoteDisplayContent } from "@/lib/types/scheduled-note";
 import { sv } from "date-fns/locale";
 import { LoaderCircle } from "lucide-react";
 import {

@@ -17,7 +17,7 @@ import SaveNoteDialog, {
 } from "@/app/(dashboard)/schedule/[...slug]/_components/save-note-dialog";
 import { useSelection } from "@/app/(dashboard)/schedule/[...slug]/selection-provider";
 import { HouseholdMember } from "@/lib/schemas/household";
-import { ScheduledNoteDisplayContent } from "@/lib/types";
+import { ScheduledNoteDisplayContent } from "@/lib/types/scheduled-note";
 import { ScheduledRecipeDisplayContent } from "@/lib/types/scheduled-recipe";
 import { cn, groupRecipesByWeekday } from "@/lib/utils";
 import { format, isSameDay, isToday } from "date-fns";

@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ScheduledNoteDisplayContent } from "@/lib/types";
+import { ScheduledNoteDisplayContent } from "@/lib/types/scheduled-note";
 import { Edit, MoreVertical, Trash2 } from "lucide-react";
 
 type NoteCardProps = {
