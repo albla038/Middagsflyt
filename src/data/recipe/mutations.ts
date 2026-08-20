@@ -1,15 +1,26 @@
 import "server-only";
 
-import { GeneratedRecipe } from "@/lib/schemas/recipe-generation";
-import prisma from "@/lib/db";
-import { generateUniqueSlug, slugify } from "@/lib/utils";
-import { Result } from "@/lib/types";
-import { Recipe } from "@/lib/generated/prisma";
-import { fetchMissingIngredients } from "@/data/ingredient/queries";
-import { generateAndCreateIngredients } from "@/data/ingredient/mutations";
-import { requireUser } from "@/data/user/verify-user";
-import { legacySafeQuery } from "@/lib/safe-query";
 import { requireHouseholdId } from "@/data/household/queries";
+import { generateAndCreateIngredients } from "@/data/ingredient/mutations";
+import { fetchMissingIngredients } from "@/data/ingredient/queries";
+import { fetchRecipeSlugsByPrefix } from "@/data/recipe/queries";
+import { requireUser } from "@/data/user/verify-user";
+import prisma from "@/lib/db";
+import { Recipe } from "@/lib/generated/prisma";
+import { legacySafeQuery } from "@/lib/safe-query";
+import { GeneratedRecipe } from "@/lib/schemas/recipe-generation";
+import { Result } from "@/lib/types";
+import { generateUniqueSlug, slugify } from "@/lib/utils";
+
+// HELPER FUNCTIONS
+async function resolveUniqueRecipeSlugForName(name: string) {
+  const baseSlug = slugify(name);
+  // Check if the slug already exists in the database
+  const conflictingSlugs = await fetchRecipeSlugsByPrefix(baseSlug);
+  const existingSlugs = new Set<string>(conflictingSlugs);
+  // Generate a new unique slug based on the baseSlug and existing slugs
+  return generateUniqueSlug(baseSlug, existingSlugs);
+}
 
 export async function createRecipeFromGeneratedData(
   data: GeneratedRecipe,
@@ -17,25 +28,8 @@ export async function createRecipeFromGeneratedData(
 ): Promise<Result<Recipe, Error>> {
   const user = await requireUser();
 
-  const baseSlug = slugify(data.name);
-
   try {
-    // Check if the slug already exists in the database
-    const conflictingSlugRecords = await prisma.recipe.findMany({
-      where: {
-        slug: {
-          startsWith: baseSlug,
-        },
-      },
-      select: {
-        slug: true,
-      },
-    });
-
-    const existingSlugs = new Set<string>(
-      conflictingSlugRecords.map((record) => record.slug),
-    );
-    const uniqueSlug = generateUniqueSlug(baseSlug, existingSlugs);
+    const uniqueSlug = await resolveUniqueRecipeSlugForName(data.name);
 
     // Prepare ingredients list
     const ingredientList = data.recipeIngredients.map(
@@ -187,11 +181,11 @@ export async function createRecipeFromGeneratedData(
           data: {
             step: instruction.step,
             text: instruction.text,
-            recipeIngredients: {
-              connect: ingredientIds,
-            },
             recipe: {
               connect: { id: createdRecipe.id },
+            },
+            recipeIngredients: {
+              connect: ingredientIds,
             },
           },
         });

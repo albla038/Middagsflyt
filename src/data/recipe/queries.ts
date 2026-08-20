@@ -1,13 +1,13 @@
 import "server-only";
 
-import { ProteinType } from "@/lib/generated/prisma";
-import prisma from "@/lib/db";
 import { requireUser } from "@/data/user/verify-user";
-import { Order, SortBy } from "@/lib/types";
-import { RecipeCardDisplayContent } from "@/lib/schemas/recipe";
-import { startOfToday } from "date-fns";
+import prisma from "@/lib/db";
+import { ProteinType } from "@/lib/generated/prisma";
 import { Prisma } from "@/lib/generated/prisma/client";
+import { RecipeCardDisplayContent } from "@/lib/schemas/recipe";
+import { Order, SortBy } from "@/lib/types";
 import { Recipe } from "@/lib/types/recipe";
+import { startOfToday } from "date-fns";
 
 // HELPER FUNCTIONS
 function searchFilters(searchQuery: string) {
@@ -116,6 +116,19 @@ export const recipeSelects = {
     },
   },
 } satisfies Prisma.RecipeSelect;
+
+export async function fetchRecipeSlugsByPrefix(
+  prefix: string,
+): Promise<string[]> {
+  const data = await prisma.recipe.findMany({
+    where: {
+      slug: { startsWith: prefix },
+    },
+    select: { slug: true },
+  });
+
+  return data.map((record) => record.slug);
+}
 
 export async function fetchRecipeBySlug(slug: string): Promise<Recipe | null> {
   const recipe = await prisma.recipe.findUnique({
