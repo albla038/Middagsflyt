@@ -7,9 +7,10 @@ import { fetchRecipeSlugsByPrefix } from "@/data/recipe/queries";
 import { requireUser } from "@/data/user/verify-user";
 import prisma from "@/lib/db";
 import { Recipe } from "@/lib/generated/prisma";
-import { legacySafeQuery } from "@/lib/safe-query";
+import { prismaErrorToErrorCode } from "@/lib/prisma-error-mapper";
+import { safeQuery } from "@/lib/safe-query";
 import { GeneratedRecipe } from "@/lib/schemas/recipe-generation";
-import { Result } from "@/lib/types";
+import { MutationResultData } from "@/lib/types/api";
 import { generateUniqueSlug, slugify } from "@/lib/utils";
 
 // HELPER FUNCTIONS
@@ -22,10 +23,48 @@ async function resolveUniqueRecipeSlugForName(name: string) {
   return generateUniqueSlug(baseSlug, existingSlugs);
 }
 
+async function buildIngredientNameToCanonicalNameMap(
+  ingredientList: string[],
+): Promise<Map<string, string>> {
+  const nameToCanonicalNameMap = new Map<string, string>();
+
+  // Populate the map with canonical names from the ingredient list
+  const directMatches = await prisma.ingredient.findMany({
+    where: {
+      name: { in: ingredientList },
+    },
+    select: { name: true },
+  });
+  for (const ingredient of directMatches) {
+    nameToCanonicalNameMap.set(ingredient.name, ingredient.name);
+  }
+
+  // Populate the map with aliases that point to canonical names
+  const aliasMatches = await prisma.ingredientAlias.findMany({
+    where: {
+      name: { in: ingredientList },
+    },
+    select: {
+      name: true,
+      ingredient: {
+        select: { name: true },
+      },
+    },
+  });
+  for (const alias of aliasMatches) {
+    if (!nameToCanonicalNameMap.has(alias.name)) {
+      nameToCanonicalNameMap.set(alias.name, alias.ingredient.name);
+    }
+  }
+
+  return nameToCanonicalNameMap;
+}
+
+// DAL MUTATION FUNCTIONS
 export async function createRecipeFromGeneratedData(
   data: GeneratedRecipe,
   sourceUrl: string,
-): Promise<Result<Recipe, Error>> {
+): Promise<MutationResultData<Recipe>> {
   const user = await requireUser();
 
   try {
@@ -36,14 +75,14 @@ export async function createRecipeFromGeneratedData(
       (ingredient) => ingredient.name,
     );
 
-    const missingIngredientsRes = await legacySafeQuery(() =>
+    // Fetch missing ingredients from the DB
+    const missingIngredientsRes = await safeQuery(() =>
       fetchMissingIngredients(ingredientList),
     );
+
+    // Return early if there was an error fetching missing ingredients
     if (!missingIngredientsRes.ok) {
-      return {
-        ok: false,
-        error: missingIngredientsRes.error,
-      };
+      return { ok: false, errorCode: missingIngredientsRes.errorCode };
     }
     const missingIngredients = missingIngredientsRes.data;
     console.log("Missing ingredients:", missingIngredients);
@@ -51,41 +90,15 @@ export async function createRecipeFromGeneratedData(
     // If there are missing ingredients, generate and create them
     if (missingIngredients.length > 0) {
       const result = await generateAndCreateIngredients(missingIngredients);
-      // If ingredient generation failed, return the error
-      if (!result.ok) return result;
+      // Return error code if the ingredient generation failed
+      if (!result.ok) {
+        return { ok: false, errorCode: "INTERNAL_ERROR" };
+      }
     }
 
     // Create a map to resolve any ingredient name (canonical or alias) to its canonical name.
-    const nameToCanonicalNameMap = new Map<string, string>();
-
-    // Populate the map with canonical names from the ingredient list
-    const directMatches = await prisma.ingredient.findMany({
-      where: {
-        name: { in: ingredientList },
-      },
-      select: { name: true },
-    });
-    directMatches.forEach((ingredient) =>
-      nameToCanonicalNameMap.set(ingredient.name, ingredient.name),
-    );
-
-    // Populate the map with aliases that point to canonical names
-    const aliasMatches = await prisma.ingredientAlias.findMany({
-      where: {
-        name: { in: ingredientList },
-      },
-      select: {
-        name: true,
-        ingredient: {
-          select: { name: true },
-        },
-      },
-    });
-    aliasMatches.forEach((alias) => {
-      if (!nameToCanonicalNameMap.has(alias.name)) {
-        nameToCanonicalNameMap.set(alias.name, alias.ingredient.name);
-      }
-    });
+    const nameToCanonicalNameMap =
+      await buildIngredientNameToCanonicalNameMap(ingredientList);
 
     // Get the household ID for saving the recipe
     const householdId = await requireHouseholdId();
@@ -199,17 +212,9 @@ export async function createRecipeFromGeneratedData(
       });
     });
 
-    return {
-      ok: true,
-      data: result,
-    };
+    return { ok: true, data: result };
   } catch (error) {
-    console.error("Error creating recipe:", error);
-    return {
-      ok: false,
-      error: new Error("Failed to create recipe", {
-        cause: error instanceof Error ? error : new Error(String(error)),
-      }),
-    };
+    console.error("Error creating recipe from generated data:", error);
+    return { ok: false, errorCode: prismaErrorToErrorCode(error) };
   }
 }

@@ -1,13 +1,13 @@
 "use server";
 
-import z from "zod";
-import { scrapeRecipeData } from "@/lib/scraping";
 import { createRecipeFromGeneratedData } from "@/data/recipe/mutations";
-import { revalidatePath } from "next/cache";
 import { findRecipeSlugByUrl } from "@/data/recipe/queries";
 import { requireUser } from "@/data/user/verify-user";
 import { legacySafeQuery } from "@/lib/safe-query";
+import { scrapeRecipeData } from "@/lib/scraping";
 import { ActionState } from "@/lib/types";
+import { revalidatePath } from "next/cache";
+import z from "zod";
 
 type FormState = ActionState<
   string,
@@ -76,10 +76,12 @@ export async function importRecipeFromUrl(
   }
 
   // Store the recipe in the database
-  const dbRes = await createRecipeFromGeneratedData(scrapingRes.data, url);
+  const mutationRes = await createRecipeFromGeneratedData(
+    scrapingRes.data,
+    url,
+  );
 
-  if (!dbRes.ok) {
-    console.error(dbRes.error);
+  if (!mutationRes.ok) {
     return {
       success: false,
       message:
@@ -87,7 +89,7 @@ export async function importRecipeFromUrl(
     };
   }
 
-  revalidatePath("/");
+  revalidatePath("/", "layout");
 
   return { success: true, message: "Nytt recept importerades!" };
 }
