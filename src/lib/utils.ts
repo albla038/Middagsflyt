@@ -378,6 +378,3 @@ export function stringifyPageSearchParams(
 
   return params.toString();
 }
-
-export const emptyStringToNull = (value: string) =>
-  value === "" ? null : value;
