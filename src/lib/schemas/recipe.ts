@@ -31,17 +31,22 @@ const stringToPositiveIntNullableSchema = z
   .transform(stringToNumberOrNull)
   .pipe(z.int().positive("Ange ett positivt värde").nullable());
 
+const stringToLinkNullableSchema = z
+  .string()
+  .transform(emptyStringToNull)
+  .pipe(z.httpUrl("Ange en giltig webbadress: https://...").nullable());
+
 const recipeIngredient = z.object({
   id: z.cuid2(),
   // displayOrder: z.int(), // TODO: Examine this. If it's needed for DnD-kit, it should be a float
   text: z.string().nonempty("Ingrediensen måste ha ett namn"),
-  name: z
+  canonicalName: z
     .string()
     .nonempty(
       "Ingrediensen måste vara registrerad i Middagsflyt så att systemet kan identifiera den",
     ),
   note: z.string().transform(emptyStringToNull),
-  quantity: z.number().optional(), // TODO: Check if string -> number conversion is needed
+  quantity: stringToPositiveIntNullableSchema,
   unit: z.enum(Unit).optional(),
 });
 
@@ -49,17 +54,14 @@ const recipeInstruction = z.object({
   id: z.cuid2(),
   step: z.int(), // TODO: Check if string -> number conversion is needed
   text: z.string().nonempty("Instruktionen får inte vara tom"),
-  ingredientIds: z.array(z.cuid2()).optional(),
+  ingredientIds: z.array(z.cuid2()),
 });
 
-const recipeSchema = z.object({
-  name: z.string().nonempty("Receptet måste ha ett namn"),
+const baseRecipeSchema = z.object({
+  name: z.string(),
   description: z.string().transform(emptyStringToNull),
   recipeYield: stringToPositiveIntNullableSchema,
-  imageUrl: z
-    .string()
-    .transform(emptyStringToNull)
-    .pipe(z.httpUrl().nullable()),
+  imageUrl: stringToLinkNullableSchema,
   recipeType: z.enum(RecipeType),
   proteinType: z
     .string()
@@ -68,26 +70,31 @@ const recipeSchema = z.object({
   totalTimeSeconds: stringToPositiveIntNullableSchema,
   oven: stringToPositiveIntNullableSchema,
   originalAuthor: z.string().transform(emptyStringToNull),
-  sourceUrl: z.string().transform(emptyStringToNull),
+  sourceUrl: stringToLinkNullableSchema,
   status: z.enum(RecipeStatus),
+  isPublic: z.boolean(),
 
-  recipeIngredients: z
-    .array(recipeIngredient)
-    .nonempty("Ange minst en ingrediens"),
-  recipeInstructions: z
-    .array(recipeInstruction)
-    .nonempty("Ange minst en instruktion"),
+  recipeIngredients: z.array(recipeIngredient),
+  recipeInstructions: z.array(recipeInstruction),
 });
 
 export const recipeFormSchema = z.discriminatedUnion("action", [
   z.object({
     action: z.literal("DRAFT"),
-    // NOTE: undefined arrays may cause problems with useFieldArray() from RHF
-    recipe: recipeSchema.partial(),
+    recipe: baseRecipeSchema,
   }),
   z.object({
     action: z.literal("PUBLISH"),
-    recipe: recipeSchema,
+    recipe: baseRecipeSchema.extend({
+      name: z.string().nonempty("Receptet måste ha ett namn"),
+
+      recipeIngredients: z
+        .array(recipeIngredient)
+        .nonempty("Ange minst en ingrediens"),
+      recipeInstructions: z
+        .array(recipeInstruction)
+        .nonempty("Ange minst en instruktion"),
+    }),
   }),
 ]);
 
