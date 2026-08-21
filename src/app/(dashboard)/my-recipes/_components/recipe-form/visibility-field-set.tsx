@@ -11,7 +11,7 @@ import {
   FieldTitle,
 } from "@/components/ui/field";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { RecipeForm, RecipeFormInput } from "@/lib/schemas/recipe";
+import { RecipeFormInput, RecipeFormOutput } from "@/lib/schemas/recipe";
 import { EyeOff, Globe2 } from "lucide-react";
 import { Controller, useFormContext } from "react-hook-form";
 
@@ -39,7 +39,7 @@ const visibilityOptions = [
 ];
 
 export default function VisibilityFieldSet() {
-  const form = useFormContext<RecipeFormInput, unknown, RecipeForm>();
+  const form = useFormContext<RecipeFormInput, unknown, RecipeFormOutput>();
 
   return (
     <Controller

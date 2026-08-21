@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/input-group";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { RecipeForm, RecipeFormInput } from "@/lib/schemas/recipe";
+import { RecipeFormInput, RecipeFormOutput } from "@/lib/schemas/recipe";
 import { User } from "better-auth";
 import { useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
@@ -28,7 +28,7 @@ type GeneralDetailsFieldSetProps = {
 export default function GeneralDetailsFieldSet({
   user,
 }: GeneralDetailsFieldSetProps) {
-  const form = useFormContext<RecipeFormInput, unknown, RecipeForm>();
+  const form = useFormContext<RecipeFormInput, unknown, RecipeFormOutput>();
 
   const [isAuthorSwitchChecked, setIsAuthorSwitchChecked] = useState(false);
 

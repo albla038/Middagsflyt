@@ -60,7 +60,10 @@ const recipeInstruction = z.object({
 const baseRecipeSchema = z.object({
   name: z.string(),
   description: z.string().transform(emptyStringToNull),
-  recipeYield: stringToPositiveIntNullableSchema,
+  recipeYield: z
+    .string()
+    .transform(stringToNumberOrNull)
+    .pipe(z.int("Ange antal portioner").positive("Ange ett positivt värde")),
   imageUrl: stringToLinkNullableSchema,
   recipeType: z.enum(RecipeType),
   proteinType: z
@@ -99,4 +102,4 @@ export const recipeFormSchema = z.discriminatedUnion("action", [
 ]);
 
 export type RecipeFormInput = z.input<typeof recipeFormSchema>;
-export type RecipeForm = z.infer<typeof recipeFormSchema>;
+export type RecipeFormOutput = z.output<typeof recipeFormSchema>;
