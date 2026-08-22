@@ -9,11 +9,6 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { RecipeFormInput, RecipeFormOutput } from "@/lib/schemas/recipe";
@@ -30,7 +25,7 @@ export default function GeneralDetailsFieldSet({
 }: GeneralDetailsFieldSetProps) {
   const form = useFormContext<RecipeFormInput, unknown, RecipeFormOutput>();
 
-  const [isAuthorSwitchChecked, setIsAuthorSwitchChecked] = useState(false);
+  const [isAuthorToggled, setIsAuthorToggled] = useState(false);
 
   return (
     <FieldSet>
@@ -46,7 +41,7 @@ export default function GeneralDetailsFieldSet({
                 {...field}
                 id={field.name}
                 aria-invalid={fieldState.invalid}
-                placeholder="Ange ett namn"
+                placeholder="Ange ett namn/titel på receptet"
               />
               {fieldState.error && <FieldError errors={[fieldState.error]} />}
             </Field>
@@ -77,45 +72,54 @@ export default function GeneralDetailsFieldSet({
           control={form.control}
           name="recipe.originalAuthor"
           render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor={field.name}>Receptförfattare</FieldLabel>
-              <InputGroup>
-                <InputGroupInput
-                  {...field}
-                  value={field.value}
-                  id={field.name}
-                  aria-invalid={fieldState.invalid}
-                  disabled={!isAuthorSwitchChecked}
-                  placeholder={
-                    isAuthorSwitchChecked ? "t.ex. Markus Aujalay" : user.name
-                  }
+            <Field data-invalid={fieldState.invalid} className="relative">
+              <div className="flex items-center justify-between">
+                <FieldLabel htmlFor={field.name}>Receptförfattare</FieldLabel>
+                <Switch
+                  checked={isAuthorToggled}
+                  size="sm"
+                  onCheckedChange={(checked) => {
+                    setIsAuthorToggled(checked);
+                    if (!checked) {
+                      // Clear the values if the user toggles the switch off
+                      form.setValue("recipe.originalAuthor", "");
+                      form.setValue("recipe.sourceUrl", "");
+                    }
+                  }}
                 />
-                <InputGroupAddon align="inline-end">
-                  {/* // TODO: Can I extend hitbox when input is disabled? */}
-                  <Switch
-                    checked={isAuthorSwitchChecked}
-                    onCheckedChange={(checked) => {
-                      setIsAuthorSwitchChecked(checked);
-                      if (!checked) {
-                        // Clear the values if the user turns the switch off
-                        form.setValue("recipe.originalAuthor", "");
-                        form.setValue("recipe.sourceUrl", "");
-                      }
-                    }}
-                  />
-                </InputGroupAddon>
-              </InputGroup>
+              </div>
+
+              <Input
+                {...field}
+                value={field.value}
+                id={field.name}
+                aria-invalid={fieldState.invalid}
+                disabled={!isAuthorToggled}
+                placeholder={
+                  isAuthorToggled ? "t.ex. Markus Aujalay" : user.name
+                }
+              />
+
               <FieldDescription>
                 Lägg gärna till den ursprungliga författaren av receptet om du
                 hämtar det från någon annan.
               </FieldDescription>
               {fieldState.error && <FieldError errors={[fieldState.error]} />}
+
+              {/* Hidden clickable div to enable click anywhere to toggle input */}
+              {!isAuthorToggled && (
+                <div
+                  className="absolute inset-0"
+                  role="button"
+                  onClick={() => setIsAuthorToggled(true)}
+                />
+              )}
             </Field>
           )}
         />
 
         {/* Source URL */}
-        {isAuthorSwitchChecked && (
+        {isAuthorToggled && (
           <Controller
             control={form.control}
             name="recipe.sourceUrl"
