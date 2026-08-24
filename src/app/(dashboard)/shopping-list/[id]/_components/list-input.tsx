@@ -1,11 +1,14 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { IngredientWithAlias } from "@/lib/types";
-import { cn, isExactIngredientMatch, parseIngredientInputString } from "@/lib/utils";
+import {
+  cn,
+  isExactIngredientMatch,
+  parseIngredientInputString,
+} from "@/lib/utils";
 import { useCreateShoppingListItem } from "@/queries/shopping-list/use-create-shopping-list-item";
 import { createId } from "@paralleldrive/cuid2";
 import Fuse from "fuse.js";
@@ -90,16 +93,16 @@ export default function ListInput({ listId, ingredients }: ListInputProps) {
         }
       }}
       className={cn(
-        "sticky bottom-0 z-10 flex flex-col gap-2 border-t border-border bg-background p-3 pb-0",
-        "sm:top-26 sm:mt-8 sm:h-[98px] sm:border-none sm:bg-transparent sm:p-0 sm:pb-3",
+        "sticky bottom-0 z-10 flex max-w-svw flex-col gap-1 border-t border-border bg-background pt-3 pb-1",
+        "sm:top-26 sm:mt-8 sm:border-none sm:bg-transparent sm:p-0 sm:pb-3",
       )}
     >
       <div className="absolute -top-9 hidden w-full sm:block">
-        <div className="h-18 bg-subtle" />
-        <div className="h-16 bg-linear-to-b from-subtle to-transparent" />
+        <div className="h-24 bg-subtle" />
+        <div className="h-10 bg-linear-to-b from-subtle to-transparent" />
       </div>
       <form
-        className="relative"
+        className="relative mx-3 sm:mx-1"
         onSubmit={(e) => {
           e.preventDefault();
           handleSubmit();
@@ -130,24 +133,24 @@ export default function ListInput({ listId, ingredients }: ListInputProps) {
         )}
       </form>
 
-      <ScrollArea className="w-full overflow-x-hidden">
-        {placeholder === "Sök" && (
-          <ul className="flex items-center gap-2 pb-3">
+      <ScrollArea className="pb-2 sm:h-12">
+        {isInputFocused && (
+          <ul className="flex items-center gap-2 p-1 pl-3 sm:pl-1">
             {input ? (
               <li className="flex items-center justify-center">
-                <Badge
-                  variant="primary-secondary"
-                  className="cursor-pointer px-3 py-1.5"
+                <Button
+                  variant="primary-inverse"
+                  size="sm"
                   onClick={handleSubmit}
                 >
                   &quot;{input}&quot;
-                </Badge>
+                </Button>
               </li>
             ) : (
               <li className="flex items-center justify-center">
-                <Badge className="px-3 py-1.5">
+                <Button variant="primary-inverse" size="sm">
                   <ListOrdered /> Favoritvaror
-                </Badge>
+                </Button>
               </li>
             )}
 
@@ -160,9 +163,9 @@ export default function ListInput({ listId, ingredients }: ListInputProps) {
                 ingredientCategoryId,
               }) => (
                 <li key={id} className="flex items-center justify-center">
-                  <Badge
-                    variant="primary-secondary"
-                    className="cursor-pointer px-3 py-1.5"
+                  <Button
+                    variant="primary-inverse"
+                    size="sm"
                     onClick={() => {
                       createItem({
                         id: createId(),
@@ -177,7 +180,7 @@ export default function ListInput({ listId, ingredients }: ListInputProps) {
                     {parsedInput.name.length > displayNameSingular.length
                       ? displayNamePlural
                       : displayNameSingular}
-                  </Badge>
+                  </Button>
                 </li>
               ),
             )}
