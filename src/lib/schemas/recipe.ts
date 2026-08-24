@@ -38,16 +38,16 @@ const stringToLinkNullableSchema = z
 
 const recipeIngredient = z.object({
   id: z.cuid2(),
+  quantity: stringToPositiveIntNullableSchema,
+  unit: z.string().transform(emptyStringToNull).pipe(z.enum(Unit).nullable()),
   // displayOrder: z.int(), // TODO: Examine this. If it's needed for DnD-kit, it should be a float
   text: z.string().nonempty("Ingrediensen måste ha ett namn"),
-  canonicalName: z
-    .string()
+  note: z.string().transform(emptyStringToNull),
+  ingredientId: z
+    .cuid2()
     .nonempty(
       "Ingrediensen måste vara registrerad i Middagsflyt så att systemet kan identifiera den",
     ),
-  note: z.string().transform(emptyStringToNull),
-  quantity: stringToPositiveIntNullableSchema,
-  unit: z.enum(Unit).optional(),
 });
 
 const recipeInstruction = z.object({
@@ -103,3 +103,5 @@ export const recipeFormSchema = z.discriminatedUnion("action", [
 
 export type RecipeFormInput = z.input<typeof recipeFormSchema>;
 export type RecipeFormOutput = z.output<typeof recipeFormSchema>;
+
+export type RecipeIngredient = z.infer<typeof recipeIngredient>;
