@@ -22,13 +22,13 @@ import { memo, useCallback, useMemo, useState } from "react";
 type IngredientInputProps = {
   ingredients: IngredientWithAlias[];
   fuse: Fuse<IngredientWithAlias>;
-  onSubmit: (ingredient: RecipeIngredient) => void;
+  onAddIngredient: (ingredient: RecipeIngredient) => void;
 };
 
 function IngredientInput({
   ingredients,
   fuse,
-  onSubmit,
+  onAddIngredient,
 }: IngredientInputProps) {
   const [input, setInput] = useState("");
 
@@ -65,7 +65,7 @@ function IngredientInput({
     const capitalizedName =
       parsedInput.name.charAt(0).toUpperCase() + parsedInput.name.slice(1);
 
-    onSubmit({
+    onAddIngredient({
       id: createId(),
       quantity: parsedInput.quantity,
       unit,
@@ -75,7 +75,7 @@ function IngredientInput({
     });
 
     setInput("");
-  }, [input, findMatchingIngredient, parsedInput, onSubmit]);
+  }, [input, findMatchingIngredient, parsedInput, onAddIngredient]);
 
   return (
     <div className="group flex flex-col gap-1" tabIndex={-1}>
@@ -143,7 +143,7 @@ function IngredientInput({
                     size="sm"
                     type="button"
                     onClick={() => {
-                      onSubmit({
+                      onAddIngredient({
                         id: createId(),
                         quantity: parsedInput.quantity,
                         unit,
