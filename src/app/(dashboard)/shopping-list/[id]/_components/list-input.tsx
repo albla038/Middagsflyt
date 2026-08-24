@@ -5,32 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { IngredientWithAlias } from "@/lib/types";
-import { cn, parseIngredientInputString } from "@/lib/utils";
+import { cn, isExactIngredientMatch, parseIngredientInputString } from "@/lib/utils";
 import { useCreateShoppingListItem } from "@/queries/shopping-list/use-create-shopping-list-item";
 import { createId } from "@paralleldrive/cuid2";
 import Fuse from "fuse.js";
 import { ListOrdered, Plus, X } from "lucide-react";
 import { useMemo, useState } from "react";
-
-function isExactMatch(
-  ingredient: IngredientWithAlias,
-  matchValue: string,
-): boolean {
-  const trimmedMatchValue = matchValue.trim().toLowerCase();
-  if (!trimmedMatchValue) return false;
-
-  const { name, displayNameSingular, displayNamePlural, ingredientAliases } =
-    ingredient;
-
-  return (
-    name.toLowerCase() === trimmedMatchValue ||
-    displayNameSingular.toLowerCase() === trimmedMatchValue ||
-    displayNamePlural.toLowerCase() === trimmedMatchValue ||
-    ingredientAliases.some(
-      (alias) => alias.name.toLowerCase() === trimmedMatchValue,
-    )
-  );
-}
 
 type ListInputProps = {
   listId: string;
@@ -68,7 +48,7 @@ export default function ListInput({ listId, ingredients }: ListInputProps) {
     () =>
       fuse
         .search(parsedInput.name)
-        .filter(({ item }) => !isExactMatch(item, parsedInput.name))
+        .filter(({ item }) => !isExactIngredientMatch(item, parsedInput.name))
         .map(({ item }) => item),
     [fuse, parsedInput.name],
   );
@@ -81,7 +61,7 @@ export default function ListInput({ listId, ingredients }: ListInputProps) {
 
     // Find an existing ingredient if the parsed input name has an exact match
     const existingIngredient = ingredients.find((ingredient) =>
-      isExactMatch(ingredient, parsedInput.name),
+      isExactIngredientMatch(ingredient, parsedInput.name),
     );
 
     const unit = parsedInput.unit ?? existingIngredient?.shoppingUnit ?? null;

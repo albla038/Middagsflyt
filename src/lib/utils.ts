@@ -1,6 +1,7 @@
 import { UNIT_ALIASES } from "@/lib/constants";
 import { Unit } from "@/lib/generated/prisma";
 import { ShoppingListItemResponse } from "@/lib/schemas/shopping-list";
+import { IngredientWithAlias } from "@/lib/types";
 import { ScheduledNoteDisplayContent } from "@/lib/types/scheduled-note";
 import { ScheduledRecipeDisplayContent } from "@/lib/types/scheduled-recipe";
 import { clsx, type ClassValue } from "clsx";
@@ -276,7 +277,6 @@ const quantitySchema = z.preprocess(
  * @param value - The input string to parse
  * @returns An object containing the parsed name, quantity, and unit. If quantity or unit are not found, they will be null.
  */
-
 export function parseIngredientInputString(value: string): {
   name: string;
   quantity: number | null;
@@ -377,4 +377,28 @@ export function stringifyPageSearchParams(
   }
 
   return params.toString();
+}
+
+/**
+ * Checks if the provided ingredient matches the given matchValue exactly, considering the ingredient's name, display names, and aliases. The comparison is case-insensitive and ignores leading/trailing whitespace.
+ *
+ */
+export function isExactIngredientMatch(
+  ingredient: IngredientWithAlias,
+  matchValue: string,
+): boolean {
+  const trimmedMatchValue = matchValue.trim().toLowerCase();
+  if (!trimmedMatchValue) return false;
+
+  const { name, displayNameSingular, displayNamePlural, ingredientAliases } =
+    ingredient;
+
+  return (
+    name.toLowerCase() === trimmedMatchValue ||
+    displayNameSingular.toLowerCase() === trimmedMatchValue ||
+    displayNamePlural.toLowerCase() === trimmedMatchValue ||
+    ingredientAliases.some(
+      (alias) => alias.name.toLowerCase() === trimmedMatchValue,
+    )
+  );
 }
