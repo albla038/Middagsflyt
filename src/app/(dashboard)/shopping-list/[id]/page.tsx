@@ -51,7 +51,7 @@ export default async function ShoppingListPage({
         <Header breadcrumbs={breadcrumbs}>
           <HeaderMenu list={list} />
         </Header>
-        <main className="w-full max-w-screen grow sm:max-w-lg">
+        <main className="flex size-full grow flex-col sm:max-w-lg">
           <HydrationBoundary state={dehydrate(queryClient)}>
             <ShoppingList
               listId={id}

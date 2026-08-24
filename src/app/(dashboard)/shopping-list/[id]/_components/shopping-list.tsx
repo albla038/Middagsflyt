@@ -2,8 +2,10 @@
 
 import ListInput from "@/app/(dashboard)/shopping-list/[id]/_components/list-input";
 import ListItem from "@/app/(dashboard)/shopping-list/[id]/_components/list-item";
+import SortableListItem from "@/app/(dashboard)/shopping-list/[id]/_components/sortable-list-item";
 import { useSortSelection } from "@/app/(dashboard)/shopping-list/sort-selection-provider";
-import { useShoppingList } from "@/queries/shopping-list/use-shopping-list";
+import { Button } from "@/components/ui/button";
+import { getQueryClient } from "@/lib/query-client";
 import { ShoppingListItemResponse } from "@/lib/schemas/shopping-list";
 import { IngredientWithAlias } from "@/lib/types";
 import {
@@ -11,7 +13,10 @@ import {
   cn,
   groupItemsByCategory,
 } from "@/lib/utils";
-import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { shoppingListQueryOptions } from "@/queries/shopping-list/options";
+import { useDeleteShoppingListItems } from "@/queries/shopping-list/use-delete-shopping-list-items";
+import { useReorderShoppingListItem } from "@/queries/shopping-list/use-reorder-shopping-list-item";
+import { useShoppingList } from "@/queries/shopping-list/use-shopping-list";
 import {
   closestCorners,
   DndContext,
@@ -25,22 +30,17 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import {
+  restrictToVerticalAxis,
+  restrictToWindowEdges,
+} from "@dnd-kit/modifiers";
+import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { shoppingListQueryOptions } from "@/queries/shopping-list/options";
-import { getQueryClient } from "@/lib/query-client";
-import { useReorderShoppingListItem } from "@/queries/shopping-list/use-reorder-shopping-list-item";
-import {
-  restrictToVerticalAxis,
-  restrictToWindowEdges,
-} from "@dnd-kit/modifiers";
-import SortableListItem from "@/app/(dashboard)/shopping-list/[id]/_components/sortable-list-item";
 import { Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useDeleteShoppingListItems } from "@/queries/shopping-list/use-delete-shopping-list-items";
+import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 
 const queryClient = getQueryClient();
 
@@ -204,7 +204,7 @@ export default function ShoppingList({
   return (
     <div
       className={cn(
-        "flex h-full flex-col-reverse justify-between",
+        "flex grow flex-col-reverse justify-between",
         "sm:flex-col sm:justify-start",
       )}
     >
