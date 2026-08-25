@@ -8,6 +8,14 @@ import {
   FieldLegend,
   FieldSet,
 } from "@/components/ui/field";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 import {
   RecipeFormInput,
@@ -65,19 +73,41 @@ export default function IngredientFieldArray({
 
   return (
     <FieldSet>
-      <FieldLegend>Ingredienser</FieldLegend>
-      <FieldDescription></FieldDescription>
+      <FieldLegend>Ingredienslista</FieldLegend>
+      <FieldDescription>Mata in receptets ingredienser.</FieldDescription>
 
       <FieldGroup>
-        {fields.map((field, index) => (
-          <IngredientFieldRow
-            key={field.id}
-            index={index}
-            ingredients={ingredients}
-            fuse={fuse}
-            onRemove={() => remove(index)}
-          />
-        ))}
+        {fields.length > 0 && (
+          <ScrollArea>
+            <div className="overflow-hidden rounded-md border has-aria-invalid:border-destructive">
+              <Table className="min-w-xl">
+                <TableHeader className="bg-muted">
+                  <TableRow>
+                    <TableHead className="w-18 text-end">Mängd</TableHead>
+                    <TableHead>Enhet</TableHead>
+                    <TableHead>Text*</TableHead>
+                    <TableHead>Anteckning</TableHead>
+                    <TableHead>Ingrediens*</TableHead>
+                    <TableHead></TableHead>
+                  </TableRow>
+                </TableHeader>
+
+                <TableBody>
+                  {fields.map((field, index) => (
+                    <IngredientFieldRow
+                      key={field.id}
+                      index={index}
+                      ingredients={ingredients}
+                      fuse={fuse}
+                      onRemove={() => remove(index)}
+                    />
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        )}
 
         <IngredientInput
           ingredients={ingredients}

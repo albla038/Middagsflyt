@@ -2,7 +2,7 @@
 
 import IngredientIdField from "@/app/(dashboard)/my-recipes/_components/recipe-form/ingredient/id-field";
 import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldGroup } from "@/components/ui/field";
+import { Field, FieldError } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TableCell, TableRow } from "@/components/ui/table";
 import { Unit } from "@/lib/generated/prisma/enums";
 import { RecipeFormInput, RecipeFormOutput } from "@/lib/schemas/recipe";
 import { IngredientWithAlias } from "@/lib/types";
@@ -39,93 +40,115 @@ export default function IngredientFieldRow({
   const form = useFormContext<RecipeFormInput, unknown, RecipeFormOutput>();
 
   return (
-    <FieldGroup className="flex-row gap-1!">
+    <TableRow className="*:align-top">
       {/* Quantity input */}
-      <Controller
-        control={form.control}
-        name={`recipe.recipeIngredients.${index}.quantity`}
-        render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid}>
-            <Input
-              {...field}
-              id={field.name}
-              aria-invalid={fieldState.invalid}
-              type="number"
-              min={0}
-            />
-            {fieldState.error && <FieldError errors={[fieldState.error]} />}
-          </Field>
-        )}
-      />
+      <TableCell>
+        <Controller
+          control={form.control}
+          name={`recipe.recipeIngredients.${index}.quantity`}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <Input
+                {...field}
+                id={field.name}
+                aria-invalid={fieldState.invalid}
+                className="border-none p-0 text-end shadow-none focus-visible:ring-0"
+              />
+              {fieldState.error && <FieldError errors={[fieldState.error]} className="text-wrap" />}
+            </Field>
+          )}
+        />
+      </TableCell>
 
       {/* Unit select */}
-      <Controller
-        control={form.control}
-        name={`recipe.recipeIngredients.${index}.unit`}
-        render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid}>
-            <Select {...field} onValueChange={field.onChange}>
-              <SelectTrigger id={field.name} aria-invalid={fieldState.invalid}>
-                <SelectValue placeholder="Välj enhet" />
-              </SelectTrigger>
+      <TableCell>
+        <Controller
+          control={form.control}
+          name={`recipe.recipeIngredients.${index}.unit`}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <Select {...field} onValueChange={field.onChange}>
+                <SelectTrigger
+                  id={field.name}
+                  aria-invalid={fieldState.invalid}
+                >
+                  <SelectValue placeholder="Välj enhet" />
+                </SelectTrigger>
 
-              <SelectContent>
-                <SelectItem value="">-</SelectItem>
-                {unitOptions.map((option) => (
-                  <SelectItem
-                    key={`${field.name}-${option.value}`}
-                    value={option.value}
-                  >
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {fieldState.error && <FieldError errors={[fieldState.error]} />}
-          </Field>
-        )}
-      />
+                <SelectContent>
+                  <SelectItem value="">-</SelectItem>
+                  {unitOptions.map((option) => (
+                    <SelectItem
+                      key={`${field.name}-${option.value}`}
+                      value={option.value}
+                    >
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {fieldState.error && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+      </TableCell>
 
       {/* Text input */}
-      <Controller
-        control={form.control}
-        name={`recipe.recipeIngredients.${index}.text`}
-        render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid}>
-            <Input
-              {...field}
-              id={field.name}
-              aria-invalid={fieldState.invalid}
-            />
-            {fieldState.error && <FieldError errors={[fieldState.error]} />}
-          </Field>
-        )}
-      />
+      <TableCell>
+        <Controller
+          control={form.control}
+          name={`recipe.recipeIngredients.${index}.text`}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <Input
+                {...field}
+                id={field.name}
+                aria-invalid={fieldState.invalid}
+                className="border-none p-0 shadow-none focus-visible:ring-0 aria-invalid:border"
+              />
+              {fieldState.error && (
+                <FieldError errors={[fieldState.error]} className="text-wrap" />
+              )}
+            </Field>
+          )}
+        />
+      </TableCell>
 
       {/* Note input */}
-      <Controller
-        control={form.control}
-        name={`recipe.recipeIngredients.${index}.note`}
-        render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid}>
-            <Input
-              {...field}
-              id={field.name}
-              aria-invalid={fieldState.invalid}
-              placeholder="Notering (valfritt)"
-            />
-            {fieldState.error && <FieldError errors={[fieldState.error]} />}
-          </Field>
-        )}
-      />
+
+      <TableCell>
+        <Controller
+          control={form.control}
+          name={`recipe.recipeIngredients.${index}.note`}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <Input
+                {...field}
+                id={field.name}
+                aria-invalid={fieldState.invalid}
+                className="border-none p-0 shadow-none focus-visible:ring-0"
+              />
+              {fieldState.error && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+      </TableCell>
 
       {/* Ingredient ID combobox */}
-      <IngredientIdField index={index} fuse={fuse} ingredients={ingredients} />
+      <TableCell>
+        <IngredientIdField
+          index={index}
+          fuse={fuse}
+          ingredients={ingredients}
+        />
+      </TableCell>
 
       {/* Remove button */}
-      <Button type="button" variant="ghost" size="icon" onClick={onRemove}>
-        <X />
-      </Button>
-    </FieldGroup>
+      <TableCell>
+        <Button type="button" variant="ghost" size="icon" onClick={onRemove}>
+          <X />
+        </Button>
+      </TableCell>
+    </TableRow>
   );
 }

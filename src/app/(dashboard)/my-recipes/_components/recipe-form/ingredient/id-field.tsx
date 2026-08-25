@@ -80,7 +80,9 @@ export default function IngredientIdField({
             </ComboboxContent>
           </Combobox>
 
-          {fieldState.error && <FieldError errors={[fieldState.error]} />}
+          {fieldState.error && (
+            <FieldError errors={[fieldState.error]} className="text-wrap" />
+          )}
         </Field>
       )}
     />
