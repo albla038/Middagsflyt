@@ -59,14 +59,17 @@ export default function IngredientFieldArray({
 
   const handleAddIngredient = useCallback(
     (ingredient: RecipeIngredient) => {
-      append({
-        id: ingredient.id,
-        quantity: ingredient.quantity ? String(ingredient.quantity) : "",
-        unit: ingredient.unit ?? "",
-        text: ingredient.text,
-        note: ingredient.note ?? "",
-        ingredientId: ingredient.ingredientId,
-      });
+      append(
+        {
+          id: ingredient.id,
+          quantity: ingredient.quantity ? String(ingredient.quantity) : "",
+          unit: ingredient.unit ?? "",
+          text: ingredient.text,
+          note: ingredient.note ?? "",
+          ingredientId: ingredient.ingredientId,
+        },
+        { shouldFocus: false },
+      );
     },
     [append],
   );
