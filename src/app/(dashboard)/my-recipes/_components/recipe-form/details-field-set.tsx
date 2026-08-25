@@ -110,7 +110,9 @@ export default function DetailsFieldSet() {
                 value={field.value === "" ? "" : Number(field.value) / 60}
                 onChange={(e) => {
                   const value = e.target.value;
-                  field.onChange(value === "" ? "" : Number(value) * 60);
+                  field.onChange(
+                    value === "" ? "" : String(Number(value) * 60),
+                  );
                 }}
                 id={field.name}
                 aria-invalid={fieldState.invalid}
