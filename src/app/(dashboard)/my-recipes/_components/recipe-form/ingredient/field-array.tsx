@@ -2,6 +2,13 @@
 
 import IngredientFieldRow from "@/app/(dashboard)/my-recipes/_components/recipe-form/ingredient/field-row";
 import IngredientInput from "@/app/(dashboard)/my-recipes/_components/recipe-form/ingredient/input";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   FieldDescription,
   FieldGroup,
@@ -24,6 +31,7 @@ import {
 } from "@/lib/schemas/recipe";
 import { IngredientWithAlias } from "@/lib/types";
 import Fuse from "fuse.js";
+import { MoreHorizontal, Trash2 } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 
@@ -91,7 +99,24 @@ export default function IngredientFieldArray({
                     <TableHead>Text*</TableHead>
                     <TableHead>Anteckning</TableHead>
                     <TableHead>Ingrediens*</TableHead>
-                    <TableHead></TableHead>
+                    <TableHead>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal />
+                          </Button>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={() => remove()}
+                            variant="destructive"
+                          >
+                            <Trash2 /> Rensa alla
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
 
