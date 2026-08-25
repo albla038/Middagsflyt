@@ -23,11 +23,13 @@ const unitOptions = Object.values(Unit).map((unit) => ({
 
 type IngredientFieldRowProps = {
   index: number;
+  ingredients: IngredientWithAlias[];
   fuse: Fuse<IngredientWithAlias>;
 };
 
 export default function IngredientFieldRow({
   index,
+  ingredients,
   fuse,
 }: IngredientFieldRowProps) {
   const form = useFormContext<RecipeFormInput, unknown, RecipeFormOutput>();
@@ -114,7 +116,7 @@ export default function IngredientFieldRow({
       />
 
       {/* Ingredient ID combobox */}
-      <IngredientIdField index={index} fuse={fuse} />
+      <IngredientIdField index={index} fuse={fuse} ingredients={ingredients} />
     </FieldGroup>
   );
 }
