@@ -44,7 +44,7 @@ export default function IngredientFieldArray({
 
   const form = useFormContext<RecipeFormInput, unknown, RecipeFormOutput>();
 
-  const { fields, append } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "recipe.recipeIngredients",
   });
@@ -75,6 +75,7 @@ export default function IngredientFieldArray({
             index={index}
             ingredients={ingredients}
             fuse={fuse}
+            onRemove={() => remove(index)}
           />
         ))}
 

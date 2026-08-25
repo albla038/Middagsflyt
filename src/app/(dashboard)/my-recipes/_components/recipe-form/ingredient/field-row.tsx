@@ -1,6 +1,7 @@
 "use client";
 
 import IngredientIdField from "@/app/(dashboard)/my-recipes/_components/recipe-form/ingredient/id-field";
+import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,6 +15,7 @@ import { Unit } from "@/lib/generated/prisma/enums";
 import { RecipeFormInput, RecipeFormOutput } from "@/lib/schemas/recipe";
 import { IngredientWithAlias } from "@/lib/types";
 import Fuse from "fuse.js";
+import { X } from "lucide-react";
 import { Controller, useFormContext } from "react-hook-form";
 
 const unitOptions = Object.values(Unit).map((unit) => ({
@@ -25,12 +27,14 @@ type IngredientFieldRowProps = {
   index: number;
   ingredients: IngredientWithAlias[];
   fuse: Fuse<IngredientWithAlias>;
+  onRemove: () => void;
 };
 
 export default function IngredientFieldRow({
   index,
   ingredients,
   fuse,
+  onRemove,
 }: IngredientFieldRowProps) {
   const form = useFormContext<RecipeFormInput, unknown, RecipeFormOutput>();
 
@@ -117,6 +121,11 @@ export default function IngredientFieldRow({
 
       {/* Ingredient ID combobox */}
       <IngredientIdField index={index} fuse={fuse} ingredients={ingredients} />
+
+      {/* Remove button */}
+      <Button type="button" variant="ghost" size="icon" onClick={onRemove}>
+        <X />
+      </Button>
     </FieldGroup>
   );
 }
