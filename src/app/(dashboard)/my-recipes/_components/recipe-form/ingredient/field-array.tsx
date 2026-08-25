@@ -63,6 +63,8 @@ export default function IngredientFieldArray({
   const { fields, append, remove, move } = useFieldArray({
     control: form.control,
     name: "recipe.recipeIngredients",
+    // Use a different key name to avoid conflicts with the field from the RecipeFormtype
+    keyName: "rhfId",
   });
 
   const handleAddIngredient = useCallback(
@@ -123,7 +125,7 @@ export default function IngredientFieldArray({
                 <TableBody>
                   {fields.map((field, index) => (
                     <IngredientFieldRow
-                      key={field.id}
+                      key={field.rhfId}
                       index={index}
                       ingredients={ingredients}
                       fuse={fuse}
