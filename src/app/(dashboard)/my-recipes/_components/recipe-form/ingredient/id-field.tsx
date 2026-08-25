@@ -65,12 +65,12 @@ export default function IngredientIdField({
               type="text"
             />
 
-            <ComboboxContent>
+            <ComboboxContent className="w-fit">
               <ComboboxEmpty>
                 Inga matchande ingredienser hittades.
               </ComboboxEmpty>
 
-              <ComboboxList>
+              <ComboboxList className="scrollbar-none">
                 {(ingredient: IngredientWithAlias) => (
                   <ComboboxItem key={ingredient.id} value={ingredient}>
                     {ingredient.name}
