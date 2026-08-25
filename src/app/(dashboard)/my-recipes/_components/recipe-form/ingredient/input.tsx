@@ -51,17 +51,33 @@ function IngredientInput({
       ingredients.find((ingredient) =>
         isExactIngredientMatch(ingredient, parsedInput.name),
       ),
-    [ingredients, parsedInput],
+    [ingredients, parsedInput.name],
   );
 
   const submitIngredient = useCallback(() => {
     const value = input.trim();
-    // Return early if the trimmed value is empty
     if (!value) return;
 
-    const existingIngredient = findMatchingIngredient();
+    let ingredientId = "";
+    let unit = parsedInput.unit;
 
-    const unit = parsedInput.unit ?? existingIngredient?.shoppingUnit ?? null;
+    // 1. Check for perfect match first
+    const exactMatch = findMatchingIngredient();
+
+    if (exactMatch) {
+      ingredientId = exactMatch.id;
+      unit = unit ?? exactMatch.shoppingUnit;
+    } else {
+      // 2. Check for fuzzy match with high confidence (< 0.1)
+      const searchResults = fuse.search(parsedInput.name);
+      const topResult = searchResults.at(0);
+
+      if (topResult && topResult.score !== undefined && topResult.score < 0.1) {
+        ingredientId = topResult.item.id;
+        unit = unit ?? topResult.item.shoppingUnit;
+      }
+    }
+
     const capitalizedName =
       parsedInput.name.charAt(0).toUpperCase() + parsedInput.name.slice(1);
 
@@ -71,11 +87,11 @@ function IngredientInput({
       unit,
       text: capitalizedName,
       note: null,
-      ingredientId: existingIngredient?.id ?? "",
+      ingredientId,
     });
 
     setInput("");
-  }, [input, findMatchingIngredient, parsedInput, onAddIngredient]);
+  }, [input, findMatchingIngredient, fuse, parsedInput, onAddIngredient]);
 
   return (
     <div className="group flex flex-col gap-1" tabIndex={-1}>
@@ -126,15 +142,11 @@ function IngredientInput({
           )}
 
           {filteredIngredients.map(
-            ({ id, displayNameSingular, displayNamePlural }) => {
+            ({ id, displayNameSingular, displayNamePlural, shoppingUnit }) => {
               const name =
                 parsedInput.name.length > displayNameSingular.length
                   ? displayNamePlural
                   : displayNameSingular;
-
-              const existingIngredient = findMatchingIngredient();
-              const unit =
-                parsedInput.unit ?? existingIngredient?.shoppingUnit ?? null;
 
               return (
                 <li key={id} className="flex items-center justify-center">
@@ -146,12 +158,11 @@ function IngredientInput({
                       onAddIngredient({
                         id: createId(),
                         quantity: parsedInput.quantity,
-                        unit,
+                        unit: parsedInput.unit ?? shoppingUnit,
                         text: name,
                         note: null,
-                        ingredientId: existingIngredient?.id ?? "",
+                        ingredientId: id ?? "",
                       });
-
                       setInput("");
                     }}
                   >
