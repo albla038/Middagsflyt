@@ -44,7 +44,9 @@ const recipeIngredient = z.object({
   text: z.string().nonempty("Ingrediensen måste ha ett namn"),
   note: z.string().transform(emptyStringToNull),
   ingredientId: z
-    .cuid2()
+    .cuid2(
+      "Ingrediensen måste vara registrerad i Middagsflyt så att systemet kan identifiera den",
+    )
     .nonempty(
       "Ingrediensen måste vara registrerad i Middagsflyt så att systemet kan identifiera den",
     ),

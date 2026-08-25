@@ -1,5 +1,6 @@
 "use client";
 
+import IngredientIdField from "@/app/(dashboard)/my-recipes/_components/recipe-form/ingredient/id-field";
 import { Field, FieldError, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,6 +12,8 @@ import {
 } from "@/components/ui/select";
 import { Unit } from "@/lib/generated/prisma/enums";
 import { RecipeFormInput, RecipeFormOutput } from "@/lib/schemas/recipe";
+import { IngredientWithAlias } from "@/lib/types";
+import Fuse from "fuse.js";
 import { Controller, useFormContext } from "react-hook-form";
 
 const unitOptions = Object.values(Unit).map((unit) => ({
@@ -20,9 +23,13 @@ const unitOptions = Object.values(Unit).map((unit) => ({
 
 type IngredientFieldRowProps = {
   index: number;
+  fuse: Fuse<IngredientWithAlias>;
 };
 
-export default function IngredientFieldRow({ index }: IngredientFieldRowProps) {
+export default function IngredientFieldRow({
+  index,
+  fuse,
+}: IngredientFieldRowProps) {
   const form = useFormContext<RecipeFormInput, unknown, RecipeFormOutput>();
 
   return (
@@ -105,6 +112,9 @@ export default function IngredientFieldRow({ index }: IngredientFieldRowProps) {
           </Field>
         )}
       />
+
+      {/* Ingredient ID combobox */}
+      <IngredientIdField index={index} fuse={fuse} />
     </FieldGroup>
   );
 }

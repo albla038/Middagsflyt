@@ -70,7 +70,7 @@ export default function IngredientFieldArray({
 
       <FieldGroup>
         {fields.map((field, index) => (
-          <IngredientFieldRow key={field.id} index={index} />
+          <IngredientFieldRow key={field.id} index={index} fuse={fuse} />
         ))}
 
         <IngredientInput
