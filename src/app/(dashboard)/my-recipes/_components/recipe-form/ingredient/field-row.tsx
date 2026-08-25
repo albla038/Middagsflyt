@@ -2,6 +2,12 @@
 
 import IngredientIdField from "@/app/(dashboard)/my-recipes/_components/recipe-form/ingredient/id-field";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Field, FieldError } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
@@ -16,7 +22,7 @@ import { Unit } from "@/lib/generated/prisma/enums";
 import { RecipeFormInput, RecipeFormOutput } from "@/lib/schemas/recipe";
 import { IngredientWithAlias } from "@/lib/types";
 import Fuse from "fuse.js";
-import { X } from "lucide-react";
+import { ArrowDown, ArrowUp, MoreHorizontal, Trash2 } from "lucide-react";
 import { Controller, useFormContext } from "react-hook-form";
 
 const unitOptions = Object.values(Unit).map((unit) => ({
@@ -28,6 +34,10 @@ type IngredientFieldRowProps = {
   index: number;
   ingredients: IngredientWithAlias[];
   fuse: Fuse<IngredientWithAlias>;
+  isFirst: boolean;
+  isLast: boolean;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
   onRemove: () => void;
 };
 
@@ -35,6 +45,10 @@ export default function IngredientFieldRow({
   index,
   ingredients,
   fuse,
+  isFirst,
+  isLast,
+  onMoveUp,
+  onMoveDown,
   onRemove,
 }: IngredientFieldRowProps) {
   const form = useFormContext<RecipeFormInput, unknown, RecipeFormOutput>();
@@ -54,7 +68,9 @@ export default function IngredientFieldRow({
                 aria-invalid={fieldState.invalid}
                 className="border-none p-0 text-end shadow-none focus-visible:ring-0"
               />
-              {fieldState.error && <FieldError errors={[fieldState.error]} className="text-wrap" />}
+              {fieldState.error && (
+                <FieldError errors={[fieldState.error]} className="text-wrap" />
+              )}
             </Field>
           )}
         />
@@ -143,11 +159,27 @@ export default function IngredientFieldRow({
         />
       </TableCell>
 
-      {/* Remove button */}
+      {/* Action dropdown menu */}
       <TableCell>
-        <Button type="button" variant="ghost" size="icon" onClick={onRemove}>
-          <X />
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button type="button" variant="ghost" size="icon">
+              <MoreHorizontal />
+            </Button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={onRemove} variant="destructive">
+              <Trash2 /> Ta bort
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={onMoveUp} disabled={isFirst}>
+              <ArrowUp /> Flytta upp
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={onMoveDown} disabled={isLast}>
+              <ArrowDown /> Flytta ned
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </TableCell>
     </TableRow>
   );

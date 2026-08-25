@@ -52,7 +52,7 @@ export default function IngredientFieldArray({
 
   const form = useFormContext<RecipeFormInput, unknown, RecipeFormOutput>();
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, move } = useFieldArray({
     control: form.control,
     name: "recipe.recipeIngredients",
   });
@@ -79,7 +79,7 @@ export default function IngredientFieldArray({
       <FieldLegend>Ingredienslista</FieldLegend>
       <FieldDescription>Mata in receptets ingredienser.</FieldDescription>
 
-      <FieldGroup>
+      <FieldGroup className="gap-3">
         {fields.length > 0 && (
           <ScrollArea>
             <div className="overflow-hidden rounded-md border has-aria-invalid:border-destructive">
@@ -102,6 +102,10 @@ export default function IngredientFieldArray({
                       index={index}
                       ingredients={ingredients}
                       fuse={fuse}
+                      isFirst={index === 0}
+                      isLast={index === fields.length - 1}
+                      onMoveUp={() => move(index, index - 1)}
+                      onMoveDown={() => move(index, index + 1)}
                       onRemove={() => remove(index)}
                     />
                   ))}
