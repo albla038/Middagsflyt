@@ -67,7 +67,7 @@ export default function IngredientFieldArray({
     keyName: "rhfId",
   });
 
-  const handleAddIngredient = useCallback(
+  const handleAppend = useCallback(
     (ingredient: RecipeIngredient) => {
       append(
         {
@@ -82,6 +82,48 @@ export default function IngredientFieldArray({
       );
     },
     [append],
+  );
+
+  const handleRemove = useCallback(
+    (index?: number) => {
+      const ingredients = form.getValues("recipe.recipeIngredients");
+      const idsToRemove = new Set<string>();
+
+      if (index === undefined) {
+        // "Clear All" was clicked
+        ingredients.forEach((ing) => idsToRemove.add(ing.id));
+      } else {
+        // Single row was deleted
+        idsToRemove.add(ingredients[index].id);
+      }
+
+      // Remove the ingredients from ingredients array
+      remove(index);
+
+      // Clean up instructions array
+      const instructions = form.getValues("recipe.recipeInstructions");
+      let hasChanges = false;
+
+      const updatedInstructions = instructions.map((instruction) => {
+        const filteredIds = instruction.ingredientIds.filter(
+          (id) => !idsToRemove.has(id),
+        );
+
+        if (filteredIds.length !== instruction.ingredientIds.length) {
+          hasChanges = true;
+          return { ...instruction, ingredientIds: filteredIds };
+        }
+        return instruction;
+      });
+
+      // Update instructions array state if any ingredients should be removed
+      if (hasChanges) {
+        form.setValue("recipe.recipeInstructions", updatedInstructions, {
+          shouldDirty: true,
+        });
+      }
+    },
+    [form, remove],
   );
 
   return (
@@ -111,7 +153,7 @@ export default function IngredientFieldArray({
 
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem
-                            onClick={() => remove()}
+                            onClick={() => handleRemove()}
                             variant="destructive"
                           >
                             <Trash2 /> Rensa alla
@@ -133,7 +175,7 @@ export default function IngredientFieldArray({
                       isLast={index === fields.length - 1}
                       onMoveUp={() => move(index, index - 1)}
                       onMoveDown={() => move(index, index + 1)}
-                      onRemove={() => remove(index)}
+                      onRemove={() => handleRemove(index)}
                     />
                   ))}
                 </TableBody>
@@ -146,7 +188,7 @@ export default function IngredientFieldArray({
         <IngredientInput
           ingredients={ingredients}
           fuse={fuse}
-          onAddIngredient={handleAddIngredient}
+          onAddIngredient={handleAppend}
         />
       </FieldGroup>
     </FieldSet>
