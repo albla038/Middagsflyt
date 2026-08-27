@@ -37,10 +37,10 @@ export default function IngredientIdField({
     // Prioritize the combobox query if available
     const query = comboboxQuery || ingredientText;
 
-    if (!query) return [];
+    if (!query) return ingredients;
 
     return fuse.search(query).map(({ item }) => item);
-  }, [ingredientText, comboboxQuery, fuse]);
+  }, [comboboxQuery, ingredientText, ingredients, fuse]);
 
   return (
     <Controller
@@ -65,7 +65,7 @@ export default function IngredientIdField({
               type="text"
             />
 
-            <ComboboxContent className="w-fit">
+            <ComboboxContent>
               <ComboboxEmpty>
                 Inga matchande ingredienser hittades.
               </ComboboxEmpty>
