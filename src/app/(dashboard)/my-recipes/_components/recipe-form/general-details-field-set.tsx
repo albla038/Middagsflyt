@@ -13,7 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { RecipeFormInput, RecipeFormOutput } from "@/lib/schemas/recipe";
 import { User } from "better-auth";
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 
 type GeneralDetailsFieldSetProps = {
@@ -25,7 +25,37 @@ export default function GeneralDetailsFieldSet({
 }: GeneralDetailsFieldSetProps) {
   const form = useFormContext<RecipeFormInput, unknown, RecipeFormOutput>();
 
-  const [isAuthorToggled, setIsAuthorToggled] = useState(false);
+  const [isAuthorToggled, setIsAuthorToggled] = useState(
+    // Initialize based on whether the originalAuthor field has a value
+    () => form.getValues("recipe.originalAuthor") !== "",
+  );
+
+  const authorBackup = useRef("");
+  const sourceUrlBackup = useRef("");
+
+  const handleAuthorToggle = useCallback(
+    (checked: boolean) => {
+      setIsAuthorToggled(checked);
+
+      if (!checked) {
+        // Save backup and clear form
+        authorBackup.current = form.getValues("recipe.originalAuthor");
+        sourceUrlBackup.current = form.getValues("recipe.sourceUrl");
+
+        form.setValue("recipe.originalAuthor", "", { shouldDirty: true });
+        form.setValue("recipe.sourceUrl", "", { shouldDirty: true });
+      } else {
+        // Restore from backup
+        form.setValue("recipe.originalAuthor", authorBackup.current, {
+          shouldDirty: true,
+        });
+        form.setValue("recipe.sourceUrl", sourceUrlBackup.current, {
+          shouldDirty: true,
+        });
+      }
+    },
+    [form],
+  );
 
   return (
     <FieldSet>
@@ -78,14 +108,7 @@ export default function GeneralDetailsFieldSet({
                 <Switch
                   checked={isAuthorToggled}
                   size="sm"
-                  onCheckedChange={(checked) => {
-                    setIsAuthorToggled(checked);
-                    if (!checked) {
-                      // Clear the values if the user toggles the switch off
-                      form.setValue("recipe.originalAuthor", "");
-                      form.setValue("recipe.sourceUrl", "");
-                    }
-                  }}
+                  onCheckedChange={handleAuthorToggle}
                 />
               </div>
 
@@ -111,7 +134,7 @@ export default function GeneralDetailsFieldSet({
                 <div
                   className="absolute inset-0"
                   role="button"
-                  onClick={() => setIsAuthorToggled(true)}
+                  onClick={() => handleAuthorToggle(true)}
                 />
               )}
             </Field>
