@@ -135,15 +135,15 @@ export default function IngredientFieldArray({
         {fields.length > 0 && (
           <ScrollArea>
             <div className="overflow-hidden rounded-md border has-aria-invalid:border-destructive">
-              <Table className="min-w-xl">
+              <Table className="min-w-xl table-fixed">
                 <TableHeader className="bg-muted">
                   <TableRow>
                     <TableHead className="w-18 text-end">Mängd</TableHead>
-                    <TableHead>Enhet</TableHead>
+                    <TableHead className="w-33">Enhet</TableHead>
                     <TableHead>Text*</TableHead>
                     <TableHead className="w-32">Anteckning</TableHead>
-                    <TableHead>Ingrediens*</TableHead>
-                    <TableHead>
+                    <TableHead className="w-56">Ingrediens*</TableHead>
+                    <TableHead className="w-13">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon">
