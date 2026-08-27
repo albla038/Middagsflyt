@@ -99,7 +99,7 @@ export default function IngredientFieldArray({
                     <TableHead className="w-18 text-end">Mängd</TableHead>
                     <TableHead>Enhet</TableHead>
                     <TableHead>Text*</TableHead>
-                    <TableHead>Anteckning</TableHead>
+                    <TableHead className="w-32">Anteckning</TableHead>
                     <TableHead>Ingrediens*</TableHead>
                     <TableHead>
                       <DropdownMenu>

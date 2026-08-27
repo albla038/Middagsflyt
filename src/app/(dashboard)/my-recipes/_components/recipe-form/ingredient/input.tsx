@@ -16,7 +16,7 @@ import {
 } from "@/lib/utils";
 import { createId } from "@paralleldrive/cuid2";
 import Fuse from "fuse.js";
-import { ArrowUp, Plus } from "lucide-react";
+import { CornerDownLeft, Plus } from "lucide-react";
 import { memo, useCallback, useMemo, useState } from "react";
 
 type IngredientInputProps = {
@@ -118,10 +118,9 @@ function IngredientInput({
             variant="default"
             type="button"
             size="icon-xs"
-            className="rounded-full"
             onClick={submitIngredient}
           >
-            <ArrowUp />
+            <CornerDownLeft />
           </InputGroupButton>
         </InputGroupAddon>
       </InputGroup>

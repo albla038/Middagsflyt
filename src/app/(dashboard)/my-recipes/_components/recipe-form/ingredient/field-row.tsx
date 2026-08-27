@@ -66,7 +66,8 @@ export default function IngredientFieldRow({
                 {...field}
                 id={field.name}
                 aria-invalid={fieldState.invalid}
-                className="border-none p-0 text-end shadow-none focus-visible:ring-0"
+                // className="border-none p-0 text-end shadow-none focus-visible:ring-0"
+                className="text-end"
               />
               {fieldState.error && (
                 <FieldError errors={[fieldState.error]} className="text-wrap" />
@@ -120,7 +121,7 @@ export default function IngredientFieldRow({
                 {...field}
                 id={field.name}
                 aria-invalid={fieldState.invalid}
-                className="border-none p-0 shadow-none focus-visible:ring-0 aria-invalid:border"
+                // className="border-none p-0 shadow-none focus-visible:ring-0 aria-invalid:border"
               />
               {fieldState.error && (
                 <FieldError errors={[fieldState.error]} className="text-wrap" />
@@ -131,7 +132,6 @@ export default function IngredientFieldRow({
       </TableCell>
 
       {/* Note input */}
-
       <TableCell>
         <Controller
           control={form.control}
@@ -142,7 +142,7 @@ export default function IngredientFieldRow({
                 {...field}
                 id={field.name}
                 aria-invalid={fieldState.invalid}
-                className="border-none p-0 shadow-none focus-visible:ring-0"
+                // className="border-none p-0 shadow-none focus-visible:ring-0"
               />
               {fieldState.error && <FieldError errors={[fieldState.error]} />}
             </Field>
