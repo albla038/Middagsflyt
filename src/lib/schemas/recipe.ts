@@ -54,7 +54,7 @@ const recipeIngredient = z.object({
 
 const recipeInstruction = z.object({
   id: z.cuid2(),
-  step: z.int(), // TODO: Check if string -> number conversion is needed
+  // step: z.int(), // TODO: Check if string -> number conversion is needed
   text: z.string().nonempty("Instruktionen får inte vara tom"),
   ingredientIds: z.array(z.cuid2()),
 });
@@ -106,4 +106,5 @@ export const recipeFormSchema = z.discriminatedUnion("action", [
 export type RecipeFormInput = z.input<typeof recipeFormSchema>;
 export type RecipeFormOutput = z.output<typeof recipeFormSchema>;
 
+export type RecipeIngredientInput = z.input<typeof recipeIngredient>;
 export type RecipeIngredient = z.infer<typeof recipeIngredient>;
