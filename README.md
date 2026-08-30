@@ -62,9 +62,10 @@ This project utilizes generative AI with structured outputs to enrich web scrape
    - **Gemini API:** Get your API key from [Google AI Studio](https://aistudio.google.com/).
 
 3. **Initialize the database:**
-   Sync your Prisma schema with the database:
+   Generate the Prisma client and sync your Prisma schema with the database by running:
 
    ```bash
+   npx prisma generate
    npx prisma db push
    ```
 
