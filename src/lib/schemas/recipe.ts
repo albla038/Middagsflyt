@@ -36,11 +36,10 @@ const stringToLinkNullableSchema = z
   .transform(emptyStringToNull)
   .pipe(z.httpUrl("Ange en giltig webbadress: https://...").nullable());
 
-const recipeIngredient = z.object({
+const recipeIngredientFormSchema = z.object({
   id: z.cuid2(),
   quantity: stringToPositiveIntNullableSchema,
   unit: z.string().transform(emptyStringToNull).pipe(z.enum(Unit).nullable()),
-  // displayOrder: z.int(), // TODO: Examine this. If it's needed for DnD-kit, it should be a float
   text: z.string().nonempty("Ingrediensen måste ha ett namn"),
   note: z.string().transform(emptyStringToNull),
   ingredientId: z
@@ -52,15 +51,14 @@ const recipeIngredient = z.object({
     ),
 });
 
-const recipeInstruction = z.object({
+const recipeInstructionFormSchema = z.object({
   id: z.cuid2(),
-  // step: z.int(), // TODO: Check if string -> number conversion is needed
   text: z.string().nonempty("Instruktionen får inte vara tom"),
   ingredientIds: z.array(z.cuid2()),
 });
 
-const baseRecipeSchema = z.object({
-  name: z.string(),
+const recipeDraftFormSchema = z.object({
+  name: z.string().nonempty("Receptet måste ha ett namn"),
   description: z.string().transform(emptyStringToNull),
   recipeYield: z
     .string()
@@ -79,32 +77,111 @@ const baseRecipeSchema = z.object({
   status: z.enum(RecipeStatus),
   isPublic: z.boolean(),
 
-  recipeIngredients: z.array(recipeIngredient),
-  recipeInstructions: z.array(recipeInstruction),
+  recipeIngredients: z.array(recipeIngredientFormSchema),
+  recipeInstructions: z.array(recipeInstructionFormSchema),
+});
+
+const recipePublishFormSchema = recipeDraftFormSchema.extend({
+  recipeIngredients: z
+    .array(recipeIngredientFormSchema)
+    .nonempty("Ange minst en ingrediens"),
+  recipeInstructions: z
+    .array(recipeInstructionFormSchema)
+    .nonempty("Ange minst en instruktion"),
 });
 
 export const recipeFormSchema = z.discriminatedUnion("action", [
   z.object({
     action: z.literal("DRAFT"),
-    recipe: baseRecipeSchema,
+    recipe: recipeDraftFormSchema,
   }),
   z.object({
     action: z.literal("PUBLISH"),
-    recipe: baseRecipeSchema.extend({
-      name: z.string().nonempty("Receptet måste ha ett namn"),
-
-      recipeIngredients: z
-        .array(recipeIngredient)
-        .nonempty("Ange minst en ingrediens"),
-      recipeInstructions: z
-        .array(recipeInstruction)
-        .nonempty("Ange minst en instruktion"),
-    }),
+    recipe: recipePublishFormSchema,
   }),
 ]);
 
 export type RecipeFormInput = z.input<typeof recipeFormSchema>;
 export type RecipeFormOutput = z.output<typeof recipeFormSchema>;
 
-export type RecipeIngredientInput = z.input<typeof recipeIngredient>;
-export type RecipeIngredient = z.infer<typeof recipeIngredient>;
+export type RecipeIngredientInput = z.input<typeof recipeIngredientFormSchema>;
+export type RecipeIngredient = z.infer<typeof recipeIngredientFormSchema>;
+
+export type RecipeDraftFormOutput = z.output<typeof recipeDraftFormSchema>;
+
+export type RecipePublishFormOutput = z.output<typeof recipePublishFormSchema>;
+
+const recipeIngredientSchema = z.object({
+  id: z.cuid2(),
+  quantity: z.int().positive().nullable(),
+  unit: z.enum(Unit).nullable(),
+  text: z.string().nonempty(),
+  note: z.string().nullable(),
+  ingredientId: z.cuid2(),
+});
+
+const recipeInstructionSchema = z.object({
+  id: z.cuid2(),
+  text: z.string().nonempty(),
+  ingredientIds: z.array(z.cuid2()),
+});
+
+export const recipeDraftSchema = z.object({
+  id: z.cuid2().optional(),
+  slug: z.string().optional(),
+  name: z.string().nonempty(),
+  description: z.string().nullable(),
+  recipeYield: z.int().positive().nullable(),
+  imageUrl: z.string().nullable(),
+  recipeType: z.enum(RecipeType),
+  proteinType: z.enum(ProteinType).nullable(),
+  totalTimeSeconds: z.int().positive().nullable(),
+  oven: z.int().positive().nullable(),
+  originalAuthor: z.string().nullable(),
+  sourceUrl: z.string().nullable(),
+  status: z.literal("DRAFT"),
+  isPublic: z.boolean(),
+
+  recipeIngredients: z.array(recipeIngredientSchema).transform((ingredients) =>
+    ingredients.map((ing, index) => ({
+      ...ing,
+      displayOrder: index,
+    })),
+  ),
+
+  recipeInstructions: z
+    .array(recipeInstructionSchema)
+    .transform((instructions) =>
+      instructions.map((inst, index) => ({
+        ...inst,
+        step: index + 1,
+      })),
+    ),
+});
+
+export const recipePublishSchema = recipeDraftSchema.extend({
+  status: z.literal("PUBLISHED"),
+
+  recipeIngredients: z
+    .array(recipeIngredientSchema)
+    .nonempty()
+    .transform((ingredients) =>
+      ingredients.map((ing, index) => ({
+        ...ing,
+        displayOrder: index,
+      })),
+    ),
+
+  recipeInstructions: z
+    .array(recipeInstructionSchema)
+    .nonempty()
+    .transform((instructions) =>
+      instructions.map((inst, index) => ({
+        ...inst,
+        step: index + 1,
+      })),
+    ),
+});
+
+export type RecipeDraft = z.infer<typeof recipeDraftSchema>;
+export type RecipePublish = z.infer<typeof recipePublishSchema>;
