@@ -9,6 +9,7 @@ import prisma from "@/lib/db";
 import { Recipe } from "@/lib/generated/prisma";
 import { prismaErrorToErrorCode } from "@/lib/prisma-error-mapper";
 import { safeQuery } from "@/lib/safe-query";
+import { RecipeDraft, RecipePublish } from "@/lib/schemas/recipe";
 import { GeneratedRecipe } from "@/lib/schemas/recipe-generation";
 import { MutationResultData } from "@/lib/types/api";
 import { generateUniqueSlug, slugify } from "@/lib/utils";
@@ -215,6 +216,89 @@ export async function createRecipeFromGeneratedData(
     return { ok: true, data: result };
   } catch (error) {
     console.error("Error creating recipe from generated data:", error);
+    return { ok: false, errorCode: prismaErrorToErrorCode(error) };
+  }
+}
+
+export async function upsertRecipe(
+  data: RecipeDraft | RecipePublish,
+): Promise<MutationResultData<{ recipeId: string }>> {
+  const user = await requireUser();
+
+
+  try {
+    let finalSlug = data.slug;
+
+    // If ID exists, we have an edit
+    if (data.id) {
+      const existingRecipe = await prisma.recipe.findUnique({
+        where: { id: data.id },
+        select: { slug: true, name: true, status: true },
+      });
+
+      // Generate a new slug if the name has changed, and this is a draft
+      if (existingRecipe) {
+        if (
+          existingRecipe.name !== data.name &&
+          existingRecipe.status === "DRAFT"
+        ) {
+          finalSlug = await resolveUniqueRecipeSlugForName(data.name);
+        }
+      }
+    }
+
+    // If finalSlug is still undefined, we have a brand new recipe draft
+    if (!finalSlug) {
+      finalSlug = await resolveUniqueRecipeSlugForName(data.name);
+    }
+
+    const mappedInstructions = data.recipeInstructions.map((instruction) => {
+      const { ingredientIds, ...rest } = instruction;
+
+      return {
+        ...rest,
+        // Convert string[] to { connect: [{ id: "..." }] }
+        recipeIngredients: {
+          connect: ingredientIds.map((id) => ({ id })),
+        },
+      };
+    });
+
+    // Save the recipe draft to the database
+    const recipe = await prisma.recipe.upsert({
+      where: {
+        id: data.id ?? "",
+      },
+
+      // NEW RECIPE
+      create: {
+        ...data,
+        slug: finalSlug,
+        createdBy: { connect: { id: user.id } },
+
+        recipeIngredients: { create: data.recipeIngredients },
+        recipeInstructions: { create: mappedInstructions },
+      },
+
+      // EDIT RECIPE (wipe & replace)
+      update: {
+        ...data,
+        slug: finalSlug,
+
+        recipeIngredients: {
+          deleteMany: {},
+          create: data.recipeIngredients,
+        },
+        recipeInstructions: {
+          deleteMany: {},
+          create: mappedInstructions,
+        },
+      },
+    });
+
+    return { ok: true, data: { recipeId: recipe.id } };
+  } catch (error) {
+    console.error("Error saving recipe draft:", error);
     return { ok: false, errorCode: prismaErrorToErrorCode(error) };
   }
 }
